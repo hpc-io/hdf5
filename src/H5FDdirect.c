@@ -138,7 +138,6 @@ static herr_t H5FD__direct_read(H5FD_t *_file, H5FD_mem_t type, hid_t fapl_id, h
 static herr_t H5FD__direct_write(H5FD_t *_file, H5FD_mem_t type, hid_t fapl_id, haddr_t addr,
             size_t size, const void *buf);
 static herr_t H5FD__direct_flush(H5FD_t *_file, hid_t dxpl_id, hbool_t closing);
-
 static herr_t H5FD__direct_truncate(H5FD_t *_file, hid_t dxpl_id, hbool_t closing);
 static herr_t H5FD__direct_lock(H5FD_t *_file, hbool_t rw);
 static herr_t H5FD__direct_unlock(H5FD_t *_file);
