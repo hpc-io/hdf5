@@ -137,6 +137,8 @@ static herr_t H5FD__direct_read(H5FD_t *_file, H5FD_mem_t type, hid_t fapl_id, h
            size_t size, void *buf);
 static herr_t H5FD__direct_write(H5FD_t *_file, H5FD_mem_t type, hid_t fapl_id, haddr_t addr,
             size_t size, const void *buf);
+static herr_t H5FD__direct_flush(H5FD_t *_file, hid_t dxpl_id, hbool_t closing);
+
 static herr_t H5FD__direct_truncate(H5FD_t *_file, hid_t dxpl_id, hbool_t closing);
 static herr_t H5FD__direct_lock(H5FD_t *_file, hbool_t rw);
 static herr_t H5FD__direct_unlock(H5FD_t *_file);
@@ -170,7 +172,7 @@ static const H5FD_class_t H5FD_direct_g = {
     H5FD__direct_get_handle,    /* get_handle           */
     H5FD__direct_read,          /* read                 */
     H5FD__direct_write,         /* write                */
-    NULL,                       /* flush                */
+    H5FD__direct_flush,         /* flush                */
     H5FD__direct_truncate,      /* truncate             */
     H5FD__direct_lock,          /* lock                 */
     H5FD__direct_unlock,        /* unlock               */
@@ -1243,6 +1245,43 @@ done:
 
     FUNC_LEAVE_NOAPI(ret_value)
 }
+
+
+/*-------------------------------------------------------------------------
+ * Function:  H5FD__direct_flush
+ *
+ * Purpose:  Flush makes use of fsync to flush data to persistent storage.
+ *    O_DIRECT will disable the OS cache, but fsync maybe necessary on
+ *    certain file system to get data to persistant storage.
+ *
+ * Return:  Success:  Zero
+ *
+ *    Failure:  -1
+ *
+ * Programmer:  John J Ravi
+ *              Saturday, 3 October 2020
+ *
+ *-------------------------------------------------------------------------
+ */
+static herr_t
+H5FD__direct_flush(H5FD_t *_file, hid_t dxpl_id, hbool_t closing)
+{
+    H5FD_direct_t  *file = (H5FD_direct_t*)_file;	/* VFD file struct */
+    herr_t ret_value = SUCCEED;                 	/* Return value */
+
+    FUNC_ENTER_STATIC
+
+    HDassert(file);
+
+    fsync(file->fd);
+
+    if(fsync(file->fd) < 0) {
+        HSYS_GOTO_ERROR(H5E_VFL, H5E_CANTFLUSH, FAIL, "unable perform fsync on file descriptor")
+    }
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5FD__direct_flush() */
 
 
 /*-------------------------------------------------------------------------
