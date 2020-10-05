@@ -1271,9 +1271,6 @@ H5FD__direct_flush(H5FD_t *_file, hid_t dxpl_id, hbool_t closing)
     FUNC_ENTER_STATIC
 
     HDassert(file);
-
-    fsync(file->fd);
-
     if(fsync(file->fd) < 0) {
         HSYS_GOTO_ERROR(H5E_VFL, H5E_CANTFLUSH, FAIL, "unable perform fsync on file descriptor")
     }
