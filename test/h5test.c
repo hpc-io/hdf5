@@ -965,7 +965,8 @@ h5_get_vfd_fapl(hid_t fapl)
             goto error;
     } else if(!HDstrcmp(tok, "gds")) {
         /* Standard C fread() and fwrite() system calls */
-        if(H5Pset_fapl_gds(fapl) < 0)
+        // if(H5Pset_fapl_gds(fapl) < 0)
+        if(H5Pset_fapl_gds(fapl, 1024, 4096, 8 * 4096) < 0)
             goto error;
     } else if(!HDstrcmp(tok, "stdio")) {
         /* Standard C fread() and fwrite() system calls */
