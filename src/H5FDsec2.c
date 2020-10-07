@@ -36,6 +36,12 @@
 #include "H5MMprivate.h"    /* Memory management        */
 #include "H5Pprivate.h"     /* Property lists           */
 
+#define ADVISE_OS_DISABLE_READ_CACHE
+
+#ifdef ADVISE_OS_DISABLE_READ_CACHE
+#include <fcntl.h>
+#endif /* ADVISE_OS_DISABLE_READ_CACHE */
+
 /* The driver identification number, initialized at runtime */
 static hid_t H5FD_SEC2_g = 0;
 
@@ -363,6 +369,23 @@ H5FD__sec2_open(const char *name, unsigned flags, hid_t fapl_id, haddr_t maxaddr
 
     if(HDfstat(fd, &sb) < 0)
         HSYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file")
+
+#ifdef ADVISE_OS_DISABLE_READ_CACHE
+    if( posix_fadvise(fd, 0, 0, POSIX_FADV_RANDOM) != 0 ) {
+      perror("posix_fadvise");
+      exit(EXIT_FAILURE);
+    }
+
+    if( posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED) != 0 ) {
+      perror("posix_fadvise");
+      exit(EXIT_FAILURE);
+    }
+
+    if( posix_fadvise(fd, 0, 0, POSIX_FADV_NOREUSE) != 0 ) {
+      perror("posix_fadvise");
+      exit(EXIT_FAILURE);
+    }
+#endif /* ADVISE_OS_DISABLE_READ_CACHE */
 
     /* Create the new file struct */
     if(NULL == (file = H5FL_CALLOC(H5FD_sec2_t)))
@@ -886,7 +909,7 @@ done:
  * Function:  H5FD__sec2_flush
  *
  * Purpose:  Flush makes use of fsync to flush data to persistent storage.
- *    fsync maybe necessary on certain file system to get data to 
+ *    fsync maybe necessary on certain file system to get data to
  *    persistant storage.
  *
  * Return:  Success:  Zero
