@@ -292,6 +292,20 @@ void link_chunk_collective_io_test(void);
 void contig_hyperslab_dr_pio_test(ShapeSameTestMethods sstest_type);
 void checker_board_hyperslab_dr_pio_test(ShapeSameTestMethods sstest_type);
 void file_image_daisy_chain_test(void);
+
+
+void dataset_writeInd_cuda(void);
+void dataset_readInd_cuda(void);
+
+
+void dataset_writeAll_cuda(void);
+void dataset_readAll_cuda(void);
+
+void extend_writeInd_cuda(void);
+void extend_readInd_cuda(void);
+
+void extend_writeInd2_cuda(void);
+
 #ifdef H5_HAVE_FILTER_DEFLATE
 void compress_readAll(void);
 #endif /* H5_HAVE_FILTER_DEFLATE */

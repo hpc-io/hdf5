@@ -184,6 +184,7 @@ fi # production
 # Make sure that these versions of the autotools are in the path
 AUTOCONF_DIR=`dirname ${HDF5_AUTOCONF}`
 LIBTOOL_DIR=`dirname ${HDF5_LIBTOOL}`
+# LIBTOOL_DIR=""
 M4_DIR=`dirname ${HDF5_M4}`
 PATH=${AUTOCONF_DIR}:${LIBTOOL_DIR}:${M4_DIR}:$PATH
 
@@ -195,11 +196,13 @@ Darwin*)
     # to the latter if it's not found.
     HDF5_LIBTOOLIZE="${LIBTOOL_DIR}/glibtoolize"
     if [ ! -f $HDF5_LIBTOOLIZE ] ; then
-        HDF5_LIBTOOLIZE="${LIBTOOL_DIR}/libtoolize"
+        HDF5_LIBTOOLIZE="libtoolize"
+        # HDF5_LIBTOOLIZE="${LIBTOOL_DIR}/libtoolize"
     fi
     ;;
 *)
-    HDF5_LIBTOOLIZE="${LIBTOOL_DIR}/libtoolize"
+    HDF5_LIBTOOLIZE="libtoolize"
+    # HDF5_LIBTOOLIZE="${LIBTOOL_DIR}/libtoolize"
     ;;
 esac
 
