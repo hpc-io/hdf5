@@ -483,7 +483,7 @@ H5Fcreate(const char *filename, unsigned flags, hid_t fcpl_id, hid_t fapl_id)
     H5P_genplist_t *      plist;           /* Property list pointer                    */
     H5VL_connector_prop_t connector_prop;  /* Property for VOL connector ID & info     */
     H5VL_object_t *       vol_obj = NULL;  /* VOL object for file                      */
-    hbool_t               supported;       /* Whether 'post open' operation is supported by VOL connector */
+    uint64_t            supported;          /* Whether 'post open' operation is supported by VOL connector */
     hid_t                 ret_value;       /* return value                             */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
@@ -547,10 +547,10 @@ H5Fcreate(const char *filename, unsigned flags, hid_t fcpl_id, hid_t fapl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "invalid object identifier")
 
     /* Make the 'post open' callback */
-    supported = FALSE;
+    supported = 0;
     if (H5VL_introspect_opt_query(vol_obj, H5VL_SUBCLS_FILE, H5VL_NATIVE_FILE_POST_OPEN, &supported) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTGET, H5I_INVALID_HID, "can't check for 'post open' operation")
-    if (supported)
+    if(supported & H5VL_OPT_QUERY_SUPPORTED)
         if (H5VL_file_optional(vol_obj, H5VL_NATIVE_FILE_POST_OPEN, H5P_DATASET_XFER_DEFAULT,
                                H5_REQUEST_NULL) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to make file 'post open' callback")
@@ -583,7 +583,7 @@ H5Fopen(const char *filename, unsigned flags, hid_t fapl_id)
     H5P_genplist_t *      plist;           /* Property list pointer                    */
     H5VL_connector_prop_t connector_prop;  /* Property for VOL connector ID & info     */
     H5VL_object_t *       vol_obj = NULL;  /* VOL object for file                      */
-    hbool_t               supported;       /* Whether 'post open' operation is supported by VOL connector */
+    uint64_t            supported;          /* Whether 'post open' operation is supported by VOL connector */
     hid_t                 ret_value;       /* Return value                             */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
@@ -635,10 +635,10 @@ H5Fopen(const char *filename, unsigned flags, hid_t fapl_id)
         HGOTO_ERROR(H5E_FILE, H5E_CANTGET, H5I_INVALID_HID, "invalid object identifier")
 
     /* Make the 'post open' callback */
-    supported = FALSE;
+    supported = 0;
     if (H5VL_introspect_opt_query(vol_obj, H5VL_SUBCLS_FILE, H5VL_NATIVE_FILE_POST_OPEN, &supported) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTGET, H5I_INVALID_HID, "can't check for 'post open' operation")
-    if (supported)
+    if(supported & H5VL_OPT_QUERY_SUPPORTED)
         if (H5VL_file_optional(vol_obj, H5VL_NATIVE_FILE_POST_OPEN, H5P_DATASET_XFER_DEFAULT,
                                H5_REQUEST_NULL) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to make file 'post open' callback")
@@ -797,7 +797,7 @@ H5Freopen(hid_t file_id)
 {
     void *         file    = NULL; /* File struct for new file */
     H5VL_object_t *vol_obj = NULL; /* VOL object for file                      */
-    hbool_t        supported;      /* Whether 'post open' operation is supported by VOL connector */
+    uint64_t        supported;                      /* Whether 'post open' operation is supported by VOL connector */
     hid_t          ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
@@ -824,10 +824,10 @@ H5Freopen(hid_t file_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "invalid object identifier")
 
     /* Make the 'post open' callback */
-    supported = FALSE;
+    supported = 0;
     if (H5VL_introspect_opt_query(vol_obj, H5VL_SUBCLS_FILE, H5VL_NATIVE_FILE_POST_OPEN, &supported) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTGET, H5I_INVALID_HID, "can't check for 'post open' operation")
-    if (supported)
+    if(supported & H5VL_OPT_QUERY_SUPPORTED)
         if (H5VL_file_optional(vol_obj, H5VL_NATIVE_FILE_POST_OPEN, H5P_DATASET_XFER_DEFAULT,
                                H5_REQUEST_NULL) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to make file 'post open' callback")
