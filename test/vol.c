@@ -1359,16 +1359,20 @@ typedef herr_t (*reg_opt_oper_t)(hid_t obj_id, int opt_type, hid_t dxpl_id, void
  */
 static herr_t
 exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id,
-    H5VL_subclass_t subcls, H5I_type_t id_type, reg_opt_oper_t reg_opt_op)
+    H5VL_subclass_t subcls, const char *subcls_name, H5I_type_t id_type,
+    reg_opt_oper_t reg_opt_op)
 {
+    char op_name[256];                  /* Operation name to register */
     hid_t obj_id = H5I_INVALID_HID;
     H5VL_object_t *vol_obj;
     int fake_obj, fake_arg;
     int op_val = -1, op_val2 = -1;
+    int find_op_val;
     herr_t ret = SUCCEED;
 
     /* Test registering optional operation */
-    if(H5VLregister_opt_operation(subcls, &op_val) < 0)
+    HDsnprintf(op_name, sizeof(op_name), "%s-op1", subcls_name);
+    if(H5VLregister_opt_operation(subcls, op_name, &op_val) < 0)
         TEST_ERROR;
 
     /* Verify that the reserved amount of optional operations is obeyed */
@@ -1376,13 +1380,32 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id,
     if(op_val != H5VL_RESERVED_NATIVE_OPTIONAL)
         TEST_ERROR;
 
+    /* Look up 1st registered optional operation */
+    find_op_val = 0;
+    if(H5VLfind_opt_operation(subcls, op_name, &find_op_val) < 0)
+        TEST_ERROR;
+
+    /* Verify that the operation was looked up successfully */
+    if(op_val != find_op_val)
+        TEST_ERROR;
+
     /* Test registering second optional operation */
-    if(H5VLregister_opt_operation(subcls, &op_val2) < 0)
+    HDsnprintf(op_name, sizeof(op_name), "%s-op2", subcls_name);
+    if(H5VLregister_opt_operation(subcls, op_name, &op_val2) < 0)
         TEST_ERROR;
 
     /* Verify that the reserved amount of optional operations is obeyed */
-    /* (The first optional operation registered should be at the lower limit) */
+    /* (The 2nd optional operation registered should be at the lower limit + 1) */
     if(op_val2 != (H5VL_RESERVED_NATIVE_OPTIONAL + 1))
+        TEST_ERROR;
+
+    /* Look up 2nd registered optional operation */
+    find_op_val = 0;
+    if(H5VLfind_opt_operation(subcls, op_name, &find_op_val) < 0)
+        TEST_ERROR;
+
+    /* Verify that the operation was looked up successfully */
+    if(op_val2 != find_op_val)
         TEST_ERROR;
 
 
@@ -1494,6 +1517,10 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id,
             TEST_ERROR;
     } /* end else */
 
+    /* Unregister 2nd registered optional operation */
+    if(H5VLunregister_opt_operation(subcls, op_name) < 0)
+        TEST_ERROR;
+
     return SUCCEED;
 
 error:
@@ -1517,20 +1544,21 @@ test_register_opt_operation(void)
     hid_t reg_opt_vol_id = H5I_INVALID_HID;
     struct {
         H5VL_subclass_t subcls;
+        const char *subcls_name;
         H5I_type_t id_type;
         reg_opt_oper_t reg_opt_op;
     } test_params[] = {
-        {H5VL_SUBCLS_ATTR, H5I_ATTR, H5VLattr_optional_op},
-        {H5VL_SUBCLS_DATASET, H5I_DATASET, H5VLdataset_optional_op},
-        {H5VL_SUBCLS_DATATYPE, H5I_DATATYPE, H5VLdatatype_optional_op},
-        {H5VL_SUBCLS_FILE, H5I_FILE, H5VLfile_optional_op},
-        {H5VL_SUBCLS_GROUP, H5I_GROUP, H5VLgroup_optional_op}
+        {H5VL_SUBCLS_ATTR, "attr", H5I_ATTR, H5VLattr_optional_op},
+        {H5VL_SUBCLS_DATASET, "dataset", H5I_DATASET, H5VLdataset_optional_op},
+        {H5VL_SUBCLS_DATATYPE, "datatype", H5I_DATATYPE, H5VLdatatype_optional_op},
+        {H5VL_SUBCLS_FILE, "file", H5I_FILE, H5VLfile_optional_op},
+        {H5VL_SUBCLS_GROUP, "group", H5I_GROUP, H5VLgroup_optional_op}
     };
     int op_val = -1;
     unsigned u;
     herr_t ret = SUCCEED;
 
-    TESTING("registering optional operations");
+    TESTING("dynamically registering optional operations");
 
     /* Register the VOL connectors for testing */
     if((fake_vol_id = H5VLregister_connector(&fake_vol_g, H5P_DEFAULT)) < 0)
@@ -1540,56 +1568,56 @@ test_register_opt_operation(void)
 
     /* Test registering invalid optional VOL subclass operations */
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_NONE, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_NONE, "fail", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'NONE' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_INFO, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_INFO, "fail2", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'INFO' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_WRAP, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_WRAP, "fail3", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'WRAP' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_LINK, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_LINK, "fail4", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'LINK' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_OBJECT, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_OBJECT, "fail5", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'OBJECT' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_REQUEST, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_REQUEST, "fail6", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'REQUEST' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_BLOB, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_BLOB, "fail7", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'BLOB' VOL subclass");
     if((-1) != op_val)
         FAIL_PUTS_ERROR("'op_val' changed during failed operation?");
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_TOKEN, &op_val);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_TOKEN, "fail8", &op_val);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation for the 'TOKEN' VOL subclass");
@@ -1598,16 +1626,30 @@ test_register_opt_operation(void)
 
     /* Test registering valid optional VOL subclass operation with NULL op_val ptr*/
     H5E_BEGIN_TRY {
-        ret = H5VLregister_opt_operation(H5VL_SUBCLS_FILE, NULL);
+        ret = H5VLregister_opt_operation(H5VL_SUBCLS_FILE, "fail9", NULL);
     } H5E_END_TRY;
     if(FAIL != ret)
         FAIL_PUTS_ERROR("should not be able to register an optional operation with a NULL 'op_val'");
+
+    /* Try finding a non-existent optional VOL subclass operation */
+    H5E_BEGIN_TRY {
+        ret = H5VLfind_opt_operation(H5VL_SUBCLS_DATASET, "fail", &op_val);
+    } H5E_END_TRY;
+    if(FAIL != ret)
+        FAIL_PUTS_ERROR("should not be able to find a non-existent optional operation");
+
+    /* Try unregistering a non-existent optional VOL subclass operation */
+    H5E_BEGIN_TRY {
+        ret = H5VLunregister_opt_operation(H5VL_SUBCLS_DATASET, "fail");
+    } H5E_END_TRY;
+    if(FAIL != ret)
+        FAIL_PUTS_ERROR("should not be able to unregister a non-existent optional operation");
 
     /* Register & test calling optional operations for each valid VOL subclass */
     /* (Table-driven, with test_params array) */
     for(u = 0; u < NELMTS(test_params); u++)
         /* Exercise appropriate callback, for each VOL subclass */
-        if(exercise_reg_opt_oper(fake_vol_id, reg_opt_vol_id, test_params[u].subcls, test_params[u].id_type, test_params[u].reg_opt_op) < 0)
+        if(exercise_reg_opt_oper(fake_vol_id, reg_opt_vol_id, test_params[u].subcls, test_params[u].subcls_name, test_params[u].id_type, test_params[u].reg_opt_op) < 0)
             TEST_ERROR;
 
     /* Unregister the VOL connectors */
