@@ -50,8 +50,8 @@
 /********************/
 
 /* Helper routines for read/write API calls */
-static herr_t H5VL__native_dataset_io_setup(H5D_t *dset, hid_t dxpl_id, hid_t file_space_id, hid_t mem_space_id,
-                                            H5S_t **file_space, H5S_t **mem_space);
+static herr_t H5VL__native_dataset_io_setup(H5D_t *dset, hid_t dxpl_id, hid_t file_space_id,
+                                            hid_t mem_space_id, H5S_t **file_space, H5S_t **mem_space);
 
 /*********************/
 /* Package Variables */
@@ -94,8 +94,8 @@ H5VL__native_dataset_io_setup(H5D_t *dset, hid_t dxpl_id, hid_t file_space_id, h
     else if (H5S_BLOCK == file_space_id)
         HGOTO_ERROR(H5E_DATASET, H5E_BADTYPE, FAIL, "H5S_BLOCK is not allowed for file dataspace")
     else if (H5S_PLIST == file_space_id) {
-        H5P_genplist_t * plist;                   /* Property list pointer */
-        H5S_t          * space;                   /* Dataspace to hold selection */
+        H5P_genplist_t *plist; /* Property list pointer */
+        H5S_t *         space; /* Dataspace to hold selection */
 
         /* Get the plist structure */
         if (NULL == (plist = H5P_object_verify(dxpl_id, H5P_DATASET_XFER)))
@@ -282,7 +282,8 @@ H5VL__native_dataset_read(void *obj, hid_t mem_type_id, hid_t mem_space_id, hid_
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "dataset is not associated with a file")
 
     /* Get file & memory dataspaces */
-    if (H5VL__native_dataset_io_setup(dset, dxpl_id, file_space_id, mem_space_id, &file_space, &mem_space) < 0)
+    if (H5VL__native_dataset_io_setup(dset, dxpl_id, file_space_id, mem_space_id, &file_space, &mem_space) <
+        0)
         HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "unable to set up file and memory dataspaces")
 
     /* Set DXPL for operation */
@@ -332,7 +333,8 @@ H5VL__native_dataset_write(void *obj, hid_t mem_type_id, hid_t mem_space_id, hid
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "dataset is not associated with a file")
 
     /* Get file & memory dataspaces */
-    if (H5VL__native_dataset_io_setup(dset, dxpl_id, file_space_id, mem_space_id, &file_space, &mem_space) < 0)
+    if (H5VL__native_dataset_io_setup(dset, dxpl_id, file_space_id, mem_space_id, &file_space, &mem_space) <
+        0)
         HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "unable to set up file and memory dataspaces")
 
     /* Set DXPL for operation */

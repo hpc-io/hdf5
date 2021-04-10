@@ -14984,13 +14984,13 @@ test_h5s_block(void)
 {
     hid_t    file_id                     = H5I_INVALID_HID; /* File ID */
     char     filename[FILENAME_BUF_SIZE] = "";
-    hid_t    dset_id                     = H5I_INVALID_HID;   /* Dataset ID */
-    hsize_t  dims[1]                     = {20}; /* Dataset's dataspace size */
-    hsize_t  start                       = 2;    /* Starting offset of hyperslab selection */
-    hsize_t  count                       = 10;   /* Count of hyperslab selection */
-    hid_t    file_space_id               = H5I_INVALID_HID;   /* File dataspace ID */
-    int      buf[20];                            /* Memory buffer for I/O */
-    unsigned u;                                  /* Local index variable */
+    hid_t    dset_id                     = H5I_INVALID_HID; /* Dataset ID */
+    hsize_t  dims[1]                     = {20};            /* Dataset's dataspace size */
+    hsize_t  start                       = 2;               /* Starting offset of hyperslab selection */
+    hsize_t  count                       = 10;              /* Count of hyperslab selection */
+    hid_t    file_space_id               = H5I_INVALID_HID; /* File dataspace ID */
+    int      buf[20];                                       /* Memory buffer for I/O */
+    unsigned u;                                             /* Local index variable */
     herr_t   ret;
 
     TESTING("contiguous memory buffers with H5S_BLOCK");
@@ -15106,17 +15106,17 @@ test_h5s_plist(void)
 {
     hid_t    file_id                     = H5I_INVALID_HID; /* File ID */
     char     filename[FILENAME_BUF_SIZE] = "";
-    hid_t    dset_id                     = H5I_INVALID_HID;   /* Dataset ID */
-    hsize_t  dims[1]                     = {20}; /* Dataset's dataspace size */
+    hid_t    dset_id                     = H5I_INVALID_HID; /* Dataset ID */
+    hsize_t  dims[1]                     = {20};            /* Dataset's dataspace size */
     hid_t    dxpl_id                     = H5I_INVALID_HID; /* Dataset xfer property list ID */
     hid_t    dxpl_id_copy                = H5I_INVALID_HID; /* Copy of dataset xfer property list ID */
-    hsize_t  start                       = 2;    /* Starting offset of hyperslab selection */
-    hsize_t  stride                      = 1;    /* Stride of hyperslab selection */
-    hsize_t  count                       = 10;   /* Count of hyperslab selection */
-    hsize_t  block                       = 1;    /* Block size of hyperslab selection */
-    hid_t    file_space_id               = H5I_INVALID_HID;   /* File dataspace ID */
-    int      buf[20];                            /* Memory buffer for I/O */
-    unsigned u;                                  /* Local index variable */
+    hsize_t  start                       = 2;               /* Starting offset of hyperslab selection */
+    hsize_t  stride                      = 1;               /* Stride of hyperslab selection */
+    hsize_t  count                       = 10;              /* Count of hyperslab selection */
+    hsize_t  block                       = 1;               /* Block size of hyperslab selection */
+    hid_t    file_space_id               = H5I_INVALID_HID; /* File dataspace ID */
+    int      buf[20];                                       /* Memory buffer for I/O */
+    unsigned u;                                             /* Local index variable */
     herr_t   ret;
 
     TESTING("dataset's dataspace selection for I/O in DXPL with H5S_PLIST");
@@ -15143,50 +15143,65 @@ test_h5s_plist(void)
     /* TESTS */
     /*********/
 
-
     /* Check error cases */
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* Bad rank */
-        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 0, H5S_SELECT_SET, &start, &stride, &count, &block);
-    } H5E_END_TRY;
+        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 0, H5S_SELECT_SET, &start, &stride, &count,
+                                                    &block);
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* Bad selection operator */
-        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_NOOP, &start, &stride, &count, &block);
-    } H5E_END_TRY;
+        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_NOOP, &start, &stride, &count,
+                                                    &block);
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* Bad start pointer */
-        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, NULL, &stride, &count, &block);
-    } H5E_END_TRY;
+        ret =
+            H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, NULL, &stride, &count, &block);
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* Bad stride value (stride of NULL is OK) */
         stride = 0;
-        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, &count, &block);
+        ret    = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, &count,
+                                                    &block);
         stride = 1;
-    } H5E_END_TRY;
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* Bad count pointer */
-        ret = H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, NULL, &block);
-    } H5E_END_TRY;
+        ret =
+            H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, NULL, &block);
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
 
     /* Block pointer is allowed to be NULL */
 
-    H5E_BEGIN_TRY {
+    H5E_BEGIN_TRY
+    {
         /* H5S_PLIST for memory dataspace */
         ret = H5Dwrite(dset_id, H5T_NATIVE_INT, H5S_PLIST, H5S_ALL, H5P_DEFAULT, buf);
-    } H5E_END_TRY;
+    }
+    H5E_END_TRY;
     if (ret == SUCCEED)
         TEST_ERROR
-
 
     /* Write the entire dataset */
     if (H5Dwrite(dset_id, H5T_NATIVE_INT, H5S_BLOCK, H5S_ALL, H5P_DEFAULT, buf) < 0)
@@ -15208,7 +15223,8 @@ test_h5s_plist(void)
     HDmemset(buf, 0, sizeof(buf));
 
     /* Set valid selection in DXPL */
-    if(H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, &count, &block) < 0)
+    if (H5Pset_dataset_io_hyperslab_selection(dxpl_id, 1, H5S_SELECT_SET, &start, &stride, &count, &block) <
+        0)
         FAIL_STACK_ERROR
 
     /* Read a hyperslab from the file to the first 10 elements of the buffer */
@@ -15696,9 +15712,9 @@ main(void)
             } /* end for new_format */
         }     /* end for minimized_ohdr */
     }         /* end for paged */
-#else /* QAK */
-HDfprintf(stderr, "Uncomment tests!\n");
-#endif /* QAK */
+#else         /* QAK */
+    HDfprintf(stderr, "Uncomment tests!\n");
+#endif        /* QAK */
 
     /* Close property lists */
     if (H5Pclose(fapl2) < 0)
