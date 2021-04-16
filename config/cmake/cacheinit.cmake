@@ -5,7 +5,7 @@
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
 # the COPYING file, which can be found at the root of the source code
-# distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.
+# distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
 #
@@ -39,6 +39,8 @@ set (MPIEXEC_MAX_NUMPROCS "4" CACHE STRING "Minimum number of processes for HDF 
 set (HDF5_ENABLE_ALL_WARNINGS ON CACHE BOOL "Enable all warnings" FORCE)
 
 set (HDF_TEST_EXPRESS "2" CACHE STRING "Control testing framework (0-3)" FORCE)
+
+set (HDF5_MINGW_STATIC_GCC_LIBS ON CACHE BOOL "Statically link libgcc/libstdc++" FORCE)
 
 set (HDF5_ALLOW_EXTERNAL_SUPPORT "NO" CACHE STRING "Allow External Library Building (NO GIT TGZ)" FORCE)
 set_property (CACHE HDF5_ALLOW_EXTERNAL_SUPPORT PROPERTY STRINGS NO GIT TGZ)
@@ -155,15 +157,15 @@ set (LZF_PACKAGE_NAME "lzf" CACHE STRING "Name of LZF package" FORCE)
 #set (MAFISC_PACKAGE_NAME "mafisc" CACHE STRING "Name of MAFISC package" FORCE)
 
 ######
-# sz
+# szf
 ######
 
-set (SZ_GIT_URL "https://github.com/disheng222/SZ" CACHE STRING "Use SZ from github repository" FORCE)
-set (SZ_GIT_BRANCH "master" CACHE STRING "" FORCE)
+set (SZF_GIT_URL "https://github.com/disheng222/SZ" CACHE STRING "Use SZ from github repository" FORCE)
+set (SZF_GIT_BRANCH "master" CACHE STRING "" FORCE)
 
-set (SZ_TGZ_NAME "sz.tar.gz" CACHE STRING "Use SZ from compressed file" FORCE)
+set (SZF_TGZ_NAME "szf.tar.gz" CACHE STRING "Use SZ from compressed file" FORCE)
 
-set (SZ_PACKAGE_NAME "sz" CACHE STRING "Name of SZ package" FORCE)
+set (SZF_PACKAGE_NAME "szf" CACHE STRING "Name of SZ package" FORCE)
 
 ######
 # zfp

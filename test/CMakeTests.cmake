@@ -5,7 +5,7 @@
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
 # the COPYING file, which can be found at the root of the source code
-# distribution tree, or in https://support.hdfgroup.org/ftp/HDF5/releases.
+# distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
 #
@@ -409,6 +409,7 @@ set (test_CLEANFILES
     splitter.log
     mirror_rw/*
     mirror_wo/*
+    event_set_*.h5
 )
 
 # Remove any output file left over from previous test run
@@ -844,7 +845,7 @@ endif ()
 ###    F I L T E R  P L U G I N  T E S T S
 ##############################################################################
 if (BUILD_SHARED_LIBS)
-  if (WIN32 OR MINGW)
+  if (WIN32)
     set (CMAKE_SEP "\;")
     set (BIN_REL_PATH "../../")
   else ()
@@ -915,9 +916,9 @@ if (ENABLE_EXTENDED_TESTS)
         ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/H5TEST/flushrefresh_test"
         WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/H5TEST/flushrefresh_test
     )
+  else ()
+    message (STATUS "Cannot execute TEST flushrefresh - perl not found")
   endif ()
-else ()
-  message (STATUS "Cannot execute TEST flushrefresh - perl not found")
 endif ()
 
 ##############################################################################
@@ -940,7 +941,7 @@ endif ()
 ###    V O L  P L U G I N  T E S T S
 ##############################################################################
 if (BUILD_SHARED_LIBS)
-  if (WIN32 OR MINGW)
+  if (WIN32)
     set (CMAKE_SEP "\;")
     set (BIN_REL_PATH "../../")
   else ()

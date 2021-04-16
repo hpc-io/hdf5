@@ -234,7 +234,6 @@ set (testhdf5_SOURCES
     ${HDF5_TEST_SOURCE_DIR}/tskiplist.c
     ${HDF5_TEST_SOURCE_DIR}/tsohm.c
     ${HDF5_TEST_SOURCE_DIR}/ttime.c
-    ${HDF5_TEST_SOURCE_DIR}/ttst.c
     ${HDF5_TEST_SOURCE_DIR}/tunicode.c
     ${HDF5_TEST_SOURCE_DIR}/tvltypes.c
     ${HDF5_TEST_SOURCE_DIR}/tvlstr.c
@@ -258,6 +257,10 @@ set (ttsafe_SOURCES
     ${HDF5_TEST_SOURCE_DIR}/ttsafe_cancel.c
     ${HDF5_TEST_SOURCE_DIR}/ttsafe_acreate.c
     ${HDF5_TEST_SOURCE_DIR}/ttsafe_attr_vlen.c
+)
+
+set (event_set_SOURCES
+    ${HDF5_TEST_SOURCE_DIR}/event_set.c
 )
 
 set (H5_TESTS
@@ -332,6 +335,8 @@ set (H5_TESTS
     thread_id # special link
     vol
     timer
+    cmpd_dtransform
+    event_set # multiple source
 )
 
 macro (ADD_H5_EXE file)
@@ -363,6 +368,7 @@ set (H5_TESTS_MULTIPLE
     ttsafe
     thread_id # special link
     mirror_vfd
+    event_set
 )
 # Only build single source tests here
 foreach (h5_test ${H5_TESTS})
@@ -524,6 +530,26 @@ set_target_properties (mirror_vfd PROPERTIES FOLDER test)
 #-----------------------------------------------------------------------------
 if (HDF5_ENABLE_FORMATTERS)
   clang_format (HDF5_TEST_mirror_vfd_FORMAT mirror_vfd)
+endif ()
+
+#-- Adding test for event_set
+add_executable (event_set ${event_set_SOURCES})
+target_compile_options(event_set PRIVATE "${HDF5_CMAKE_C_FLAGS}")
+target_include_directories (event_set PRIVATE "${HDF5_SRC_DIR};${HDF5_BINARY_DIR};$<$<BOOL:${HDF5_ENABLE_PARALLEL}>:${MPI_C_INCLUDE_DIRS}>")
+if (NOT BUILD_SHARED_LIBS)
+  TARGET_C_PROPERTIES (event_set STATIC)
+  target_link_libraries (event_set PRIVATE ${HDF5_TEST_LIB_TARGET})
+else ()
+  TARGET_C_PROPERTIES (event_set SHARED)
+  target_link_libraries (event_set PRIVATE ${HDF5_TEST_LIBSH_TARGET})
+endif ()
+set_target_properties (event_set PROPERTIES FOLDER test)
+
+#-----------------------------------------------------------------------------
+# Add Target to clang-format
+#-----------------------------------------------------------------------------
+if (HDF5_ENABLE_FORMATTERS)
+  clang_format (HDF5_TEST_event_set_FORMAT event_set)
 endif ()
 
 ##############################################################################

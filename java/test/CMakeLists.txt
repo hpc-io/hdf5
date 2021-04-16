@@ -23,16 +23,19 @@ set (HDF5_JAVA_TEST_SOURCES
     TestH5Dparams
     TestH5D
     TestH5Dplist
+    TestH5Drw
     TestH5Lparams
     TestH5Lbasic
     TestH5Lcreate
     TestH5R
+    TestH5Rref
     TestH5P
     TestH5PData
     TestH5Pfapl
     TestH5Pvirtual
     TestH5Plist
     TestH5A
+    TestH5Arw
     TestH5Oparams
     TestH5Obasic
     TestH5Ocreate
@@ -93,10 +96,16 @@ HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_
 HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/h5ex_g_iterateL2.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
 HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/h5ex_g_iterateO1.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
 HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/h5ex_g_iterateO2.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/trefer_reg.h5" "${PROJECT_BINARY_DIR}/trefer_reg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/trefer_attr.h5" "${PROJECT_BINARY_DIR}/trefer_attr.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tdatareg.h5" "${PROJECT_BINARY_DIR}/tdatareg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tattrreg.h5" "${PROJECT_BINARY_DIR}/tattrreg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tintsattrs.h5" "${PROJECT_BINARY_DIR}/tintsattrs.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
+HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tfloatsattrs.h5" "${PROJECT_BINARY_DIR}/tfloatsattrs.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_files")
 
 add_custom_target(${HDF5_JAVA_TEST_LIB_TARGET}_files ALL COMMENT "Copying files needed by ${HDF5_JAVA_TEST_LIB_TARGET} tests" DEPENDS ${${HDF5_JAVA_TEST_LIB_TARGET}_files_list})
 
-if (WIN32 OR MINGW)
+if (WIN32)
   set (CMAKE_JAVA_INCLUDE_FLAG_SEP ";")
 else ()
   set (CMAKE_JAVA_INCLUDE_FLAG_SEP ":")
@@ -191,9 +200,11 @@ if (HDF5_TEST_JAVA AND HDF5_TEST_SERIAL)
         vol_pass_through2
     )
 
+    # native VOL = 0
+    # pass-through VOL = 1
     set (vol_native native)
     set (vol_pass_through1 "pass_through under_vol=0\;under_info={}")
-    set (vol_pass_through2 "pass_through under_vol=505\;under_info={under_vol=0\;under_info={}}")
+    set (vol_pass_through2 "pass_through under_vol=1\;under_info={under_vol=0\;under_info={}}")
 
     foreach (voltest ${VOL_LIST})
       file (MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/${voltest}")
@@ -206,6 +217,12 @@ if (HDF5_TEST_JAVA AND HDF5_TEST_SERIAL)
         HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/${voltest}/h5ex_g_iterateL2.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
         HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/${voltest}/h5ex_g_iterateO1.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
         HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/h5ex_g_iterate.orig" "${PROJECT_BINARY_DIR}/${voltest}/h5ex_g_iterateO2.hdf" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/trefer_reg.h5" "${PROJECT_BINARY_DIR}/${voltest}/trefer_reg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/trefer_attr.h5" "${PROJECT_BINARY_DIR}/${voltest}/trefer_attr.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tdatareg.h5" "${PROJECT_BINARY_DIR}/${voltest}/tdatareg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tattrreg.h5" "${PROJECT_BINARY_DIR}/${voltest}/tattrreg.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tintsattrs.h5" "${PROJECT_BINARY_DIR}/${voltest}/tintsattrs.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
+        HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/tfloatsattrs.h5" "${PROJECT_BINARY_DIR}/${voltest}/tfloatsattrs.h5" "${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files")
 
         add_custom_target(${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files ALL COMMENT "Copying files needed by ${HDF5_JAVA_TEST_LIB_TARGET} tests" DEPENDS ${${HDF5_JAVA_TEST_LIB_TARGET}_${voltest}_files_list})
 
