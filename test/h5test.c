@@ -949,7 +949,7 @@ h5_get_vfd_fapl(hid_t fapl)
     else if (!HDstrcmp(tok, "gds")) {
         /* Standard C fread() and fwrite() system calls */
         // if(H5Pset_fapl_gds(fapl) < 0)
-        if(H5Pset_fapl_gds(fapl, 1024, 4096, 8 * 4096) < 0)
+        if (H5Pset_fapl_gds(fapl, 1024, 4096, 8 * 4096) < 0)
             goto error;
     }
     else if (!HDstrcmp(tok, "stdio")) {
@@ -1374,7 +1374,7 @@ h5_get_file_size(const char *filename, hid_t fapl)
             return (-1);
 
         /* Check for simple cases */
-        if(driver == H5FD_SEC2 || driver == H5FD_GDS || driver == H5FD_STDIO || driver == H5FD_CORE ||
+        if (driver == H5FD_SEC2 || driver == H5FD_GDS || driver == H5FD_STDIO || driver == H5FD_CORE ||
 #ifdef H5_HAVE_WINDOWS
             driver == H5FD_WINDOWS ||
 #endif /* H5_HAVE_WINDOWS */

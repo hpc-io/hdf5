@@ -144,7 +144,6 @@ static herr_t  H5FD__direct_truncate(H5FD_t *_file, hid_t dxpl_id, hbool_t closi
 static herr_t  H5FD__direct_lock(H5FD_t *_file, hbool_t rw);
 static herr_t  H5FD__direct_unlock(H5FD_t *_file);
 
-
 static const H5FD_class_t H5FD_direct_g = {
     "direct",                   /* name                 */
     MAXADDR,                    /* maxaddr              */
@@ -496,19 +495,19 @@ H5FD__direct_open(const char *name, unsigned flags, hid_t fapl_id, haddr_t maxad
         HSYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file")
 
 #ifdef ADVISE_OS_DISABLE_READ_CACHE
-    if( posix_fadvise(fd, 0, 0, POSIX_FADV_RANDOM) != 0 ) {
-      perror("posix_fadvise");
-      exit(EXIT_FAILURE);
+    if (posix_fadvise(fd, 0, 0, POSIX_FADV_RANDOM) != 0) {
+        perror("posix_fadvise");
+        exit(EXIT_FAILURE);
     }
 
-    if( posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED) != 0 ) {
-      perror("posix_fadvise");
-      exit(EXIT_FAILURE);
+    if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED) != 0) {
+        perror("posix_fadvise");
+        exit(EXIT_FAILURE);
     }
 
-    if( posix_fadvise(fd, 0, 0, POSIX_FADV_NOREUSE) != 0 ) {
-      perror("posix_fadvise");
-      exit(EXIT_FAILURE);
+    if (posix_fadvise(fd, 0, 0, POSIX_FADV_NOREUSE) != 0) {
+        perror("posix_fadvise");
+        exit(EXIT_FAILURE);
     }
 #endif /* ADVISE_OS_DISABLE_READ_CACHE */
 
@@ -1279,13 +1278,13 @@ done:
 static herr_t
 H5FD__direct_flush(H5FD_t *_file, hid_t dxpl_id, hbool_t closing)
 {
-    H5FD_direct_t  *file = (H5FD_direct_t*)_file;	/* VFD file struct */
-    herr_t ret_value = SUCCEED;                 	/* Return value */
+    H5FD_direct_t *file      = (H5FD_direct_t *)_file; /* VFD file struct */
+    herr_t         ret_value = SUCCEED;                /* Return value */
 
     FUNC_ENTER_STATIC
 
     HDassert(file);
-    if(fsync(file->fd) < 0) {
+    if (fsync(file->fd) < 0) {
         HSYS_GOTO_ERROR(H5E_VFL, H5E_CANTFLUSH, FAIL, "unable perform fsync on file descriptor")
     }
 
@@ -1293,7 +1292,6 @@ done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5FD__direct_flush() */
 
-
 /*-------------------------------------------------------------------------
  * Function:  H5FD__direct_truncate
  *
