@@ -21,9 +21,7 @@
 #include "H5Mpublic.h"
 
 /* Private headers needed by this file */
-#include "H5Oprivate.h" /* Object headers              */
-#include "H5Sprivate.h" /* Dataspaces                  */
-#include "H5Zprivate.h" /* Data filters                */
+#include "H5VLprivate.h" /* Virtual Object Layer                */
 
 /**************************/
 /* Library Private Macros */
@@ -46,25 +44,9 @@
 #define H5M_ACS_KEY_ALLOC_SIZE_NAME                                                                          \
     "key_alloc_size" /* Initial allocation size for keys prefetched during map iteration */
 
-/* Default temporary buffer size */
-#define H5D_TEMP_BUF_SIZE (1024 * 1024)
-
-/* Default I/O vector size */
-#define H5D_IO_VECTOR_SIZE 1024
-
-/* Default VL allocation & free info */
-#define H5D_VLEN_ALLOC      NULL
-#define H5D_VLEN_ALLOC_INFO NULL
-#define H5D_VLEN_FREE       NULL
-#define H5D_VLEN_FREE_INFO  NULL
-
-/* Default virtual dataset list size */
-#define H5D_VIRTUAL_DEF_LIST_SIZE 8
-
 /****************************/
 /* Library Private Typedefs */
 /****************************/
-H5_DLL herr_t H5M_init(void);
 
 /*****************************/
 /* Library Private Variables */
@@ -73,5 +55,7 @@ H5_DLL herr_t H5M_init(void);
 /******************************/
 /* Library Private Prototypes */
 /******************************/
+H5_DLL herr_t H5M_init(void);
+H5_DLL herr_t H5M_close(H5VL_object_t *vol_obj, void **request);
 
 #endif /* H5Mprivate_H */

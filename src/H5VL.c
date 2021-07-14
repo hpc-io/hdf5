@@ -94,7 +94,7 @@ H5VLregister_connector(const H5VL_class_t *cls, hid_t vipl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "not a VOL initialize property list")
 
     /* Register connector */
-    if ((ret_value = H5VL__register_connector_by_class(cls, TRUE, vipl_id)) < 0)
+    if ((ret_value = H5VL__register_connector_by_class(cls, vipl_id)) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register VOL connector")
 
 done:
@@ -140,7 +140,7 @@ H5VLregister_connector_by_name(const char *name, hid_t vipl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "not a VOL initialize property list")
 
     /* Register connector */
-    if ((ret_value = H5VL__register_connector_by_name(name, TRUE, vipl_id)) < 0)
+    if ((ret_value = H5VL__register_connector_by_name(name, vipl_id)) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register VOL connector")
 
 done:
@@ -184,7 +184,7 @@ H5VLregister_connector_by_value(H5VL_class_value_t value, hid_t vipl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "not a VOL initialize property list")
 
     /* Register connector */
-    if ((ret_value = H5VL__register_connector_by_value(value, TRUE, vipl_id)) < 0)
+    if ((ret_value = H5VL__register_connector_by_value(value, vipl_id)) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register VOL connector")
 
 done:
@@ -537,20 +537,20 @@ done:
 herr_t
 H5VLcmp_connector_cls(int *cmp, hid_t connector_id1, hid_t connector_id2)
 {
-    H5VL_class_t *cls1, *cls2;         /* connectors for IDs */
+    H5VL_connector_t *conn1, *conn2;         /* connectors for IDs */
     herr_t        ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("e", "*Isii", cmp, connector_id1, connector_id2);
 
     /* Check args and get class pointers */
-    if (NULL == (cls1 = (H5VL_class_t *)H5I_object_verify(connector_id1, H5I_VOL)))
+    if (NULL == (conn1 = H5I_object_verify(connector_id1, H5I_VOL)))
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a VOL connector ID")
-    if (NULL == (cls2 = (H5VL_class_t *)H5I_object_verify(connector_id2, H5I_VOL)))
+    if (NULL == (conn2 = H5I_object_verify(connector_id2, H5I_VOL)))
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a VOL connector ID")
 
     /* Compare the two VOL connector classes */
-    if (H5VL_cmp_connector_cls(cmp, cls1, cls2) < 0)
+    if (H5VL_cmp_connector(cmp, conn1, conn2) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
 
 done:
@@ -654,76 +654,6 @@ H5VLobject(hid_t id)
 done:
     FUNC_LEAVE_API(ret_value)
 } /* H5VLobject() */
-
-/*-------------------------------------------------------------------------
- * Function:    H5VLget_file_type
- *
- * Purpose:     Returns a copy of dtype_id with its location set to be in
- *              the file, with updated size, etc.
- *
- * Return:      Non-negative on success/Negative on failure
- *
- *-------------------------------------------------------------------------
- */
-hid_t
-H5VLget_file_type(void *file_obj, hid_t connector_id, hid_t dtype_id)
-{
-    H5T_t *        dtype;               /* unregistered type       */
-    H5T_t *        file_type    = NULL; /* copied file type        */
-    hid_t          file_type_id = -1;   /* copied file type id     */
-    H5VL_object_t *file_vol_obj = NULL; /* VOL object for file     */
-    hid_t          ret_value    = -1;   /* Return value            */
-
-    FUNC_ENTER_API(FAIL)
-    H5TRACE3("i", "*xii", file_obj, connector_id, dtype_id);
-
-    /* Check args */
-    if (!file_obj)
-        HGOTO_ERROR(H5E_ARGS, H5E_UNINITIALIZED, FAIL, "no file object supplied")
-    if (NULL == (dtype = (H5T_t *)H5I_object_verify(dtype_id, H5I_DATATYPE)))
-        HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a data type")
-
-    /* Create VOL object for file if necessary (force_conv will be TRUE if and
-     * only if file needs to be passed to H5T_set_loc) */
-    if (H5T_GET_FORCE_CONV(dtype) &&
-        (NULL == (file_vol_obj = H5VL_create_object_using_vol_id(H5I_FILE, file_obj, connector_id, TRUE))))
-        HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object")
-
-    /* Copy the datatype */
-    if (NULL == (file_type = H5T_copy(dtype, H5T_COPY_TRANSIENT)))
-        HGOTO_ERROR(H5E_VOL, H5E_CANTCOPY, FAIL, "unable to copy datatype")
-
-    /* Register file type id */
-    if ((file_type_id = H5I_register(H5I_DATATYPE, file_type, FALSE)) < 0) {
-        (void)H5T_close_real(file_type);
-        HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, FAIL, "unable to register file datatype")
-    } /* end if */
-
-    /* Set the location of the datatype to be in the file */
-    if (H5T_set_loc(file_type, file_vol_obj, H5T_LOC_DISK) < 0)
-        HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, FAIL, "can't set datatype location")
-
-    /* Release our reference to file_type */
-    if (file_vol_obj) {
-        if (H5VL_free_object(file_vol_obj) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free VOL object")
-        file_vol_obj = NULL;
-    } /* end if */
-
-    /* Set return value */
-    ret_value = file_type_id;
-
-done:
-    /* Cleanup on error */
-    if (ret_value < 0) {
-        if (file_vol_obj && H5VL_free_object(file_vol_obj) < 0)
-            HDONE_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free VOL object")
-        if (file_type_id >= 0 && H5I_dec_ref(file_type_id) < 0)
-            HDONE_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to close file datatype")
-    } /* end if */
-
-    FUNC_LEAVE_API(ret_value)
-} /* end H5VLget_file_type() */
 
 /*---------------------------------------------------------------------------
  * Function:    H5VLretrieve_lib_state

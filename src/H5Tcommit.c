@@ -97,8 +97,7 @@ static herr_t
 H5T__commit_api_common(hid_t loc_id, const char *name, hid_t type_id, hid_t lcpl_id, hid_t tcpl_id,
                        hid_t tapl_id, void **token_ptr, H5VL_object_t **_vol_obj_ptr)
 {
-    void *          data        = NULL; /* VOL-managed datatype data */
-    H5VL_object_t * new_obj     = NULL; /* VOL object that holds the datatype object and the VOL info */
+    H5VL_object_t * type_obj     = NULL; /* VOL object that holds the datatype object and the VOL info */
     H5T_t *         dt          = NULL; /* High level datatype object that wraps the VOL object */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
@@ -138,16 +137,12 @@ H5T__commit_api_common(hid_t loc_id, const char *name, hid_t type_id, hid_t lcpl
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, FAIL, "can't set object access arguments")
 
     /* Commit the type */
-    if (NULL == (data = H5VL_datatype_commit(*vol_obj_ptr, &loc_params, name, type_id, lcpl_id, tcpl_id,
+    if (NULL == (type_obj = H5VL_datatype_commit(*vol_obj_ptr, &loc_params, name, type_id, lcpl_id, tcpl_id,
                                              tapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "unable to commit datatype")
 
-    /* Set up VOL object */
-    if (NULL == (new_obj = H5VL_create_object(data, (*vol_obj_ptr)->connector)))
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTALLOC, FAIL, "can't create VOL object for committed datatype")
-
     /* Set the committed type object to the VOL connector pointer in the H5T_t struct */
-    dt->vol_obj = new_obj;
+    dt->vol_obj = type_obj;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -217,7 +212,7 @@ H5Tcommit_async(const char *app_file, const char *app_func, unsigned app_line, h
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE10(__func__, "*s*sIui*siiiii", app_file, app_func, app_line, loc_id, name, type_id, lcpl_id, tcpl_id, tapl_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -281,10 +276,9 @@ done:
         if (dt->shared->state == H5T_STATE_OPEN && dt->sh_loc.type == H5O_SHARE_TYPE_COMMITTED) {
             /* Remove the datatype from the list of opened objects in the file */
             if (H5FO_top_decr(dt->sh_loc.file, dt->sh_loc.u.loc.oh_addr) < 0)
-                HDONE_ERROR(H5E_DATASET, H5E_CANTRELEASE, FAIL, "can't decrement count for object")
+                HDONE_ERROR(H5E_DATATYPE, H5E_CANTRELEASE, FAIL, "can't decrement count for object")
             if (H5FO_delete(dt->sh_loc.file, dt->sh_loc.u.loc.oh_addr) < 0)
-                HDONE_ERROR(H5E_DATASET, H5E_CANTRELEASE, FAIL,
-                            "can't remove dataset from list of open objects")
+                HDONE_ERROR(H5E_DATATYPE, H5E_CANTRELEASE, FAIL, "can't remove dataset from list of open objects")
 
             /* Close the datatype object */
             if (H5O_close(&(dt->oloc), NULL) < 0)
@@ -295,7 +289,7 @@ done:
                 HDONE_ERROR(H5E_DATATYPE, H5E_CANTDELETE, FAIL, "unable to delete object header")
 
             /* Mark datatype as being back in memory */
-            if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY))
+            if (H5T_set_loc(dt, H5T_LOC_MEMORY))
                 HDONE_ERROR(H5E_DATATYPE, H5E_CANTDELETE, FAIL, "unable to return datatype to memory")
             dt->sh_loc.type   = H5O_SHARE_TYPE_UNSHARED;
             dt->shared->state = old_state;
@@ -327,8 +321,7 @@ done:
 herr_t
 H5Tcommit_anon(hid_t loc_id, hid_t type_id, hid_t tcpl_id, hid_t tapl_id)
 {
-    void *            dt      = NULL; /* datatype object created by VOL connector */
-    H5VL_object_t *   new_obj = NULL; /* VOL object that holds the datatype object and the VOL info */
+    H5VL_object_t *   type_obj = NULL; /* VOL object that holds the datatype object and the VOL info */
     H5T_t *           type    = NULL; /* Datatype created */
     H5VL_object_t *   vol_obj = NULL; /* object of loc_id */
     H5VL_loc_params_t loc_params;
@@ -362,16 +355,11 @@ H5Tcommit_anon(hid_t loc_id, hid_t type_id, hid_t tcpl_id, hid_t tapl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "invalid file identifier")
 
     /* Commit the datatype */
-    if (NULL == (dt = H5VL_datatype_commit(vol_obj, &loc_params, NULL, type_id, H5P_LINK_CREATE_DEFAULT,
-                                           tcpl_id, tapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (type_obj = H5VL_datatype_commit(vol_obj, &loc_params, NULL, type_id, H5P_LINK_CREATE_DEFAULT, tcpl_id, tapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "unable to commit datatype")
 
-    /* Setup VOL object */
-    if (NULL == (new_obj = H5VL_create_object(dt, vol_obj->connector)))
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTALLOC, FAIL, "can't create VOL object for committed datatype")
-
     /* Set the committed type object to the VOL connector pointer in the H5T_t struct */
-    type->vol_obj = new_obj;
+    type->vol_obj = type_obj;
 
 done:
     FUNC_LEAVE_API(ret_value)
@@ -469,7 +457,7 @@ H5T__commit(H5F_t *file, H5T_t *type, hid_t tcpl_id)
     /* Mark datatype as being on disk now.  This step changes the size of
      *  datatype as stored on disk.
      */
-    if (H5T_set_loc(type, H5F_VOL_OBJ(file), H5T_LOC_DISK) < 0)
+    if (H5T_set_loc(type, H5T_LOC_DISK) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "cannot mark datatype on disk")
 
     /* Reset datatype location and path */
@@ -481,7 +469,7 @@ H5T__commit(H5F_t *file, H5T_t *type, hid_t tcpl_id)
 
     /* Set the version for datatype */
     if (H5T_set_version(file, type) < 0)
-        HGOTO_ERROR(H5E_DATASET, H5E_CANTSET, FAIL, "can't set version of datatype")
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, FAIL, "can't set version of datatype")
 
     /* Calculate message size information, for creating object header */
     dtype_size = H5O_msg_size_f(file, tcpl_id, H5O_DTYPE_ID, type, (size_t)0);
@@ -518,7 +506,7 @@ H5T__commit(H5F_t *file, H5T_t *type, hid_t tcpl_id)
     /* Mark datatype as being on memory again.  Since this datatype may still be
      *  used in memory after committed to disk, change its size back as in memory.
      */
-    if (H5T_set_loc(type, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(type, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "cannot mark datatype in memory")
 
 done:
@@ -622,7 +610,7 @@ static hid_t
 H5T__open_api_common(hid_t loc_id, const char *name, hid_t tapl_id, void **token_ptr,
                      H5VL_object_t **_vol_obj_ptr)
 {
-    void *          dt          = NULL; /* datatype object created by VOL connector */
+    H5VL_object_t * type_obj     = NULL; /* VOL object that holds the datatype object and the VOL info */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
@@ -642,19 +630,18 @@ H5T__open_api_common(hid_t loc_id, const char *name, hid_t tapl_id, void **token
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, H5I_INVALID_HID, "can't set object access arguments")
 
     /* Open the datatype */
-    if (NULL == (dt = H5VL_datatype_open(*vol_obj_ptr, &loc_params, name, tapl_id, H5P_DATASET_XFER_DEFAULT,
-                                         token_ptr)))
+    if (NULL == (type_obj = H5VL_datatype_open(*vol_obj_ptr, &loc_params, name, tapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open named datatype")
 
-    /* Register the type and return the ID */
-    if ((ret_value = H5VL_register(H5I_DATATYPE, dt, (*vol_obj_ptr)->connector, TRUE)) < 0)
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register named datatype")
+    /* Register an ID for the named datatype */
+    if ((ret_value = H5I_register(H5I_DATATYPE, type_obj, TRUE)) < 0)
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register ID for named datatype")
 
 done:
     /* Cleanup on error */
     if (H5I_INVALID_HID == ret_value)
-        if (dt && H5VL_datatype_close(*vol_obj_ptr, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
-            HDONE_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release datatype")
+        if (type_obj && H5VL_datatype_close(type_obj, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+            HDONE_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release named datatype")
 
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T__open_api_common() */
@@ -725,7 +712,7 @@ H5Topen_async(const char *app_file, const char *app_func, unsigned app_line, hid
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE7(__func__, "*s*sIui*sii", app_file, app_func, app_line, loc_id, name, tapl_id, es_id)) < 0) {
             /* clang-format on */
             if (H5I_dec_app_ref_always_close(ret_value) < 0)
@@ -1069,7 +1056,7 @@ H5T_open(const H5G_loc_t *loc)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINC, NULL, "can't increment object count")
 
         /* Mark any datatypes as being in memory now */
-        if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+        if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "invalid datatype location")
 
         dt->shared->fo_count = 1;
@@ -1104,7 +1091,7 @@ H5T_open(const H5G_loc_t *loc)
         dt->shared = shared_fo;
 
         /* Mark any datatypes as being in memory now */
-        if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+        if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "invalid datatype location")
 
         /* Increment ref. count on shared info */
@@ -1127,11 +1114,8 @@ H5T_open(const H5G_loc_t *loc)
 done:
     if (ret_value == NULL) {
         if (dt) {
-            if (shared_fo == NULL) { /* Need to free shared fo */
-                if (dt->shared->owned_vol_obj && H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-                    HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
+            if (shared_fo == NULL) /* Need to free shared fo */
                 dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
-            } /* end if */
 
             H5O_loc_free(&(dt->oloc));
             H5G_name_free(&(dt->path));

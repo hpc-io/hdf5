@@ -359,7 +359,7 @@ H5A__create(const H5G_loc_t *loc, const char *attr_name, const H5T_t *type, cons
         HGOTO_ERROR(H5E_ATTR, H5E_CANTGET, NULL, "can't get shared datatype info")
 
     /* Mark datatype as being on disk now */
-    if (H5T_set_loc(attr->shared->dt, H5F_VOL_OBJ(loc->oloc->file), H5T_LOC_DISK) < 0)
+    if (H5T_set_loc(attr->shared->dt, H5T_LOC_DISK) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "invalid datatype location")
 
     /* Set the version for datatype */
@@ -760,10 +760,6 @@ H5A__read(const H5A_t *attr, const H5T_t *mem_type, void *buf)
     HDassert(mem_type);
     HDassert(buf);
 
-    /* Patch the top level file pointer in attr->shared->dt->shared->u.vlen.f if needed */
-    if (H5T_patch_vlen_file(attr->shared->dt, H5F_VOL_OBJ(attr->oloc.file)) < 0)
-        HGOTO_ERROR(H5E_DATASET, H5E_CANTOPENOBJ, FAIL, "can't patch VL datatype file pointer")
-
     /* Create buffer for data to store on disk */
     if ((snelmts = H5S_GET_EXTENT_NPOINTS(attr->shared->ds)) < 0)
         HGOTO_ERROR(H5E_ATTR, H5E_CANTCOUNT, FAIL, "dataspace is invalid")
@@ -1059,7 +1055,7 @@ H5A__get_type(H5A_t *attr)
         HGOTO_ERROR(H5E_ATTR, H5E_CANTINIT, H5I_INVALID_HID, "unable to copy datatype")
 
     /* Mark any datatypes as being in memory now */
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, H5I_INVALID_HID, "invalid datatype location")
 
     /* Lock copied type */
@@ -1082,7 +1078,7 @@ H5A__get_type(H5A_t *attr)
 
 done:
     if (H5I_INVALID_HID == ret_value)
-        if (dt && H5T_close(dt) < 0)
+        if (dt && H5T_close(dt, H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_ATTR, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release datatype")
 
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1424,6 +1420,27 @@ H5A_nameof(H5A_t *attr)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5A_nameof() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5A_fileof
+ *
+ * Purpose:     Returns the file to which the specified attribute belongs.
+ *
+ * Return:	Success:	File pointer.
+ *              Failure:        NULL
+ *
+ *-------------------------------------------------------------------------
+ */
+H5F_t *
+H5A_fileof(H5A_t *attr)
+{
+    /* Use FUNC_ENTER_NOAPI_NOINIT_NOERR here to avoid performance issues */
+    FUNC_ENTER_NOAPI_NOINIT_NOERR
+
+    HDassert(attr);
+
+    FUNC_LEAVE_NOAPI(attr->oloc.file)
+} /* end H5A_fileof() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5A_type
@@ -2229,7 +2246,7 @@ H5A__attr_copy_file(const H5A_t *attr_src, H5F_t *file_dst, hbool_t *recompute_s
         HGOTO_ERROR(H5E_OHDR, H5E_CANTCOPY, NULL, "cannot copy datatype")
 
     /* Set the location of the destination datatype */
-    if (H5T_set_loc(attr_dst->shared->dt, H5F_VOL_OBJ(file_dst), H5T_LOC_DISK) < 0)
+    if (H5T_set_loc(attr_dst->shared->dt, H5T_LOC_DISK) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "cannot mark datatype on disk")
 
     if (!H5T_is_named(attr_src->shared->dt)) {

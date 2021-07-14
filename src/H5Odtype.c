@@ -35,8 +35,7 @@ static herr_t H5O__dtype_reset(void *_mesg);
 static herr_t H5O__dtype_free(void *_mesg);
 static herr_t H5O__dtype_set_share(void *_mesg, const H5O_shared_t *sh);
 static htri_t H5O__dtype_can_share(const void *_mesg);
-static herr_t H5O__dtype_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t *deleted,
-                                       const H5O_copy_t *cpy_info, void *_udata);
+static herr_t H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *_udata);
 static void * H5O__dtype_copy_file(H5F_t *file_src, const H5O_msg_class_t *mesg_type, void *native_src,
                                    H5F_t *file_dst, hbool_t *recompute_size, H5O_copy_t *cpy_info,
                                    void *udata);
@@ -458,7 +457,7 @@ H5O__dtype_decode_helper(unsigned *ioflags /*in,out*/, const uint8_t **pp, H5T_t
 
             /* Mark location of this type as undefined for now.  The caller
              * function should decide the location. */
-            if (H5T_set_loc(dt, NULL, H5T_LOC_BADLOC) < 0)
+            if (H5T_set_loc(dt, H5T_LOC_BADLOC) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
             break;
 
@@ -523,7 +522,7 @@ H5O__dtype_decode_helper(unsigned *ioflags /*in,out*/, const uint8_t **pp, H5T_t
 
             /* Mark location this type as undefined for now.  The caller function should
              * decide the location. */
-            if (H5T_set_loc(dt, NULL, H5T_LOC_BADLOC) < 0)
+            if (H5T_set_loc(dt, H5T_LOC_BADLOC) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
             break;
 
@@ -579,10 +578,8 @@ H5O__dtype_decode_helper(unsigned *ioflags /*in,out*/, const uint8_t **pp, H5T_t
 done:
     if (ret_value < 0)
         if (dt != NULL) {
-            if (dt->shared != NULL) {
-                HDassert(!dt->shared->owned_vol_obj);
+            if (dt->shared != NULL)
                 dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
-            } /* end if */
             dt = H5FL_FREE(H5T_t, dt);
         } /* end if */
 
@@ -1528,8 +1525,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__dtype_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted,
-                         const H5O_copy_t *cpy_info, void *_udata)
+H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
 {
     const H5T_t *       dt_src    = (const H5T_t *)mesg_src;      /* Source datatype */
     H5D_copy_file_ud_t *udata     = (H5D_copy_file_ud_t *)_udata; /* Dataset copying user data */
@@ -1538,7 +1534,6 @@ H5O__dtype_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t H5_ATTR_
     FUNC_ENTER_STATIC
 
     /* check args */
-    HDassert(file_src);
     HDassert(dt_src);
     HDassert(cpy_info);
     HDassert(cpy_info->file_dst);
@@ -1561,7 +1556,7 @@ H5O__dtype_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t H5_ATTR_
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "unable to copy")
 
         /* Set the location of the source datatype to describe the disk form of the data */
-        if (H5T_set_loc(udata->src_dtype, H5F_VOL_OBJ(file_src), H5T_LOC_DISK) < 0)
+        if (H5T_set_loc(udata->src_dtype, H5T_LOC_DISK) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "cannot mark datatype on disk")
     } /* end if */
 
@@ -1584,7 +1579,7 @@ done:
  */
 static void *
 H5O__dtype_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const H5O_msg_class_t *mesg_type, void *native_src,
-                     H5F_t *file_dst, hbool_t H5_ATTR_UNUSED *recompute_size,
+                     H5F_t H5_ATTR_UNUSED *file_dst, hbool_t H5_ATTR_UNUSED *recompute_size,
                      H5O_copy_t H5_ATTR_UNUSED *cpy_info, void H5_ATTR_UNUSED *udata)
 {
     H5T_t *dst_mesg;         /* Destination datatype */
@@ -1597,7 +1592,7 @@ H5O__dtype_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const H5O_msg_class_t *mesg
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "unable to copy")
 
     /* The datatype will be in the new file; set its location. */
-    if (H5T_set_loc(dst_mesg, H5F_VOL_OBJ(file_dst), H5T_LOC_DISK) < 0)
+    if (H5T_set_loc(dst_mesg, H5T_LOC_DISK) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "unable to set location")
 
     ret_value = dst_mesg;

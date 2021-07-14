@@ -98,7 +98,6 @@ H5Lmove(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
     H5VL_loc_params_t loc_params1;
     H5VL_object_t *   vol_obj2 = NULL; /* Object of dst_id */
     H5VL_loc_params_t loc_params2;
-    H5VL_object_t     tmp_vol_obj;         /* Temporary object */
     herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
@@ -152,27 +151,14 @@ H5Lmove(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector_cls(&same_connector, vol_obj1->connector->cls, vol_obj2->connector->cls) < 0)
+        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector, vol_obj2->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
-                        "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
-
-    /* Construct a temporary source VOL object */
-    if (vol_obj1) {
-        tmp_vol_obj.connector = vol_obj1->connector;
-        tmp_vol_obj.data      = vol_obj1->data;
-    } /* end if */
-    else {
-        HDassert(vol_obj2);
-
-        tmp_vol_obj.connector = vol_obj2->connector;
-        tmp_vol_obj.data      = NULL;
-    } /* end else */
 
     /* Move the link */
-    if (H5VL_link_move(&tmp_vol_obj, &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
+    if (H5VL_link_move((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
                        H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTMOVE, FAIL, "unable to move link")
 
@@ -202,7 +188,6 @@ H5Lcopy(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
     H5VL_loc_params_t loc_params1;
     H5VL_object_t *   vol_obj2 = NULL; /* Object of dst_id */
     H5VL_loc_params_t loc_params2;
-    H5VL_object_t     tmp_vol_obj;         /* Temporary object */
     herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
@@ -256,27 +241,14 @@ H5Lcopy(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector_cls(&same_connector, vol_obj1->connector->cls, vol_obj2->connector->cls) < 0)
+        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector, vol_obj2->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
-                        "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
-
-    /* Construct a temporary source VOL object */
-    if (vol_obj1) {
-        tmp_vol_obj.connector = vol_obj1->connector;
-        tmp_vol_obj.data      = vol_obj1->data;
-    } /* end if */
-    else {
-        HDassert(vol_obj2);
-
-        tmp_vol_obj.connector = vol_obj2->connector;
-        tmp_vol_obj.data      = NULL;
-    } /* end else */
 
     /* Copy the link */
-    if (H5VL_link_copy(&tmp_vol_obj, &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
+    if (H5VL_link_copy((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
                        H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTMOVE, FAIL, "unable to copy link")
 
@@ -337,8 +309,7 @@ H5L__create_soft_api_common(const char *link_target, hid_t link_loc_id, const ch
     vol_cb_args.args.soft.target = link_target;
 
     /* Create the link */
-    if (H5VL_link_create(&vol_cb_args, *vol_obj_ptr, &loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT,
-                         token_ptr) < 0)
+    if (H5VL_link_create(&vol_cb_args, *vol_obj_ptr, &loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTCREATE, FAIL, "unable to create soft link")
 
 done:
@@ -414,7 +385,7 @@ H5Lcreate_soft_async(const char *app_file, const char *app_func, unsigned app_li
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE9(__func__, "*s*sIu*si*siii", app_file, app_func, app_line, link_target, link_loc_id, link_name, lcpl_id, lapl_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_LINK, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -475,7 +446,7 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
 
     /* Set up new location struct */
     link_loc_params.type                         = H5VL_OBJECT_BY_NAME;
-    link_loc_params.obj_type                     = H5I_get_type(link_loc_id);
+    link_loc_params.obj_type                     = (H5L_SAME_LOC != link_loc_id) ? H5I_get_type(link_loc_id) : H5I_get_type(cur_loc_id);
     link_loc_params.loc_data.loc_by_name.name    = link_name;
     link_loc_params.loc_data.loc_by_name.lapl_id = lapl_id;
 
@@ -493,30 +464,24 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector_cls(&same_connector, curr_vol_obj->connector->cls,
-                                   link_vol_obj->connector->cls) < 0)
+        if (H5VL_cmp_connector(&same_connector, curr_vol_obj->container->connector, link_vol_obj->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
-                        "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
 
-    /* Construct a temporary VOL object */
-    if (curr_vol_obj)
-        (*tmp_vol_obj_ptr_ptr)->connector = curr_vol_obj->connector;
-    else {
-        HDassert(link_vol_obj);
-
-        (*tmp_vol_obj_ptr_ptr)->connector = link_vol_obj->connector;
-    } /* end else */
+    /* Construct temporary VOL object */
     if (link_vol_obj)
-        (*tmp_vol_obj_ptr_ptr)->data = link_vol_obj->data;
+        HDmemcpy((*tmp_vol_obj_ptr_ptr), link_vol_obj, sizeof(*link_vol_obj));
     else
-        (*tmp_vol_obj_ptr_ptr)->data = NULL;
+        HDmemcpy((*tmp_vol_obj_ptr_ptr), curr_vol_obj, sizeof(*curr_vol_obj));
 
     /* Set up VOL callback arguments */
     vol_cb_args.op_type                        = H5VL_LINK_CREATE_HARD;
-    vol_cb_args.args.hard.curr_obj             = (curr_vol_obj ? curr_vol_obj->data : NULL);
+    if(NULL == curr_vol_obj)
+        vol_cb_args.args.hard.curr_obj             = NULL;
+    else
+        vol_cb_args.args.hard.curr_obj             = (curr_vol_obj->obj_type == H5VL_OBJ_FILE) ? curr_vol_obj->container->object : curr_vol_obj->object;
     vol_cb_args.args.hard.curr_loc_params.type = H5VL_OBJECT_BY_NAME;
     vol_cb_args.args.hard.curr_loc_params.obj_type =
         (H5L_SAME_LOC != cur_loc_id ? H5I_get_type(cur_loc_id) : H5I_BADID);
@@ -524,8 +489,7 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
     vol_cb_args.args.hard.curr_loc_params.loc_data.loc_by_name.lapl_id = lapl_id;
 
     /* Create the link */
-    if (H5VL_link_create(&vol_cb_args, *tmp_vol_obj_ptr_ptr, &link_loc_params, lcpl_id, lapl_id,
-                         H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
+    if (H5VL_link_create(&vol_cb_args, *tmp_vol_obj_ptr_ptr, &link_loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTCREATE, FAIL, "unable to create hard link")
 
 done:
@@ -607,7 +571,7 @@ H5Lcreate_hard_async(const char *app_file, const char *app_func, unsigned app_li
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj_ptr->connector, token,
+        if (H5ES_insert(es_id, vol_obj_ptr->container->connector, token,
                         H5ARG_TRACE10(__func__, "*s*sIui*si*siii", app_file, app_func, app_line, cur_loc_id, cur_name, new_loc_id, new_name, lcpl_id, lapl_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_LINK, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -902,7 +866,7 @@ H5Ldelete_async(const char *app_file, const char *app_func, unsigned app_line, h
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE7(__func__, "*s*sIui*sii", app_file, app_func, app_line, loc_id, name, lapl_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_LINK, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -1030,7 +994,7 @@ H5Ldelete_by_idx_async(const char *app_file, const char *app_func, unsigned app_
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE10(__func__, "*s*sIui*sIiIohii", app_file, app_func, app_line, loc_id, group_name, idx_type, order, n, lapl_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_LINK, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -1274,7 +1238,7 @@ H5Lexists_async(const char *app_file, const char *app_func, unsigned app_line, h
 
     /* If a token was created, add the token to the event set */
     if (NULL != token)
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         /* clang-format off */
                         H5ARG_TRACE8(__func__, "*s*sIui*s*bii", app_file, app_func, app_line, loc_id, name, exists, lapl_id, es_id)) < 0)
             /* clang-format on */
@@ -1741,7 +1705,7 @@ H5Literate_async(const char *app_file, const char *app_func, unsigned app_line, 
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE10(__func__, "*s*sIuiIiIo*hLI*xi", app_file, app_func, app_line, group_id, idx_type, order, idx_p, op, op_data, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_LINK, H5E_CANTINSERT, FAIL, "can't insert token into event set")

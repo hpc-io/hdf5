@@ -47,8 +47,7 @@
 /********************/
 /* Local Prototypes */
 /********************/
-static herr_t H5O__oh_tag(const H5O_loc_t *oloc, haddr_t *tag);
-static herr_t H5O__refresh_metadata_close(H5O_loc_t *oloc, H5G_loc_t *obj_loc, hid_t oid);
+static herr_t H5O__refresh_metadata_close(H5O_loc_t *oloc, hid_t oid);
 
 /*************/
 /* Functions */
@@ -117,8 +116,7 @@ H5O_flush_common(H5O_loc_t *oloc, hid_t obj_id)
     FUNC_ENTER_NOAPI(FAIL)
 
     /* Retrieve tag for object */
-    if (H5O__oh_tag(oloc, &tag) < 0)
-        HGOTO_ERROR(H5E_OHDR, H5E_CANTFLUSH, FAIL, "unable to flush object metadata")
+    tag = oloc->addr;
 
     /* Flush metadata based on tag value of the object */
     if (H5F_flush_tagged_metadata(oloc->file, tag) < 0)
@@ -131,46 +129,6 @@ H5O_flush_common(H5O_loc_t *oloc, hid_t obj_id)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5O_flush_common() */
-
-/*-------------------------------------------------------------------------
- * Function:    H5O__oh_tag
- *
- * Purpose:     Get object header's address--tag value for the object
- *
- * Return:  	Success:    Non-negative
- *          	Failure:    Negative
- *
- * Programmer: Mike McGreevy
- *             May 19, 2010
- *
- *-------------------------------------------------------------------------
- */
-static herr_t
-H5O__oh_tag(const H5O_loc_t *oloc, haddr_t *tag)
-{
-    H5O_t *oh        = NULL;    /* Object header */
-    herr_t ret_value = SUCCEED; /* Return value */
-
-    FUNC_ENTER_STATIC
-
-    /* Check args */
-    HDassert(oloc);
-
-    /* Get object header for object */
-    if (NULL == (oh = H5O_protect(oloc, H5AC__READ_ONLY_FLAG, FALSE)))
-        HGOTO_ERROR(H5E_OHDR, H5E_CANTPROTECT, FAIL, "unable to protect object's object header")
-
-    /* Get object header's address (i.e. the tag value for this object) */
-    if (HADDR_UNDEF == (*tag = H5O_OH_GET_ADDR(oh)))
-        HGOTO_ERROR(H5E_OHDR, H5E_CANTGET, FAIL, "unable to get address of object header")
-
-done:
-    /* Unprotect object header on failure */
-    if (oh && H5O_unprotect(oloc, oh, H5AC__NO_FLAGS_SET) < 0)
-        HDONE_ERROR(H5E_OHDR, H5E_CANTUNPROTECT, FAIL, "unable to release object header")
-
-    FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5O__oh_tag() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5O_refresh_metadata
@@ -203,16 +161,12 @@ H5O_refresh_metadata(H5O_loc_t *oloc, hid_t oid)
 
     /* If the file is opened with write access, no need to perform refresh actions. */
     if (!(H5F_INTENT(oloc->file) & H5F_ACC_RDWR)) {
-        H5G_loc_t    obj_loc;
+        H5G_loc_t    tmp_loc;
         H5O_loc_t    obj_oloc;
         H5G_name_t   obj_path;
+        H5G_loc_t    obj_loc = {&obj_oloc, &obj_path};
         H5O_shared_t cached_H5O_shared;
-        H5VL_t *     connector = NULL;
-
-        /* Create empty object location */
-        obj_loc.oloc = &obj_oloc;
-        obj_loc.path = &obj_path;
-        H5G_loc_reset(&obj_loc);
+        H5VL_container_t *     container = NULL;
 
         /* "Fake" another open object in the file, so that it doesn't get closed
          *  if this object is the only thing holding the file open.
@@ -223,37 +177,42 @@ H5O_refresh_metadata(H5O_loc_t *oloc, hid_t oid)
         /* Save important datatype state */
         if (H5I_get_type(oid) == H5I_DATATYPE)
             if (H5T_save_refresh_state(oid, &cached_H5O_shared) < 0)
-                HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, FAIL, "unable to save datatype state")
+                HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, FAIL, "unable to save datatype state")
 
-        /* Get the VOL object from the ID and cache a pointer to the connector.
+        /* Get the VOL object from the ID and cache a pointer to the container.
          * The vol_obj will disappear when the underlying object is closed, so
          * we can't use that directly.
          */
         if (NULL == (vol_obj = H5VL_vol_object(oid)))
             HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "invalid object identifier")
-        connector = vol_obj->connector;
+        container = vol_obj->container;
 
-        /* Bump the number of references on the VOL connector.
+        /* Bump the number of references on the VOL container.
          * If you don't do this, VDS refreshes can accidentally close the connector.
          */
-        connector->nrefs++;
+        H5VL_container_inc_rc(container);
+
+        /* Make deep local copy of object's location information */
+        H5G_loc_reset(&obj_loc);
+        H5G_loc(oid, &tmp_loc);
+        H5G_loc_copy(&obj_loc, &tmp_loc, H5_COPY_DEEP);
 
         /* Close object & evict its metadata */
-        if (H5O__refresh_metadata_close(oloc, &obj_loc, oid) < 0)
+        if (H5O__refresh_metadata_close(oloc, oid) < 0)
             HGOTO_ERROR(H5E_OHDR, H5E_CANTLOAD, FAIL, "unable to refresh object")
 
         /* Re-open the object, re-fetching its metadata */
-        if (H5O_refresh_metadata_reopen(oid, &obj_loc, connector, FALSE) < 0)
+        if (H5O_refresh_metadata_reopen(oid, &obj_loc, container, FALSE) < 0)
             HGOTO_ERROR(H5E_OHDR, H5E_CANTLOAD, FAIL, "unable to refresh object")
 
         /* Restore the number of references on the VOL connector */
-        connector->nrefs--;
+        if (H5VL_container_dec_rc(container) < 0)
+            HGOTO_ERROR(H5E_OHDR, H5E_CANTDEC, FAIL, "unable to decrement container refcount")
 
         /* Restore important datatype state */
         if (H5I_get_type(oid) == H5I_DATATYPE)
             if (H5T_restore_refresh_state(oid, &cached_H5O_shared) < 0)
-                HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, FAIL, "unable to restore datatype state")
-
+                HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, FAIL, "unable to restore datatype state")
     } /* end if */
 
 done:
@@ -283,7 +242,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__refresh_metadata_close(H5O_loc_t *oloc, H5G_loc_t *obj_loc, hid_t oid)
+H5O__refresh_metadata_close(H5O_loc_t *oloc, hid_t oid)
 {
     H5F_t * file;                /* Local copy of the object's file pointer */
     haddr_t tag       = 0;       /* Tag for object */
@@ -292,31 +251,23 @@ H5O__refresh_metadata_close(H5O_loc_t *oloc, H5G_loc_t *obj_loc, hid_t oid)
 
     FUNC_ENTER_STATIC
 
-    /* Make deep local copy of object's location information */
-    if (obj_loc) {
-        H5G_loc_t tmp_loc;
-
-        H5G_loc(oid, &tmp_loc);
-        H5G_loc_copy(obj_loc, &tmp_loc, H5_COPY_DEEP);
-    } /* end if */
-
     /* Handle close for multiple dataset opens */
     if (H5I_get_type(oid) == H5I_DATASET)
         if (H5D_mult_refresh_close(oid) < 0)
             HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, FAIL, "unable to prepare refresh for dataset")
 
-    /* Retrieve tag for object */
-    if (H5O__oh_tag(oloc, &tag) < 0)
-        HGOTO_ERROR(H5E_OHDR, H5E_CANTFLUSH, FAIL, "unable to get object header address")
-
-    /* Get cork status of the object with tag */
-    if (H5AC_cork(oloc->file, tag, H5AC__GET_CORKED, &corked) < 0)
-        HGOTO_ERROR(H5E_OHDR, H5E_SYSTEM, FAIL, "unable to retrieve an object's cork status")
-
     /* Hold a copy of the object's file pointer, since closing the object will
      * invalidate the file pointer in the oloc.
      */
     file = oloc->file;
+
+    /* Retrieve tag for object */
+    tag = oloc->addr;
+
+    /* Get cork status of the object with tag */
+    if (H5AC_cork(file, tag, H5AC__GET_CORKED, &corked) < 0)
+        HGOTO_ERROR(H5E_OHDR, H5E_SYSTEM, FAIL, "unable to retrieve an object's cork status")
+
     /* Close the object */
     if (H5I_dec_ref(oid) < 0)
         HGOTO_ERROR(H5E_OHDR, H5E_CANTINIT, FAIL, "unable to close object")
@@ -353,7 +304,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5O_refresh_metadata_reopen(hid_t oid, H5G_loc_t *obj_loc, H5VL_t *vol_connector, hbool_t start_swmr)
+H5O_refresh_metadata_reopen(hid_t oid, H5G_loc_t *obj_loc, H5VL_container_t *container, hbool_t start_swmr)
 {
     void *     object = NULL;       /* Object for this operation */
     H5I_type_t type;                /* Type of object for the ID */
@@ -363,7 +314,7 @@ H5O_refresh_metadata_reopen(hid_t oid, H5G_loc_t *obj_loc, H5VL_t *vol_connector
 
     /* Sanity check */
     HDassert(obj_loc);
-    HDassert(vol_connector);
+    HDassert(container);
 
     /* Get object's type */
     type = H5I_get_type(oid);
@@ -415,7 +366,7 @@ H5O_refresh_metadata_reopen(hid_t oid, H5G_loc_t *obj_loc, H5VL_t *vol_connector
     } /* end switch */
 
     /* Re-register ID for the object */
-    if ((H5VL_register_using_existing_id(type, object, vol_connector, TRUE, oid)) < 0)
+    if ((H5VL_register_using_existing_id(type, object, container, TRUE, oid)) < 0)
         HGOTO_ERROR(H5E_OHDR, H5E_CANTREGISTER, FAIL, "unable to re-register object ID after refresh")
 
 done:

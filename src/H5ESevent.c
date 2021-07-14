@@ -84,10 +84,10 @@ H5FL_DEFINE_STATIC(H5ES_event_t);
  *-------------------------------------------------------------------------
  */
 H5ES_event_t *
-H5ES__event_new(H5VL_t *connector, void *token)
+H5ES__event_new(H5VL_connector_t *connector, void *token)
 {
     H5ES_event_t * ev        = NULL; /* New event */
-    H5VL_object_t *request   = NULL; /* Async request token VOL object */
+    H5VL_request_t *request  = NULL; /* Async request token VOL object */
     H5ES_event_t * ret_value = NULL; /* Return value */
 
     FUNC_ENTER_PACKAGE
@@ -97,8 +97,8 @@ H5ES__event_new(H5VL_t *connector, void *token)
     HDassert(token);
 
     /* Create vol object for token */
-    if (NULL == (request = H5VL_create_object(token, connector))) {
-        if (H5VL_request_free(token) < 0)
+    if (NULL == (request = H5VL_create_request(token, connector))) {
+        if (H5VL_free_token(token, connector) < 0)
             HDONE_ERROR(H5E_EVENTSET, H5E_CANTFREE, NULL, "can't free request")
         HGOTO_ERROR(H5E_EVENTSET, H5E_CANTINIT, NULL, "can't create vol object for request token")
     } /* end if */
@@ -147,15 +147,10 @@ H5ES__event_free(H5ES_event_t *ev)
         H5MM_xfree_const(ev->op_info.api_args);
     ev->op_info.app_file_name = NULL;
     ev->op_info.app_func_name = NULL;
-    if (ev->request) {
-        /* Free the request */
-        if (H5VL_request_free(ev->request) < 0)
-            HGOTO_ERROR(H5E_EVENTSET, H5E_CANTFREE, FAIL, "unable to free request")
-
+    if (ev->request)
         /* Free the VOL object for the request */
-        if (H5VL_free_object(ev->request) < 0)
+        if (H5VL_free_request(ev->request) < 0)
             HGOTO_ERROR(H5E_EVENTSET, H5E_CANTRELEASE, FAIL, "can't free VOL request object")
-    } /* end if */
 
     H5FL_FREE(H5ES_event_t, ev);
 

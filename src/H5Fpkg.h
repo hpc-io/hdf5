@@ -308,10 +308,6 @@ struct H5F_shared_t {
     hbool_t              use_file_locking;  /* Whether or not to use file locking */
     hbool_t              closing;           /* File is in the process of being closed */
 
-    /* Cached VOL connector ID & info */
-    hid_t vol_id;   /* ID of VOL connector for the container */
-    void *vol_info; /* Copy of VOL connector info for container */
-
     /* File space allocation information */
     H5F_fspace_strategy_t fs_strategy;  /* File space handling strategy	*/
     hsize_t               fs_threshold; /* Free space section threshold 	*/
@@ -374,7 +370,6 @@ struct H5F_t {
     char *         open_name;   /* Name used to open file                                       */
     char *         actual_name; /* Actual name of the file, after resolving symlinks, etc.      */
     H5F_shared_t * shared;      /* The shared file info                                         */
-    H5VL_object_t *vol_obj;     /* VOL object                                                   */
     unsigned       nopen_objs;  /* Number of open object headers                                */
     H5FO_t *       obj_count;   /* # of time each object is opened through top file structure   */
     hbool_t        id_exists;   /* Whether an ID for this struct exists                         */
@@ -403,7 +398,6 @@ H5_DLLVAR htri_t use_locks_env_g;
 /******************************/
 
 /* General routines */
-H5_DLL herr_t H5F__post_open(H5F_t *f, H5VL_object_t *vol_obj, hbool_t id_exists);
 H5_DLL H5F_t *H5F__reopen(H5F_t *f);
 H5_DLL herr_t H5F__flush(H5F_t *f);
 H5_DLL htri_t H5F__is_hdf5(const char *name, hid_t fapl_id);

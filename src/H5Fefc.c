@@ -135,7 +135,6 @@ done:
 static H5F_t *
 H5F__efc_open_real(const char *name, unsigned flags, hid_t fapl_id)
 {
-    H5VL_object_t *file_obj = NULL;  /* Pointer to file VOL object */
     H5F_t *        file     = NULL;  /* Pointer to opened file */
     hbool_t        is_native;        /* Whether the file VOL object is using the native VOL connector */
     H5F_t *        ret_value = NULL; /* Return value */
@@ -158,23 +157,9 @@ H5F__efc_open_real(const char *name, unsigned flags, hid_t fapl_id)
     if (!is_native)
         HGOTO_ERROR(H5E_FILE, H5E_UNSUPPORTED, NULL, "can't open files w/non-native VOL connector")
 
-    /* Open the file VOL object */
-    if (NULL == (file_obj = H5VL_file_open(name, flags, fapl_id, H5P_DATASET_XFER_DEFAULT, NULL, NULL)))
+    /* Open the file - directly with the native file open, not the VOL framework */
+    if (NULL == (file = H5F_open(name, flags, H5P_FILE_CREATE_DEFAULT, fapl_id)))
         HGOTO_ERROR(H5E_FILE, H5E_CANTOPENFILE, NULL, "can't open file")
-
-    /* Get native file pointer from VOL object */
-    if (NULL == (file = H5VL_object_data(file_obj))) {
-        /* Close opened file */
-        if (H5F__close_obj(file_obj, NULL) < 0)
-            HDONE_ERROR(H5E_FILE, H5E_CANTCLOSEFILE, NULL, "can't close file")
-
-        HGOTO_ERROR(H5E_FILE, H5E_CANTGET, NULL, "can't get native file pointer")
-    } /* end if */
-
-    /* Release VOL object */
-    if (H5VL_free_object(file_obj) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTRELEASE, NULL, "can't release file VOL object")
-    file_obj = NULL;
 
     /* Increment the number of open objects to prevent the file from being
      * closed out from under us - "simulate" having an open file id.  Note

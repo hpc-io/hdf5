@@ -530,7 +530,7 @@ reg_opt_link_optional(void *obj, const H5VL_loc_params_t *loc_params, H5VL_optio
  * Note:        This is _strictly_ a testing fixture to support the
  *              exercise_reg_opt_oper() testing routine.  It fakes just
  *              enough of the named datatype VOL callback for the
- *              H5VL_register_using_vol_id() call in that test routine to
+ *              H5VL__register_using_vol_id() call in that test routine to
  *              succeed.
  *
  * Return:      SUCCEED/FAIL
@@ -1609,7 +1609,7 @@ typedef union {
  */
 static herr_t
 exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id, H5VL_subclass_t subcls,
-                      const char *subcls_name, H5I_type_t id_type, reg_opt_oper_t reg_opt_op)
+                      const char *subcls_name, H5VL_obj_type_t obj_type, reg_opt_oper_t reg_opt_op)
 {
     char                 op_name[256]; /* Operation name to register */
     hid_t                obj_id = H5I_INVALID_HID;
@@ -1664,7 +1664,7 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id, H5VL_subclass_t s
         H5CX_push();
 
     /* Create fake object on fake VOL connector */
-    if (H5I_INVALID_HID == (obj_id = H5VL_register_using_vol_id(id_type, &fake_obj, fake_vol_id, TRUE)))
+    if (H5I_INVALID_HID == (obj_id = H5VL__register_using_vol_id(obj_type, &fake_obj, fake_vol_id)))
         TEST_ERROR;
 
     /* Pop the API context off the stack */
@@ -1703,7 +1703,7 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id, H5VL_subclass_t s
         if (H5VL_free_object(dt->vol_obj) < 0)
             TEST_ERROR;
         dt->vol_obj = NULL;
-        if (H5T_close(dt) < 0)
+        if (H5T_close(dt, H5_REQUEST_NULL) < 0)
             TEST_ERROR;
     } /* end if */
     else {
@@ -1720,7 +1720,7 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id, H5VL_subclass_t s
         H5CX_push();
 
     /* Create fake object on reg_opt VOL connector */
-    if (H5I_INVALID_HID == (obj_id = H5VL_register_using_vol_id(id_type, &fake_obj, reg_opt_vol_id, TRUE)))
+    if (H5I_INVALID_HID == (obj_id = H5VL__register_using_vol_id(obj_type, &fake_obj, reg_opt_vol_id)))
         TEST_ERROR;
 
     /* Pop the API context off the stack */
@@ -1779,7 +1779,7 @@ exercise_reg_opt_oper(hid_t fake_vol_id, hid_t reg_opt_vol_id, H5VL_subclass_t s
         if (H5VL_free_object(dt->vol_obj) < 0)
             TEST_ERROR;
         dt->vol_obj = NULL;
-        if (H5T_close(dt) < 0)
+        if (H5T_close(dt, H5_REQUEST_NULL) < 0)
             TEST_ERROR;
     } /* end if */
     else {
@@ -1818,15 +1818,15 @@ test_register_opt_operation(void)
     struct {
         H5VL_subclass_t subcls;
         const char *    subcls_name;
-        H5I_type_t      id_type;
+        H5VL_obj_type_t obj_type;
         reg_opt_oper_t  reg_opt_op;
-    } test_params[] = {{H5VL_SUBCLS_ATTR, "attr", H5I_ATTR, {.obj_op = H5VLattr_optional_op}},
-                       {H5VL_SUBCLS_DATASET, "dataset", H5I_DATASET, {.obj_op = H5VLdataset_optional_op}},
-                       {H5VL_SUBCLS_DATATYPE, "datatype", H5I_DATATYPE, {.obj_op = H5VLdatatype_optional_op}},
-                       {H5VL_SUBCLS_FILE, "file", H5I_FILE, {.obj_op = H5VLfile_optional_op}},
-                       {H5VL_SUBCLS_GROUP, "group", H5I_GROUP, {.obj_op = H5VLgroup_optional_op}},
-                       {H5VL_SUBCLS_LINK, "link", H5I_GROUP, {.link_op = H5VLlink_optional_op}},
-                       {H5VL_SUBCLS_OBJECT, "object", H5I_GROUP, {.link_op = H5VLobject_optional_op}}};
+    } test_params[] = {{H5VL_SUBCLS_ATTR, "attr", H5VL_OBJ_ATTR, {.obj_op = H5VLattr_optional_op}},
+                       {H5VL_SUBCLS_DATASET, "dataset", H5VL_OBJ_DATASET, {.obj_op = H5VLdataset_optional_op}},
+                       {H5VL_SUBCLS_DATATYPE, "datatype", H5VL_OBJ_DATATYPE, {.obj_op = H5VLdatatype_optional_op}},
+                       {H5VL_SUBCLS_FILE, "file", H5VL_OBJ_FILE, {.obj_op = H5VLfile_optional_op}},
+                       {H5VL_SUBCLS_GROUP, "group", H5VL_OBJ_GROUP, {.obj_op = H5VLgroup_optional_op}},
+                       {H5VL_SUBCLS_LINK, "link", H5VL_OBJ_GROUP, {.link_op = H5VLlink_optional_op}},
+                       {H5VL_SUBCLS_OBJECT, "object", H5VL_OBJ_GROUP, {.link_op = H5VLobject_optional_op}}};
     int      op_val = -1;
     unsigned u;
     herr_t   ret = SUCCEED;
@@ -1922,7 +1922,7 @@ test_register_opt_operation(void)
     for (u = 0; u < NELMTS(test_params); u++)
         /* Exercise appropriate callback, for each VOL subclass */
         if (exercise_reg_opt_oper(fake_vol_id, reg_opt_vol_id, test_params[u].subcls,
-                                  test_params[u].subcls_name, test_params[u].id_type,
+                                  test_params[u].subcls_name, test_params[u].obj_type,
                                   test_params[u].reg_opt_op) < 0)
             TEST_ERROR;
 

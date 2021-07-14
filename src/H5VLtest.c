@@ -97,3 +97,56 @@ H5VL__reparse_def_vol_conn_variable_test(void)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL__reparse_def_vol_conn_variable_test() */
+
+/*-------------------------------------------------------------------------
+ * Function:	H5VL__register_using_vol_id
+ *
+ * Purpose:     Utility function to create an object ID for a fake VOL object.
+ *
+ * Return:      Success:    A valid HDF5 ID
+ *              Failure:    H5I_INVALID_HID
+ *
+ *-------------------------------------------------------------------------
+ */
+hid_t
+H5VL__register_using_vol_id(H5VL_obj_type_t obj_type, void *obj, hid_t connector_id)
+{
+    H5VL_container_t *container = NULL; /* Temporary VOL container for object */
+    H5VL_connector_t *connector;        /* VOL connector */
+    H5VL_connector_prop_t conn_prop;    /* VOL connector property */
+    hid_t   ret_value = H5I_INVALID_HID; /* Return value */
+
+    FUNC_ENTER_PACKAGE
+
+    /* Initialize the connector property */
+    conn_prop.connector_id = connector_id;
+    conn_prop.connector_info = NULL;
+
+    /* Get the connector */
+    if (NULL == (connector = H5I_object_verify(connector_id, H5I_VOL)))
+        HGOTO_ERROR(H5E_VOL, H5E_BADTYPE, H5I_INVALID_HID, "not a VOL connector ID")
+
+    /* Create container, if file object */
+    if (H5VL_OBJ_FILE == obj_type) {
+        /* Create fake container for the object */
+        if (NULL == (container = H5VL_create_container(obj, connector, &conn_prop)))
+            HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, H5I_INVALID_HID, "VOL container create failed")
+
+        /* Get an ID for the object */
+        if ((ret_value = H5VL_register(obj_type, NULL, container, TRUE)) < 0)
+            HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to get an ID for the object")
+    } /* end if */
+    else {
+        /* Create fake container for the object */
+        if (NULL == (container = H5VL_create_container(NULL, connector, &conn_prop)))
+            HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, H5I_INVALID_HID, "VOL container create failed")
+
+        /* Get an ID for the object */
+        if ((ret_value = H5VL_register(obj_type, obj, container, TRUE)) < 0)
+            HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to get an ID for the object")
+    } /* end else */
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5VL__register_using_vol_id() */
+

@@ -221,8 +221,7 @@ struct H5O_msg_class_t {
     herr_t (*link)(H5F_t *, H5O_t *, void *); /* Increment any links in file reference by this message */
     herr_t (*set_share)(void *, const H5O_shared_t *); /* Set shared information */
     htri_t (*can_share)(const void *);                 /* Is message allowed to be shared? */
-    herr_t (*pre_copy_file)(H5F_t *, const void *, hbool_t *, const H5O_copy_t *,
-                            void *); /*"pre copy" action when copying native value to file */
+    herr_t (*pre_copy_file)(const void *, hbool_t *, const H5O_copy_t *, void *); /*"pre copy" action when copying native value to file */
     void *(*copy_file)(H5F_t *, void *, H5F_t *, hbool_t *, unsigned *, H5O_copy_t *,
                        void *); /*copy native value to file */
     herr_t (*post_copy_file)(const H5O_loc_t *, const void *, H5O_loc_t *, void *, unsigned *,

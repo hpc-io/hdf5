@@ -52,31 +52,31 @@
 /********************/
 
 /* Memory-based VL sequence callbacks */
-static herr_t H5T__vlen_mem_seq_getlen(H5VL_object_t *file_obj, const void *_vl, size_t *len);
+static herr_t H5T__vlen_mem_seq_getlen(const H5VL_container_t *container, const void *_vl, size_t *len);
 static void * H5T__vlen_mem_seq_getptr(void *_vl);
-static herr_t H5T__vlen_mem_seq_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull);
-static herr_t H5T__vlen_mem_seq_setnull(H5VL_object_t *file_obj, void *_vl, void *_bg);
-static herr_t H5T__vlen_mem_seq_read(H5VL_object_t *file_obj, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_mem_seq_write(H5VL_object_t *file_obj, const H5T_vlen_alloc_info_t *vl_alloc_info,
+static herr_t H5T__vlen_mem_seq_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
+static herr_t H5T__vlen_mem_seq_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
+static herr_t H5T__vlen_mem_seq_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
+static herr_t H5T__vlen_mem_seq_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
                                       void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
 
 /* Memory-based VL string callbacks */
-static herr_t H5T__vlen_mem_str_getlen(H5VL_object_t *file_obj, const void *_vl, size_t *len);
+static herr_t H5T__vlen_mem_str_getlen(const H5VL_container_t *container, const void *_vl, size_t *len);
 static void * H5T__vlen_mem_str_getptr(void *_vl);
-static herr_t H5T__vlen_mem_str_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull);
-static herr_t H5T__vlen_mem_str_setnull(H5VL_object_t *file_obj, void *_vl, void *_bg);
-static herr_t H5T__vlen_mem_str_read(H5VL_object_t *file_obj, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_mem_str_write(H5VL_object_t *file_obj, const H5T_vlen_alloc_info_t *vl_alloc_info,
+static herr_t H5T__vlen_mem_str_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
+static herr_t H5T__vlen_mem_str_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
+static herr_t H5T__vlen_mem_str_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
+static herr_t H5T__vlen_mem_str_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
                                       void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
 
 /* Disk-based VL sequence (and string) callbacks */
-static herr_t H5T__vlen_disk_getlen(H5VL_object_t *file_obj, const void *_vl, size_t *len);
-static herr_t H5T__vlen_disk_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull);
-static herr_t H5T__vlen_disk_setnull(H5VL_object_t *file_obj, void *_vl, void *_bg);
-static herr_t H5T__vlen_disk_read(H5VL_object_t *file_obj, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_disk_write(H5VL_object_t *file_obj, const H5T_vlen_alloc_info_t *vl_alloc_info,
+static herr_t H5T__vlen_disk_getlen(const H5VL_container_t *container, const void *_vl, size_t *len);
+static herr_t H5T__vlen_disk_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
+static herr_t H5T__vlen_disk_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
+static herr_t H5T__vlen_disk_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
+static herr_t H5T__vlen_disk_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
                                    void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
-static herr_t H5T__vlen_disk_delete(H5VL_object_t *file_obj, const void *_vl);
+static herr_t H5T__vlen_disk_delete(const H5VL_container_t *container, const void *_vl);
 
 /*********************/
 /* Public Variables */
@@ -214,7 +214,7 @@ H5T__vlen_create(const H5T_t *base)
     dt->shared->u.vlen.type = H5T_VLEN_SEQUENCE;
 
     /* Set up VL information */
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "invalid datatype location")
 
     /* Set return value */
@@ -245,7 +245,7 @@ done:
  *-------------------------------------------------------------------------
  */
 htri_t
-H5T__vlen_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
+H5T__vlen_set_loc(H5T_t *dt, H5T_loc_t loc)
 {
     htri_t ret_value = FALSE; /* Indicate success, but no location change */
 
@@ -256,11 +256,9 @@ H5T__vlen_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
     HDassert(loc >= H5T_LOC_BADLOC && loc < H5T_LOC_MAXLOC);
 
     /* Only change the location if it's different */
-    if (loc != dt->shared->u.vlen.loc || file_obj != dt->shared->u.vlen.file_obj) {
+    if (loc != dt->shared->u.vlen.loc) {
         switch (loc) {
             case H5T_LOC_MEMORY: /* Memory based VL datatype */
-                HDassert(NULL == file_obj);
-
                 /* Mark this type as being stored in memory */
                 dt->shared->u.vlen.loc = H5T_LOC_MEMORY;
 
@@ -280,34 +278,27 @@ H5T__vlen_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
                 } /* end else-if */
                 else
                     HDassert(0 && "Invalid VL type");
-
-                /* Release owned file */
-                if (dt->shared->owned_vol_obj) {
-                    if (H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-                        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close owned VOL object")
-                    dt->shared->owned_vol_obj = NULL;
-                } /* end if */
-
-                /* Reset VOL object (since this VL is in memory) */
-                dt->shared->u.vlen.file_obj = NULL;
                 break;
 
             /* Disk based VL datatype */
             case H5T_LOC_DISK: {
+                const H5VL_container_t *container;    /* Container that reference is in*/
                 H5VL_file_cont_info_t cont_info = {H5VL_CONTAINER_INFO_VERSION, 0, 0, 0};
                 H5VL_file_get_args_t  vol_cb_args; /* Arguments to VOL callback */
 
-                HDassert(file_obj);
-
                 /* Mark this type as being stored on disk */
                 dt->shared->u.vlen.loc = H5T_LOC_DISK;
+
+                /* Get container */
+                if (NULL == (container = H5VL_get_primary_container()))
+                    HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "unable to retrieve current container")
 
                 /* Set up VOL callback arguments */
                 vol_cb_args.op_type                 = H5VL_FILE_GET_CONT_INFO;
                 vol_cb_args.args.get_cont_info.info = &cont_info;
 
                 /* Get container info */
-                if (H5VL_file_get(file_obj, &vol_cb_args, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+                if (H5VL_container_get(container, &vol_cb_args) < 0)
                     HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "unable to get container info")
 
                 /* The datatype size is equal to 4 bytes for the sequence length
@@ -317,13 +308,6 @@ H5T__vlen_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
                 /* Set up the function pointers to access the VL information on disk */
                 /* VL sequences and VL strings are stored identically on disk, so use the same functions */
                 dt->shared->u.vlen.cls = &H5T_vlen_disk_g;
-
-                /* Set VOL object (since this VL is on disk) */
-                dt->shared->u.vlen.file_obj = file_obj;
-
-                /* dt now owns a reference to file */
-                if (H5T_own_vol_obj(dt, file_obj) < 0)
-                    HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "can't give ownership of VOL object")
                 break;
             }
 
@@ -335,9 +319,6 @@ H5T__vlen_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
 
                 /* Reset the function pointers to access the VL information */
                 dt->shared->u.vlen.cls = NULL;
-
-                /* Reset VOL object pointer */
-                dt->shared->u.vlen.file_obj = NULL;
                 break;
 
             case H5T_LOC_MAXLOC:
@@ -367,7 +348,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_getlen(H5VL_object_t H5_ATTR_UNUSED *file_obj, const void *_vl, size_t *len)
+H5T__vlen_mem_seq_getlen(const H5VL_container_t H5_ATTR_UNUSED *container, const void *_vl, size_t *len)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     const hvl_t *vl = (const hvl_t *)_vl; /* Pointer to the user's hvl_t information */
@@ -441,7 +422,7 @@ H5T__vlen_mem_seq_getptr(void *_vl)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_isnull(const H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, hbool_t *isnull)
+H5T__vlen_mem_seq_isnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, hbool_t *isnull)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     const hvl_t *vl = (const hvl_t *)_vl; /* Pointer to the user's hvl_t information */
@@ -478,7 +459,7 @@ H5T__vlen_mem_seq_isnull(const H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_setnull(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void H5_ATTR_UNUSED *_bg)
+H5T__vlen_mem_seq_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void H5_ATTR_UNUSED *_bg)
 {
     hvl_t vl; /* Temporary hvl_t to use during operation */
 
@@ -510,7 +491,7 @@ H5T__vlen_mem_seq_setnull(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, voi
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_read(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void *buf, size_t len)
+H5T__vlen_mem_seq_read(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void *buf, size_t len)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     const hvl_t *vl = (const hvl_t *)_vl; /* Pointer to the user's hvl_t information */
@@ -550,7 +531,7 @@ H5T__vlen_mem_seq_read(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void *
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_write(H5VL_object_t H5_ATTR_UNUSED *file_obj, const H5T_vlen_alloc_info_t *vl_alloc_info,
+H5T__vlen_mem_seq_write(const H5VL_container_t H5_ATTR_UNUSED *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
                         void *_vl, void *buf, void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
 {
     hvl_t  vl;                  /* Temporary hvl_t to use during operation */
@@ -604,7 +585,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_getlen(H5VL_object_t H5_ATTR_UNUSED *file_obj, const void *_vl, size_t *len)
+H5T__vlen_mem_str_getlen(const H5VL_container_t H5_ATTR_UNUSED *container, const void *_vl, size_t *len)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     const char *s = *(const char *const *)_vl; /* Pointer to the user's string information */
@@ -673,7 +654,7 @@ H5T__vlen_mem_str_getptr(void *_vl)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_isnull(const H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, hbool_t *isnull)
+H5T__vlen_mem_str_isnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, hbool_t *isnull)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     char *s = *(char **)_vl; /* Pointer to the user's string information */
@@ -705,7 +686,7 @@ H5T__vlen_mem_str_isnull(const H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_setnull(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void H5_ATTR_UNUSED *_bg)
+H5T__vlen_mem_str_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void H5_ATTR_UNUSED *_bg)
 {
     char *t = NULL; /* Pointer to temporary buffer allocated */
 
@@ -730,7 +711,7 @@ H5T__vlen_mem_str_setnull(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, voi
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_read(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void *buf, size_t len)
+H5T__vlen_mem_str_read(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void *buf, size_t len)
 {
 #ifdef H5_NO_ALIGNMENT_RESTRICTIONS
     char *s = *(char **)_vl; /* Pointer to the user's string information */
@@ -769,7 +750,7 @@ H5T__vlen_mem_str_read(H5VL_object_t H5_ATTR_UNUSED *file_obj, void *_vl, void *
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_write(H5VL_object_t H5_ATTR_UNUSED *file_obj, const H5T_vlen_alloc_info_t *vl_alloc_info,
+H5T__vlen_mem_str_write(const H5VL_container_t H5_ATTR_UNUSED *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
                         void *_vl, void *buf, void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
 {
     char * t;                   /* Pointer to temporary buffer allocated */
@@ -817,7 +798,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_getlen(H5VL_object_t H5_ATTR_UNUSED *file_obj, const void *_vl, size_t *seq_len)
+H5T__vlen_disk_getlen(const H5VL_container_t H5_ATTR_UNUSED *container, const void *_vl, size_t *seq_len)
 {
     const uint8_t *vl = (const uint8_t *)_vl; /* Pointer to the user's hvl_t information */
 
@@ -846,7 +827,7 @@ H5T__vlen_disk_getlen(H5VL_object_t H5_ATTR_UNUSED *file_obj, const void *_vl, s
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull)
+H5T__vlen_disk_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull)
 {
     H5VL_blob_specific_args_t vol_cb_args;                /* Arguments to VOL callback */
     uint8_t *                 vl        = (uint8_t *)_vl; /* Pointer to the user's hvl_t information */
@@ -855,7 +836,7 @@ H5T__vlen_disk_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull)
     FUNC_ENTER_STATIC
 
     /* Check parameters */
-    HDassert(file_obj);
+    HDassert(container);
     HDassert(vl);
     HDassert(isnull);
 
@@ -867,7 +848,7 @@ H5T__vlen_disk_isnull(const H5VL_object_t *file_obj, void *_vl, hbool_t *isnull)
     vol_cb_args.args.is_null.isnull = isnull;
 
     /* Check if blob ID is "nil" */
-    if (H5VL_blob_specific(file_obj, vl, &vol_cb_args) < 0)
+    if (H5VL_blob_specific(container, vl, &vol_cb_args) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "unable to check if a blob ID is 'nil'")
 
 done:
@@ -887,7 +868,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_setnull(H5VL_object_t *file_obj, void *_vl, void *bg)
+H5T__vlen_disk_setnull(const H5VL_container_t *container, void *_vl, void *bg)
 {
     H5VL_blob_specific_args_t vol_cb_args;                /* Arguments to VOL callback */
     uint8_t *                 vl        = (uint8_t *)_vl; /* Pointer to the user's hvl_t information */
@@ -896,13 +877,13 @@ H5T__vlen_disk_setnull(H5VL_object_t *file_obj, void *_vl, void *bg)
     FUNC_ENTER_STATIC
 
     /* check parameters */
-    HDassert(file_obj);
+    HDassert(container);
     HDassert(vl);
 
     /* Free heap object for old data */
     if (bg != NULL)
         /* Delete sequence in destination location */
-        if (H5T__vlen_disk_delete(file_obj, bg) < 0)
+        if (H5T__vlen_disk_delete(container, bg) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL, "unable to remove background heap object")
 
     /* Set the length of the sequence */
@@ -912,7 +893,7 @@ H5T__vlen_disk_setnull(H5VL_object_t *file_obj, void *_vl, void *bg)
     vol_cb_args.op_type = H5VL_BLOB_SETNULL;
 
     /* Set blob ID to "nil" */
-    if (H5VL_blob_specific(file_obj, vl, &vol_cb_args) < 0)
+    if (H5VL_blob_specific(container, vl, &vol_cb_args) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, FAIL, "unable to set a blob ID to 'nil'")
 
 done:
@@ -932,7 +913,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_read(H5VL_object_t *file_obj, void *_vl, void *buf, size_t len)
+H5T__vlen_disk_read(const H5VL_container_t *container, void *_vl, void *buf, size_t len)
 {
     const uint8_t *vl        = (const uint8_t *)_vl; /* Pointer to the user's hvl_t information */
     herr_t         ret_value = SUCCEED;              /* Return value */
@@ -940,7 +921,7 @@ H5T__vlen_disk_read(H5VL_object_t *file_obj, void *_vl, void *buf, size_t len)
     FUNC_ENTER_STATIC
 
     /* Check parameters */
-    HDassert(file_obj);
+    HDassert(container);
     HDassert(vl);
     HDassert(buf);
 
@@ -948,7 +929,7 @@ H5T__vlen_disk_read(H5VL_object_t *file_obj, void *_vl, void *buf, size_t len)
     vl += 4;
 
     /* Retrieve blob */
-    if (H5VL_blob_get(file_obj, vl, buf, len, NULL) < 0)
+    if (H5VL_blob_get(container, vl, buf, len, NULL) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "unable to get blob")
 
 done:
@@ -968,7 +949,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_write(H5VL_object_t *file_obj, const H5T_vlen_alloc_info_t H5_ATTR_UNUSED *vl_alloc_info,
+H5T__vlen_disk_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t H5_ATTR_UNUSED *vl_alloc_info,
                      void *_vl, void *buf, void *_bg, size_t seq_len, size_t base_size)
 {
     uint8_t *      vl        = (uint8_t *)_vl;       /* Pointer to the user's hvl_t information */
@@ -978,20 +959,20 @@ H5T__vlen_disk_write(H5VL_object_t *file_obj, const H5T_vlen_alloc_info_t H5_ATT
     FUNC_ENTER_STATIC
 
     /* check parameters */
+    HDassert(container);
     HDassert(vl);
     HDassert(seq_len == 0 || buf);
-    HDassert(file_obj);
 
     /* Free heap object for old data, if non-NULL */
     if (bg != NULL)
-        if (H5T__vlen_disk_delete(file_obj, bg) < 0)
+        if (H5T__vlen_disk_delete(container, bg) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL, "unable to remove background heap object")
 
     /* Set the length of the sequence */
     UINT32ENCODE(vl, seq_len);
 
     /* Store blob */
-    if (H5VL_blob_put(file_obj, buf, (seq_len * base_size), vl, NULL) < 0)
+    if (H5VL_blob_put(container, buf, (seq_len * base_size), vl, NULL) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, FAIL, "unable to put blob")
 
 done:
@@ -1011,7 +992,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_delete(H5VL_object_t *file_obj, const void *_vl)
+H5T__vlen_disk_delete(const H5VL_container_t *container, const void *_vl)
 {
     const uint8_t *vl        = (const uint8_t *)_vl; /* Pointer to the user's hvl_t information */
     herr_t         ret_value = SUCCEED;              /* Return value */
@@ -1019,7 +1000,7 @@ H5T__vlen_disk_delete(H5VL_object_t *file_obj, const void *_vl)
     FUNC_ENTER_STATIC
 
     /* Check parameters */
-    HDassert(file_obj);
+    HDassert(container);
 
     /* Free heap object for old data */
     if (vl != NULL) {
@@ -1035,7 +1016,7 @@ H5T__vlen_disk_delete(H5VL_object_t *file_obj, const void *_vl)
             /* Set up VOL callback arguments */
             vol_cb_args.op_type = H5VL_BLOB_DELETE;
 
-            if (H5VL_blob_specific(file_obj, (void *)vl, &vol_cb_args) < 0) /* Casting away 'const' OK -QAK */
+            if (H5VL_blob_specific(container, (void *)vl, &vol_cb_args) < 0) /* Casting away 'const' OK -QAK */
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL, "unable to delete blob")
         } /* end if */
     }     /* end if */

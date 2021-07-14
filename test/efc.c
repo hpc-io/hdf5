@@ -2557,8 +2557,6 @@ main(void)
 
     if (is_native) {
         hid_t                 fcpl_id = H5I_INVALID_HID;
-        H5P_genplist_t *      plist;          /* Property list pointer for FAPL */
-        H5VL_connector_prop_t connector_prop; /* Property for VOL connector ID & info */
 
         fcpl_id = H5Pcreate(H5P_FILE_CREATE);
 
@@ -2578,15 +2576,6 @@ main(void)
         if (H5CX_push() < 0)
             FAIL_STACK_ERROR
         api_ctx_pushed = TRUE;
-
-        /* Get the VOL info from the fapl */
-        plist = (H5P_genplist_t *)H5I_object(fapl_id);
-        H5P_peek(plist, H5F_ACS_VOL_CONN_NAME, &connector_prop);
-
-        /* Stash a copy of the "top-level" connector property, before any pass-through
-         *  connectors modify or unwrap it.
-         */
-        H5CX_set_vol_connector_prop(&connector_prop);
 
         /* Test Functions */
         nerrors += test_single(fapl_id, fcpl_id);

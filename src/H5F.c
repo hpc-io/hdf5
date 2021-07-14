@@ -645,7 +645,7 @@ H5Fcreate_async(const char *app_file, const char *app_func, unsigned app_line, c
             HGOTO_ERROR(H5E_FILE, H5E_BADTYPE, H5I_INVALID_HID, "invalid object identifier")
 
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE8(__func__, "*s*sIu*sIuiii", app_file, app_func, app_line, filename, flags, fcpl_id, fapl_id, es_id)) < 0) {
             /* clang-format on */
             if (H5I_dec_app_ref(ret_value) < 0)
@@ -783,7 +783,7 @@ H5Fopen_async(const char *app_file, const char *app_func, unsigned app_line, con
             HGOTO_ERROR(H5E_FILE, H5E_BADTYPE, H5I_INVALID_HID, "invalid object identifier")
 
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE7(__func__, "*s*sIu*sIuii", app_file, app_func, app_line, filename, flags, fapl_id, es_id)) < 0) {
             /* clang-format on */
             if (H5I_dec_app_ref(ret_value) < 0)
@@ -900,7 +900,7 @@ H5Fflush_async(const char *app_file, const char *app_func, unsigned app_line, hi
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                 H5ARG_TRACE6(__func__, "*s*sIuiFsi", app_file, app_func, app_line, object_id, scope, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_FILE, H5E_CANTINSERT, FAIL, "can't insert token into event set")
@@ -958,7 +958,6 @@ herr_t
 H5Fclose_async(const char *app_file, const char *app_func, unsigned app_line, hid_t file_id, hid_t es_id)
 {
     H5VL_object_t *vol_obj   = NULL;            /* Object for loc_id */
-    H5VL_t *       connector = NULL;            /* VOL connector */
     void *         token     = NULL;            /* Request token for async operation        */
     void **        token_ptr = H5_REQUEST_NULL; /* Pointer to request token for async operation        */
     herr_t         ret_value = SUCCEED;         /* Return value */
@@ -976,11 +975,6 @@ H5Fclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
         if (NULL == (vol_obj = H5VL_vol_object(file_id)))
             HGOTO_ERROR(H5E_FILE, H5E_CANTGET, FAIL, "can't get VOL object for file")
 
-        /* Increase connector's refcount, so it doesn't get closed if closing
-         * this file ID closes the file */
-        connector = vol_obj->connector;
-        H5VL_conn_inc_rc(connector);
-
         /* Point at token for operation to set up */
         token_ptr = &token;
     } /* end if */
@@ -994,15 +988,12 @@ H5Fclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
     /* If a token was created, add the token to the event set */
     if (NULL != token)
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE5(__func__, "*s*sIuii", app_file, app_func, app_line, file_id, es_id)) < 0)
             /* clang-format on */
             HGOTO_ERROR(H5E_FILE, H5E_CANTINSERT, FAIL, "can't insert token into event set")
 
 done:
-    if (connector && H5VL_conn_dec_rc(connector) < 0)
-        HDONE_ERROR(H5E_FILE, H5E_CANTDEC, FAIL, "can't decrement ref count on connector")
-
     FUNC_LEAVE_API(ret_value)
 } /* end H5Fclose_async() */
 
@@ -1040,12 +1031,6 @@ H5Fdelete(const char *filename, hid_t fapl_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "not a property list")
     if (H5P_peek(plist, H5F_ACS_VOL_CONN_NAME, &connector_prop) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTGET, FAIL, "can't get VOL connector info")
-
-    /* Stash a copy of the "top-level" connector property, before any pass-through
-     *  connectors modify or unwrap it.
-     */
-    if (H5CX_set_vol_connector_prop(&connector_prop) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTSET, FAIL, "can't set VOL connector info in API context")
 
     /* Set up VOL callback arguments */
     vol_cb_args.op_type                       = H5VL_FILE_IS_ACCESSIBLE;
@@ -1088,8 +1073,7 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
     H5VL_object_t *            loc_vol_obj   = NULL; /* Parent object        */
     H5VL_object_t *            child_vol_obj = NULL; /* Child object         */
     H5VL_group_specific_args_t vol_cb_args;          /* Arguments to VOL callback */
-    void *                     grp = NULL;           /* Root group opened */
-    H5I_type_t                 loc_type;             /* ID type of location  */
+    H5I_type_t                 loc_type = H5I_UNINIT;             /* ID type of location  */
     int                        same_connector = 0; /* Whether parent and child files use the same connector */
     herr_t                     ret_value      = SUCCEED; /* Return value         */
 
@@ -1132,13 +1116,8 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
         loc_params.obj_type = loc_type;
 
         /* Open the root group object */
-        if (NULL == (grp = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT,
-                                           H5P_DATASET_XFER_DEFAULT, NULL)))
+        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, NULL)))
             HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "unable to open group")
-
-        /* Create a VOL object for the root group */
-        if (NULL == (loc_vol_obj = H5VL_create_object(grp, vol_obj->connector)))
-            HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "can't create VOL object for root group")
     } /* end if */
     else {
         HDassert(H5I_GROUP == loc_type);
@@ -1151,8 +1130,7 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "could not get child object")
 
     /* Check if both objects are associated with the same VOL connector */
-    if (H5VL_cmp_connector_cls(&same_connector, loc_vol_obj->connector->cls, child_vol_obj->connector->cls) <
-        0)
+    if (H5VL_cmp_connector(&same_connector, loc_vol_obj->container->connector, child_vol_obj->container->connector) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
     if (same_connector)
         HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "can't mount file onto object from different VOL connector")
@@ -1160,8 +1138,7 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
     /* Set up VOL callback arguments */
     vol_cb_args.op_type         = H5VL_GROUP_MOUNT;
     vol_cb_args.args.mount.name = name;
-    vol_cb_args.args.mount.child_file =
-        child_vol_obj->data; /* Don't unwrap fully, so each connector can see its object */
+    vol_cb_args.args.mount.child_file = (child_vol_obj->obj_type == H5VL_OBJ_FILE) ? child_vol_obj->container->object : child_vol_obj->object; /* Don't unwrap fully, so each connector can see its object */
     vol_cb_args.args.mount.fmpl_id = plist_id;
 
     /* Perform the mount operation */
@@ -1173,7 +1150,7 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
 
 done:
     /* Clean up if we temporarily opened the root group for a file */
-    if (grp) {
+    if (H5I_FILE == loc_type) {
         HDassert(loc_vol_obj);
         if (H5VL_group_close(loc_vol_obj, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_FILE, H5E_CLOSEERROR, FAIL, "unable to release group")
@@ -1205,8 +1182,7 @@ H5Funmount(hid_t loc_id, const char *name)
 {
     H5VL_object_t *            loc_vol_obj = NULL;  /* Parent object        */
     H5VL_group_specific_args_t vol_cb_args;         /* Arguments to VOL callback */
-    void *                     grp = NULL;          /* Root group opened */
-    H5I_type_t                 loc_type;            /* ID type of location  */
+    H5I_type_t                 loc_type = H5I_UNINIT;            /* ID type of location  */
     herr_t                     ret_value = SUCCEED; /* Return value         */
 
     FUNC_ENTER_API(FAIL)
@@ -1242,13 +1218,8 @@ H5Funmount(hid_t loc_id, const char *name)
         loc_params.obj_type = loc_type;
 
         /* Open the root group object */
-        if (NULL == (grp = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT,
-                                           H5P_DATASET_XFER_DEFAULT, NULL)))
+        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, NULL)))
             HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "unable to open group")
-
-        /* Create a VOL object for the root group */
-        if (NULL == (loc_vol_obj = H5VL_create_object(grp, vol_obj->connector)))
-            HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "can't create VOL object for root group")
     } /* end if */
     else {
         HDassert(H5I_GROUP == loc_type);
@@ -1269,7 +1240,7 @@ H5Funmount(hid_t loc_id, const char *name)
 
 done:
     /* Clean up if we temporarily opened the root group for a file */
-    if (grp) {
+    if (H5I_FILE == loc_type) {
         HDassert(loc_vol_obj);
         if (H5VL_group_close(loc_vol_obj, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_FILE, H5E_CLOSEERROR, FAIL, "unable to release group")
@@ -1294,10 +1265,8 @@ done:
 static hid_t
 H5F__reopen_api_common(hid_t file_id, void **token_ptr)
 {
-    H5VL_object_t *           vol_obj = NULL;                /* Object for loc_id */
-    H5VL_file_specific_args_t vol_cb_args;                   /* Arguments to VOL callback */
-    void *                    reopen_file = NULL;            /* Pointer to the re-opened file object */
-    hid_t                     ret_value   = H5I_INVALID_HID; /* Return value */
+    H5VL_object_t *vol_obj = NULL;                /* Object for loc_id */
+    hid_t          ret_value   = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -1305,21 +1274,9 @@ H5F__reopen_api_common(hid_t file_id, void **token_ptr)
     if (NULL == (vol_obj = (H5VL_object_t *)H5I_object_verify(file_id, H5I_FILE)))
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "invalid file identifier")
 
-    /* Set up VOL callback arguments */
-    vol_cb_args.op_type          = H5VL_FILE_REOPEN;
-    vol_cb_args.args.reopen.file = &reopen_file;
-
-    /* Reopen the file */
-    if (H5VL_file_specific(vol_obj, &vol_cb_args, H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to reopen file via the VOL connector")
-
-    /* Make sure that worked */
-    if (NULL == reopen_file)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to reopen file")
-
-    /* Get an ID for the file */
-    if ((ret_value = H5VL_register(H5I_FILE, reopen_file, vol_obj->connector, TRUE)) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register file handle")
+    /* Re-open the file & get an ID for it */
+    if ((ret_value = H5F_reopen_with_container(vol_obj->container, token_ptr)) < 0)
+        HGOTO_ERROR(H5E_FILE, H5E_CANTOPENFILE, H5I_INVALID_HID, "unable to reopen file")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1395,7 +1352,7 @@ H5Freopen_async(const char *app_file, const char *app_func, unsigned app_line, h
             HGOTO_ERROR(H5E_FILE, H5E_CANTGET, H5I_INVALID_HID, "can't get handle for re-opened file")
 
         /* clang-format off */
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE5(__func__, "*s*sIuii", app_file, app_func, app_line, file_id, es_id)) < 0) {
             /* clang-format on */
             if (H5I_dec_app_ref(ret_value) < 0)

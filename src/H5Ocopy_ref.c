@@ -321,7 +321,7 @@ H5O__copy_expand_ref_object2(H5O_loc_t *src_oloc, hid_t tid_src, const H5T_t *dt
     /* create reference datatype at the destinaton file */
     if (NULL == (dt_dst = H5T_copy(dt_src, H5T_COPY_TRANSIENT)))
         HGOTO_ERROR(H5E_OHDR, H5E_CANTINIT, FAIL, "unable to copy")
-    if (H5T_set_loc(dt_dst, H5F_VOL_OBJ(dst_oloc->file), H5T_LOC_DISK) < 0) {
+    if (H5T_set_loc(dt_dst, H5T_LOC_DISK) < 0) {
         (void)H5T_close_real(dt_dst);
         HGOTO_ERROR(H5E_OHDR, H5E_CANTINIT, FAIL, "cannot mark datatype on disk")
     } /* end if */
@@ -372,6 +372,7 @@ H5O__copy_expand_ref_object2(H5O_loc_t *src_oloc, hid_t tid_src, const H5T_t *dt
             HGOTO_ERROR(H5E_OHDR, H5E_CANTSERIALIZE, FAIL, "can't serialize address into object token")
         if (H5R__set_obj_token(ref, (const H5O_token_t *)&tmp_token, token_size) < 0)
             HGOTO_ERROR(H5E_OHDR, H5E_CANTSET, FAIL, "unable to set object token")
+
         /* Do not set app_ref since references are released once the copy is done */
         if (H5R__set_loc_id(ref, dst_loc_id, TRUE, FALSE) < 0)
             HGOTO_ERROR(H5E_OHDR, H5E_CANTSET, FAIL, "unable to set destination loc id")

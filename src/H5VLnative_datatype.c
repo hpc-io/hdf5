@@ -124,7 +124,7 @@ H5VL__native_datatype_commit(void *obj, const H5VL_loc_params_t *loc_params, con
 
 done:
     if (NULL == ret_value && type)
-        H5T_close(type);
+        H5T_close(type, H5_REQUEST_NULL);
 
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL__native_datatype_commit() */
@@ -156,7 +156,6 @@ H5VL__native_datatype_open(void *obj, const H5VL_loc_params_t *loc_params, const
     /* Open the datatype */
     if (NULL == (type = H5T__open_name(&loc, name)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, NULL, "unable to open named datatype")
-
     type->vol_obj = NULL;
 
     ret_value = (void *)type;
@@ -185,28 +184,22 @@ H5VL__native_datatype_get(void *obj, H5VL_datatype_get_args_t *args, hid_t H5_AT
 
     switch (args->op_type) {
         /* H5T_construct_datatype (library private routine) */
-        case H5VL_DATATYPE_GET_BINARY_SIZE: {
+        case H5VL_DATATYPE_GET_BINARY_SIZE:
             if (H5T_encode(dt, NULL, args->args.get_binary_size.size) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "can't determine serialized length of datatype")
-
             break;
-        }
 
         /* H5T_construct_datatype (library private routine) */
-        case H5VL_DATATYPE_GET_BINARY: {
+        case H5VL_DATATYPE_GET_BINARY:
             if (H5T_encode(dt, args->args.get_binary.buf, &args->args.get_binary.buf_size) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSERIALIZE, FAIL, "can't serialize datatype")
-
             break;
-        }
 
         /* H5Tget_create_plist */
-        case H5VL_DATATYPE_GET_TCPL: {
+        case H5VL_DATATYPE_GET_TCPL:
             if (H5I_INVALID_HID == (args->args.get_tcpl.tcpl_id = H5T__get_create_plist(dt)))
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "can't get object creation info");
-
             break;
-        }
 
         default:
             HGOTO_ERROR(H5E_VOL, H5E_CANTGET, FAIL, "can't get this type of information from datatype")
@@ -236,23 +229,19 @@ H5VL__native_datatype_specific(void *obj, H5VL_datatype_specific_args_t *args, h
 
     switch (args->op_type) {
         /* H5VL_DATATYPE_FLUSH */
-        case H5VL_DATATYPE_FLUSH: {
+        case H5VL_DATATYPE_FLUSH:
             if (H5O_flush_common(&dt->oloc, args->args.flush.type_id) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTFLUSH, FAIL, "unable to flush datatype")
-
             break;
-        }
 
         /* H5VL_DATATYPE_REFRESH */
-        case H5VL_DATATYPE_REFRESH: {
+        case H5VL_DATATYPE_REFRESH:
             if ((H5O_refresh_metadata(&dt->oloc, args->args.refresh.type_id)) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTLOAD, FAIL, "unable to refresh datatype")
-
             break;
-        }
 
         default:
-            HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, FAIL, "invalid specific operation")
+            HGOTO_ERROR(H5E_DATATYPE, H5E_UNSUPPORTED, FAIL, "invalid specific operation")
     } /* end switch */
 
 done:
@@ -270,14 +259,14 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5VL__native_datatype_close(void *dt, hid_t H5_ATTR_UNUSED dxpl_id, void H5_ATTR_UNUSED **req)
+H5VL__native_datatype_close(void *dt, hid_t H5_ATTR_UNUSED dxpl_id, void **req)
 {
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
-    if (H5T_close((H5T_t *)dt) < 0)
-        HGOTO_ERROR(H5E_SYM, H5E_CANTDEC, FAIL, "can't close datatype")
+    if (H5T_close((H5T_t *)dt, req) < 0)
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTDEC, FAIL, "can't close datatype")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)

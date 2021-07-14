@@ -31,8 +31,7 @@ static void * H5O__sdspace_copy(const void *_mesg, void *_dest);
 static size_t H5O__sdspace_size(const H5F_t *f, const void *_mesg);
 static herr_t H5O__sdspace_reset(void *_mesg);
 static herr_t H5O__sdspace_free(void *_mesg);
-static herr_t H5O__sdspace_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t *deleted,
-                                         const H5O_copy_t *cpy_info, void *_udata);
+static herr_t H5O__sdspace_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *_udata);
 static herr_t H5O__sdspace_debug(H5F_t *f, const void *_mesg, FILE *stream, int indent, int fwidth);
 
 /* Set up & include shared message "interface" info */
@@ -429,8 +428,7 @@ H5O__sdspace_free(void *mesg)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__sdspace_pre_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const void *mesg_src,
-                           hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
+H5O__sdspace_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
 {
     const H5S_extent_t *src_space_extent = (const H5S_extent_t *)mesg_src; /* Source dataspace extent */
     H5D_copy_file_ud_t *udata            = (H5D_copy_file_ud_t *)_udata;   /* Dataset copying user data */
@@ -439,7 +437,6 @@ H5O__sdspace_pre_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const void *mesg_src,
     FUNC_ENTER_STATIC
 
     /* check args */
-    HDassert(file_src);
     HDassert(src_space_extent);
     HDassert(cpy_info);
     HDassert(cpy_info->file_dst);

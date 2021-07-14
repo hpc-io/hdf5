@@ -43,8 +43,7 @@ static void * H5O__link_copy(const void *_mesg, void *_dest);
 static size_t H5O__link_size(const H5F_t *f, hbool_t disable_shared, const void *_mesg);
 static herr_t H5O__link_reset(void *_mesg);
 static herr_t H5O__link_free(void *_mesg);
-static herr_t H5O__link_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t *deleted,
-                                      const H5O_copy_t *cpy_info, void *udata);
+static herr_t H5O__link_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *udata);
 static void * H5O__link_copy_file(H5F_t *file_src, void *native_src, H5F_t *file_dst, hbool_t *recompute_size,
                                   unsigned *mesg_flags, H5O_copy_t *cpy_info, void *udata);
 static herr_t H5O__link_post_copy_file(const H5O_loc_t *src_oloc, const void *mesg_src, H5O_loc_t *dst_oloc,
@@ -679,8 +678,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__link_pre_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const void H5_ATTR_UNUSED *native_src,
-                        hbool_t *deleted, const H5O_copy_t *cpy_info, void H5_ATTR_UNUSED *udata)
+H5O__link_pre_copy_file(const void H5_ATTR_UNUSED *native_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void H5_ATTR_UNUSED *udata)
 {
     FUNC_ENTER_STATIC_NOERR
 

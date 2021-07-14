@@ -658,10 +658,22 @@ IDE_GENERATED_PROPERTIES ("H5UC" "${H5UC_HDRS}" "${H5UC_SOURCES}" )
 
 
 set (H5VL_SOURCES
+# VOL framework
     ${HDF5_SRC_DIR}/H5VL.c
+    ${HDF5_SRC_DIR}/H5VLargs.c
     ${HDF5_SRC_DIR}/H5VLcallback.c
+    ${HDF5_SRC_DIR}/H5VLclass.c
+    ${HDF5_SRC_DIR}/H5VLconn.c
+    ${HDF5_SRC_DIR}/H5VLconn_prop.c
+    ${HDF5_SRC_DIR}/H5VLcontainer.c
+    ${HDF5_SRC_DIR}/H5VLcontainer_ctx.c
     ${HDF5_SRC_DIR}/H5VLdyn_ops.c
     ${HDF5_SRC_DIR}/H5VLint.c
+    ${HDF5_SRC_DIR}/H5VLlib_state.c
+    ${HDF5_SRC_DIR}/H5VLobject.c
+    ${HDF5_SRC_DIR}/H5VLrequest.c
+    ${HDF5_SRC_DIR}/H5VLtest.c
+# Native VOL connector
     ${HDF5_SRC_DIR}/H5VLnative.c
     ${HDF5_SRC_DIR}/H5VLnative_attr.c
     ${HDF5_SRC_DIR}/H5VLnative_blob.c
@@ -673,8 +685,8 @@ set (H5VL_SOURCES
     ${HDF5_SRC_DIR}/H5VLnative_introspect.c
     ${HDF5_SRC_DIR}/H5VLnative_object.c
     ${HDF5_SRC_DIR}/H5VLnative_token.c
+# Passthrough VOL connector
     ${HDF5_SRC_DIR}/H5VLpassthru.c
-    ${HDF5_SRC_DIR}/H5VLtest.c
 )
 set (H5VL_HDRS
     ${HDF5_SRC_DIR}/H5VLconnector.h

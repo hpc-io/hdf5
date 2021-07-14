@@ -313,7 +313,7 @@ H5Rdereference1(hid_t obj_id, H5R_type_t ref_type, const void *ref)
     H5VL_loc_params_t    loc_params;                              /* Location parameters */
     H5O_token_t          obj_token = {0};                         /* Object token */
     H5I_type_t           opened_type;                             /* Opened object type */
-    void *               opened_obj = NULL;                       /* Opened object */
+    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
     const unsigned char *buf        = (const unsigned char *)ref; /* Reference buffer */
     hid_t                ret_value  = H5I_INVALID_HID;            /* Return value */
 
@@ -344,15 +344,18 @@ H5Rdereference1(hid_t obj_id, H5R_type_t ref_type, const void *ref)
     loc_params.obj_type                    = vol_obj_type;
 
     /* Dereference */
-    if (NULL == (opened_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT,
-                                               H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_REFERENCE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object by token")
 
-    /* Register object */
-    if ((ret_value = H5VL_register(opened_type, opened_obj, vol_obj->connector, TRUE)) < 0)
-        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register object handle")
+    /* Register an ID for the object */
+    if ((ret_value = H5I_register(opened_type, opened_vol_obj, TRUE)) < 0)
+        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register ID for object")
 
 done:
+    if (H5I_INVALID_HID == ret_value)
+        if (opened_vol_obj && H5VL_object_close(opened_vol_obj) < 0)
+            HDONE_ERROR(H5E_REFERENCE, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release object")
+
     FUNC_LEAVE_API(ret_value)
 } /* end H5Rdereference1() */
 
@@ -565,7 +568,7 @@ H5Rdereference2(hid_t obj_id, hid_t oapl_id, H5R_type_t ref_type, const void *re
     H5VL_loc_params_t    loc_params;                              /* Location parameters */
     H5O_token_t          obj_token = {0};                         /* Object token */
     H5I_type_t           opened_type;                             /* Opened object type */
-    void *               opened_obj = NULL;                       /* Opened object */
+    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
     const unsigned char *buf        = (const unsigned char *)ref; /* Reference pointer */
     hid_t                ret_value  = H5I_INVALID_HID;            /* Return value */
 
@@ -602,15 +605,18 @@ H5Rdereference2(hid_t obj_id, hid_t oapl_id, H5R_type_t ref_type, const void *re
     loc_params.obj_type                    = vol_obj_type;
 
     /* Open object by token */
-    if (NULL == (opened_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT,
-                                               H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_REFERENCE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object by token")
 
-    /* Register object */
-    if ((ret_value = H5VL_register(opened_type, opened_obj, vol_obj->connector, TRUE)) < 0)
-        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register object handle")
+    /* Register an ID for the object */
+    if ((ret_value = H5I_register(opened_type, opened_vol_obj, TRUE)) < 0)
+        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register ID for object")
 
 done:
+    if (H5I_INVALID_HID == ret_value)
+        if (opened_vol_obj && H5VL_object_close(opened_vol_obj) < 0)
+            HDONE_ERROR(H5E_REFERENCE, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release object")
+
     FUNC_LEAVE_API(ret_value)
 } /* end H5Rdereference2() */
 

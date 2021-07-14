@@ -5681,10 +5681,10 @@ H5Pget_vol_info(hid_t plist_id, void **vol_info /*out*/)
 
         /* Copy connector info, if it exists */
         if (connector_prop.connector_info) {
-            H5VL_class_t *connector; /* Pointer to connector */
+            H5VL_connector_t *connector; /* Pointer to connector */
 
             /* Retrieve the connector for the ID */
-            if (NULL == (connector = (H5VL_class_t *)H5I_object(connector_prop.connector_id)))
+            if (NULL == (connector = H5I_object(connector_prop.connector_id)))
                 HGOTO_ERROR(H5E_PLIST, H5E_BADTYPE, FAIL, "not a VOL connector ID")
 
             /* Allocate and copy connector info */
@@ -5778,7 +5778,7 @@ H5P__facc_vol_create(const char H5_ATTR_UNUSED *name, size_t H5_ATTR_UNUSED size
     FUNC_ENTER_STATIC
 
     /* Make copy of the VOL connector */
-    if (H5VL_conn_copy((H5VL_connector_prop_t *)value) < 0)
+    if (H5VL_conn_prop_copy((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "can't copy VOL connector")
 
 done:
@@ -5807,7 +5807,7 @@ H5P__facc_vol_set(hid_t H5_ATTR_UNUSED prop_id, const char H5_ATTR_UNUSED *name,
     HDassert(value);
 
     /* Make copy of VOL connector ID & info */
-    if (H5VL_conn_copy((H5VL_connector_prop_t *)value) < 0)
+    if (H5VL_conn_prop_copy((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "can't copy VOL connector")
 
 done:
@@ -5836,7 +5836,7 @@ H5P__facc_vol_get(hid_t H5_ATTR_UNUSED prop_id, const char H5_ATTR_UNUSED *name,
     HDassert(value);
 
     /* Make copy of VOL connector */
-    if (H5VL_conn_copy((H5VL_connector_prop_t *)value) < 0)
+    if (H5VL_conn_prop_copy((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "can't copy VOL connector")
 
 done:
@@ -5861,8 +5861,8 @@ H5P__facc_vol_del(hid_t H5_ATTR_UNUSED prop_id, const char H5_ATTR_UNUSED *name,
 
     FUNC_ENTER_STATIC
 
-    /* Free the VOL connector ID & info */
-    if (H5VL_conn_free((H5VL_connector_prop_t *)value) < 0)
+    /* Free the VOL connector property */
+    if (H5VL_conn_prop_free((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTRELEASE, FAIL, "can't release VOL connector")
 
 done:
@@ -5887,7 +5887,7 @@ H5P__facc_vol_copy(const char H5_ATTR_UNUSED *name, size_t H5_ATTR_UNUSED size, 
     FUNC_ENTER_STATIC
 
     /* Make copy of VOL connector */
-    if (H5VL_conn_copy((H5VL_connector_prop_t *)value) < 0)
+    if (H5VL_conn_prop_copy((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "can't copy VOL connector")
 
 done:
@@ -5913,7 +5913,7 @@ H5P__facc_vol_cmp(const void *_info1, const void *_info2, size_t H5_ATTR_UNUSED 
     const H5VL_connector_prop_t *info1 =
         (const H5VL_connector_prop_t *)_info1; /* Create local aliases for values */
     const H5VL_connector_prop_t *info2 = (const H5VL_connector_prop_t *)_info2;
-    H5VL_class_t *               cls1, *cls2;   /* connector class for each property */
+    H5VL_connector_t *conn1, *conn2;   /* Connector for each property */
     int                          cmp_value = 0; /* Value from comparison */
     herr_t H5_ATTR_NDEBUG_UNUSED status;        /* Status from info comparison */
     int                          ret_value = 0; /* Return value */
@@ -5926,11 +5926,11 @@ H5P__facc_vol_cmp(const void *_info1, const void *_info2, size_t H5_ATTR_UNUSED 
     HDassert(size == sizeof(H5VL_connector_prop_t));
 
     /* Compare connectors */
-    if (NULL == (cls1 = (H5VL_class_t *)H5I_object(info1->connector_id)))
+    if (NULL == (conn1 = H5I_object(info1->connector_id)))
         HGOTO_DONE(-1)
-    if (NULL == (cls2 = (H5VL_class_t *)H5I_object(info2->connector_id)))
+    if (NULL == (conn2 = H5I_object(info2->connector_id)))
         HGOTO_DONE(1)
-    status = H5VL_cmp_connector_cls(&cmp_value, cls1, cls2);
+    status = H5VL_cmp_connector(&cmp_value, conn1, conn2);
     HDassert(status >= 0);
     if (cmp_value != 0)
         HGOTO_DONE(cmp_value);
@@ -5939,11 +5939,10 @@ H5P__facc_vol_cmp(const void *_info1, const void *_info2, size_t H5_ATTR_UNUSED 
      * the same connector class struct (or a copies of the same class struct)
      */
 
-    /* Use one of the classes (cls1) info comparison routines to compare the
+    /* Use one of the connector's (conn1) info comparison routines to compare the
      * info objects
      */
-    HDassert(cls1->info_cls.cmp == cls2->info_cls.cmp);
-    status = H5VL_cmp_connector_info(cls1, &cmp_value, info1->connector_info, info2->connector_info);
+    status = H5VL_cmp_connector_info(conn1, &cmp_value, info1->connector_info, info2->connector_info);
     HDassert(status >= 0);
 
     /* Set return value */
@@ -5970,8 +5969,8 @@ H5P__facc_vol_close(const char H5_ATTR_UNUSED *name, size_t H5_ATTR_UNUSED size,
 
     FUNC_ENTER_STATIC
 
-    /* Free the VOL connector */
-    if (H5VL_conn_free((H5VL_connector_prop_t *)value) < 0)
+    /* Free the VOL connector property */
+    if (H5VL_conn_prop_free((H5VL_connector_prop_t *)value) < 0)
         HGOTO_ERROR(H5E_PLIST, H5E_CANTRELEASE, FAIL, "can't release VOL connector")
 
 done:

@@ -37,8 +37,7 @@ static void * H5O__pline_copy(const void *_mesg, void *_dest);
 static size_t H5O__pline_size(const H5F_t *f, const void *_mesg);
 static herr_t H5O__pline_reset(void *_mesg);
 static herr_t H5O__pline_free(void *_mesg);
-static herr_t H5O__pline_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t *deleted,
-                                       const H5O_copy_t *cpy_info, void *_udata);
+static herr_t H5O__pline_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *_udata);
 static herr_t H5O__pline_debug(H5F_t *f, const void *_mesg, FILE *stream, int indent, int fwidth);
 
 /* Set up & include shared message "interface" info */
@@ -590,8 +589,7 @@ H5O__pline_free(void *mesg)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__pline_pre_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const void *mesg_src,
-                         hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
+H5O__pline_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
 {
     const H5O_pline_t *        pline_src = (const H5O_pline_t *)mesg_src;       /* Source pline */
     H5O_copy_file_ud_common_t *udata     = (H5O_copy_file_ud_common_t *)_udata; /* Object copying user data */

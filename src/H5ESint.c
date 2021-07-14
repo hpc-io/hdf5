@@ -82,7 +82,7 @@ typedef struct H5ES_gei_ctx_t {
 /********************/
 static herr_t H5ES__close(H5ES_t *es);
 static herr_t H5ES__close_cb(void *es, void **request_token);
-static herr_t H5ES__insert(H5ES_t *es, H5VL_t *connector, void *request_token, const char *app_file,
+static herr_t H5ES__insert(H5ES_t *es, H5VL_connector_t *connector, void *request_token, const char *app_file,
                            const char *app_func, unsigned app_line, const char *caller, const char *api_args);
 static herr_t H5ES__handle_fail(H5ES_t *es, H5ES_event_t *ev);
 static herr_t H5ES__op_complete(H5ES_t *es, H5ES_event_t *ev, H5VL_request_status_t ev_status);
@@ -257,7 +257,7 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5ES__insert(H5ES_t *es, H5VL_t *connector, void *request_token, const char *app_file, const char *app_func,
+H5ES__insert(H5ES_t *es, H5VL_connector_t *connector, void *request_token, const char *app_file, const char *app_func,
              unsigned app_line, const char *caller, const char *api_args)
 {
     H5ES_event_t *ev          = NULL;    /* Event for request */
@@ -268,6 +268,7 @@ H5ES__insert(H5ES_t *es, H5VL_t *connector, void *request_token, const char *app
 
     /* Sanity check */
     HDassert(es);
+    HDassert(connector);
 
     /* Create new event */
     if (NULL == (ev = H5ES__event_new(connector, request_token)))
@@ -335,7 +336,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5ES_insert(hid_t es_id, H5VL_t *connector, void *token, const char *caller, const char *caller_args, ...)
+H5ES_insert(hid_t es_id, H5VL_connector_t *connector, void *token, const char *caller, const char *caller_args, ...)
 {
     H5ES_t *    es = NULL;             /* Event set for the operation */
     const char *app_file;              /* Application source file name */
@@ -414,7 +415,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5ES__insert_request(H5ES_t *es, H5VL_t *connector, void *token)
+H5ES__insert_request(H5ES_t *es, H5VL_connector_t *connector, void *token)
 {
     herr_t ret_value = SUCCEED; /* Return value */
 

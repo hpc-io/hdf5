@@ -73,7 +73,6 @@ typedef struct H5F_olist_t {
 /********************/
 
 static herr_t H5F__close_cb(H5VL_object_t *file_vol_obj, void **request);
-static herr_t H5F__set_vol_conn(H5F_t *file);
 static herr_t H5F__get_objects(const H5F_t *f, unsigned types, size_t max_index, hid_t *obj_id_list,
                                hbool_t app_ref, size_t *obj_id_count_ptr);
 static int    H5F__get_objects_cb(void *obj_ptr, hid_t obj_id, void *key);
@@ -317,56 +316,6 @@ H5F__parse_file_lock_env_var(htri_t *use_locks)
 } /* end H5F__parse_file_lock_env_var() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5F__set_vol_conn
- *
- * Purpose:     Set the VOL connector ID and info for a file.
- *
- * Return:      SUCCEED/FAIL
- *
- *-------------------------------------------------------------------------
- */
-static herr_t
-H5F__set_vol_conn(H5F_t *file)
-{
-    H5VL_connector_prop_t connector_prop;               /* Property for VOL connector ID & info */
-    const H5VL_class_t *  vol_cls;                      /* Pointer to VOL connector class for the container */
-    void *                new_connector_info = NULL;    /* Copy of connector info */
-    herr_t                ret_value          = SUCCEED; /* Return value */
-
-    FUNC_ENTER_STATIC
-
-    /* Sanity check */
-    HDassert(file);
-
-    /* Retrieve a copy of the "top-level" connector property, before any pass-through
-     *  connectors modified or unwrapped it.
-     */
-    if (H5CX_get_vol_connector_prop(&connector_prop) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTGET, FAIL, "can't get VOL connector info from API context")
-
-    /* Sanity check */
-    HDassert(0 != connector_prop.connector_id);
-
-    /* Retrieve the connector for the ID */
-    if (NULL == (vol_cls = (H5VL_class_t *)H5I_object(connector_prop.connector_id)))
-        HGOTO_ERROR(H5E_FILE, H5E_BADTYPE, FAIL, "not a VOL connector ID")
-
-    /* Allocate and copy connector info, if it exists */
-    if (connector_prop.connector_info)
-        if (H5VL_copy_connector_info(vol_cls, &new_connector_info, connector_prop.connector_info) < 0)
-            HGOTO_ERROR(H5E_FILE, H5E_CANTCOPY, FAIL, "connector info copy failed")
-
-    /* Cache the connector ID & info for the container */
-    file->shared->vol_id   = connector_prop.connector_id;
-    file->shared->vol_info = new_connector_info;
-    if (H5I_inc_ref(file->shared->vol_id, FALSE) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTINC, FAIL, "incrementing VOL connector ID failed")
-
-done:
-    FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5F__set_vol_conn() */
-
-/*-------------------------------------------------------------------------
  * Function:    H5F_get_access_plist
  *
  * Purpose:     Returns a copy of the file access property list of the
@@ -389,7 +338,6 @@ H5F_get_access_plist(H5F_t *f, hbool_t app_ref)
     H5P_genplist_t *      old_plist;                  /* Old property list */
     H5FD_driver_prop_t    driver_prop;                /* Property for driver ID & info */
     hbool_t               driver_prop_copied = FALSE; /* Whether the driver property has been set up */
-    H5VL_connector_prop_t connector_prop;             /* Property for VOL connector ID & info */
     unsigned              efc_size  = 0;
     hid_t                 ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -488,12 +436,6 @@ H5F_get_access_plist(H5F_t *f, hbool_t app_ref)
     /* Set the driver property */
     if (H5P_set(new_plist, H5F_ACS_FILE_DRV_NAME, &driver_prop) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTSET, H5I_INVALID_HID, "can't set file driver ID & info")
-
-    /* Set the VOL connector property */
-    connector_prop.connector_id   = f->shared->vol_id;
-    connector_prop.connector_info = f->shared->vol_info;
-    if (H5P_set(new_plist, H5F_ACS_VOL_CONN_NAME, &connector_prop) < 0)
-        HGOTO_ERROR(H5E_FILE, H5E_CANTSET, H5I_INVALID_HID, "can't set VOL connector ID & info")
 
     /* Set the file close degree appropriately */
     if (f->shared->fc_degree == H5F_CLOSE_DEFAULT &&
@@ -1342,10 +1284,6 @@ H5F__new(H5F_shared_t *shared, unsigned flags, hid_t fcpl_id, hid_t fapl_id, H5F
         if (H5P_get(plist, H5F_ACS_OBJECT_FLUSH_CB_NAME, &(f->shared->object_flush)) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTGET, NULL, "can't get object flush cb info")
 
-        /* Get the VOL connector info */
-        if (H5F__set_vol_conn(f) < 0)
-            HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, NULL, "can't cache VOL connector info")
-
         /* Create a metadata cache with the specified number of elements.
          * The cache might be created with a different number of elements and
          * the access property list should be updated to reflect that.
@@ -1373,8 +1311,6 @@ H5F__new(H5F_shared_t *shared, unsigned flags, hid_t fcpl_id, hid_t fapl_id, H5F
 
 done:
     if (!ret_value && f) {
-        HDassert(NULL == f->vol_obj);
-
         if (!shared) {
             /* Attempt to clean up some of the shared file structures */
             if (f->shared->efc)
@@ -1611,16 +1547,6 @@ H5F__dest(H5F_t *f, hbool_t flush)
             /* Push error, but keep going*/
             HDONE_ERROR(H5E_FILE, H5E_CANTDEC, FAIL, "can't close property list")
 
-        /* Clean up the cached VOL connector ID & info */
-        if (f->shared->vol_info)
-            if (H5VL_free_connector_info(f->shared->vol_id, f->shared->vol_info) < 0)
-                /* Push error, but keep going*/
-                HDONE_ERROR(H5E_FILE, H5E_CANTRELEASE, FAIL, "unable to release VOL connector info object")
-        if (f->shared->vol_id > 0)
-            if (H5I_dec_ref(f->shared->vol_id) < 0)
-                /* Push error, but keep going*/
-                HDONE_ERROR(H5E_FILE, H5E_CANTDEC, FAIL, "can't close VOL connector ID")
-
         /* Close the file */
         if (H5FD_close(f->shared->lf) < 0)
             /* Push error, but keep going*/
@@ -1652,11 +1578,6 @@ H5F__dest(H5F_t *f, hbool_t flush)
     /* Free the non-shared part of the file */
     f->open_name   = (char *)H5MM_xfree(f->open_name);
     f->actual_name = (char *)H5MM_xfree(f->actual_name);
-    if (f->vol_obj) {
-        if (H5VL_free_object(f->vol_obj) < 0)
-            HDONE_ERROR(H5E_FILE, H5E_CANTDEC, FAIL, "unable to free VOL object")
-        f->vol_obj = NULL;
-    }
     if (H5FO_top_dest(f) < 0)
         HDONE_ERROR(H5E_FILE, H5E_CANTINIT, FAIL, "problems closing file")
     f->shared = NULL;
@@ -2127,35 +2048,6 @@ done:
 } /* end H5F_open() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5F__post_open
- *
- * Purpose:     Finishes file open after wrapper context for file has been
- *              set.
- *
- * Return:      SUCCEED/FAIL
- *
- *-------------------------------------------------------------------------
- */
-herr_t
-H5F__post_open(H5F_t *f, H5VL_object_t *vol_obj, hbool_t id_exists)
-{
-    FUNC_ENTER_PACKAGE_NOERR
-
-    /* Sanity check arguments */
-    HDassert(f);
-    HDassert(vol_obj);
-
-    /* Have an ID now? */
-    f->id_exists = id_exists;
-
-    /* Store a VOL object in the file struct */
-    (void)H5VL_object_inc_rc(vol_obj);
-    f->vol_obj = vol_obj;
-
-    FUNC_LEAVE_NOAPI(SUCCEED)
-} /* end H5F__post_open() */
-
-/*-------------------------------------------------------------------------
  * Function:    H5F_flush_phase1
  *
  * Purpose:     First phase of flushing cached data.
@@ -2599,6 +2491,45 @@ H5F__reopen(H5F_t *f)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5F__reopen() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5F_reopen_obj
+ *
+ * Purpose:     Use a file VOL object to re-open the file.
+ *
+ * Return:      Success:    A file ID
+ *              Failure:    H5I_INVALID_HID
+ *
+ *-------------------------------------------------------------------------
+ */
+hid_t
+H5F_reopen_with_container(H5VL_container_t *container, void **request)
+{
+    H5VL_file_specific_args_t vol_cb_args;                   /* Arguments to VOL callback */
+    H5VL_object_t *           reopen_file_obj = NULL;        /* Pointer to the VOL object for the re-opened file object */
+    hid_t                     ret_value   = H5I_INVALID_HID; /* Return value */
+
+    FUNC_ENTER_NOAPI(H5I_INVALID_HID)
+
+    /* Set up VOL callback arguments */
+    vol_cb_args.op_type          = H5VL_FILE_REOPEN;
+    vol_cb_args.args.reopen.file = (void **)&reopen_file_obj;    /* Internal file 'specific' callback will create VOL object */
+
+    /* Reopen the file */
+    if (H5VL_container_specific(container, &vol_cb_args, request) < 0)
+        HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to reopen file via the VOL connector")
+
+    /* Make sure that worked */
+    if (NULL == reopen_file_obj)
+        HGOTO_ERROR(H5E_FILE, H5E_CANTINIT, H5I_INVALID_HID, "unable to reopen file")
+
+    /* Register ID for VOL object, for future API calls */
+    if ((ret_value = H5I_register(H5I_FILE, reopen_file_obj, TRUE)) < 0)
+        HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register file ID")
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5F_reopen_obj() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5F_get_id
@@ -3634,7 +3565,7 @@ H5F__start_swmr_write(H5F_t *f)
     H5G_name_t *obj_paths      = NULL;   /* Group hierarchy path */
     size_t      u;                       /* Local index variable */
     hbool_t     setup         = FALSE;   /* Boolean flag to indicate whether SWMR setting is enabled */
-    H5VL_t *    vol_connector = NULL;    /* VOL connector for the file */
+    H5VL_container_t *container = NULL;    /* VOL container for file */
     herr_t      ret_value     = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
@@ -3709,7 +3640,7 @@ H5F__start_swmr_write(H5F_t *f)
                 HGOTO_ERROR(H5E_FILE, H5E_BADTYPE, FAIL, "invalid object identifier")
 
             /* Get the (top) connector for the ID */
-            vol_connector = vol_obj->connector;
+            container = vol_obj->container;
         } /* end if */
 
         /* Gather information about opened objects (groups, datasets) in the file */
@@ -3788,7 +3719,7 @@ H5F__start_swmr_write(H5F_t *f)
 
     /* Refresh (reopen) the objects (groups & datasets) in the file */
     for (u = 0; u < grp_dset_count; u++)
-        if (H5O_refresh_metadata_reopen(obj_ids[u], &obj_glocs[u], vol_connector, TRUE) < 0)
+        if (H5O_refresh_metadata_reopen(obj_ids[u], &obj_glocs[u], container, TRUE) < 0)
             HGOTO_ERROR(H5E_ID, H5E_CLOSEERROR, FAIL, "can't refresh-close object")
 
 done:
@@ -3918,7 +3849,6 @@ H5F_get_file_id(H5VL_object_t *vol_obj, H5I_type_t obj_type, hbool_t app_ref)
     H5VL_object_get_args_t vol_cb_args;                       /* Arguments to VOL callback */
     H5VL_loc_params_t      loc_params;                        /* Location parameters */
     hid_t                  file_id         = H5I_INVALID_HID; /* File ID for object */
-    hbool_t                vol_wrapper_set = FALSE; /* Whether the VOL object wrapping context was set up */
     hid_t                  ret_value       = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(H5I_INVALID_HID)
@@ -3941,12 +3871,7 @@ H5F_get_file_id(H5VL_object_t *vol_obj, H5I_type_t obj_type, hbool_t app_ref)
 
     /* If the ID does not exist, register it with the VOL connector */
     if (H5I_INVALID_HID == file_id) {
-        /* Set wrapper info in API context */
-        if (H5VL_set_vol_wrapper(vol_obj) < 0)
-            HGOTO_ERROR(H5E_FILE, H5E_CANTSET, H5I_INVALID_HID, "can't set VOL wrapper info")
-        vol_wrapper_set = TRUE;
-
-        if ((file_id = H5VL_wrap_register(H5I_FILE, vol_obj_file, app_ref)) < 0)
+        if ((file_id = H5VL_register(H5VL_OBJ_FILE, NULL, vol_obj->container, app_ref)) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register file handle")
     } /* end if */
     else {
@@ -3959,10 +3884,6 @@ H5F_get_file_id(H5VL_object_t *vol_obj, H5I_type_t obj_type, hbool_t app_ref)
     ret_value = file_id;
 
 done:
-    /* Reset object wrapping info in API context */
-    if (vol_wrapper_set && H5VL_reset_vol_wrapper() < 0)
-        HDONE_ERROR(H5E_FILE, H5E_CANTRESET, H5I_INVALID_HID, "can't reset VOL wrapper info")
-
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5F_get_file_id() */
 

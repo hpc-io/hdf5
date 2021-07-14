@@ -3292,8 +3292,7 @@ H5Pset_fill_value(hid_t plist_id, hid_t type_id, const void *value)
 
         /* Set up type conversion function */
         if (NULL == (tpath = H5T_path_find(type, type)))
-            HGOTO_ERROR(H5E_DATASET, H5E_UNSUPPORTED, FAIL,
-                        "unable to convert between src and dest data types")
+            HGOTO_ERROR(H5E_DATASET, H5E_UNSUPPORTED, FAIL, "unable to convert between src and dest data types")
 
         /* If necessary, convert fill value datatypes (which copies VL components, etc.) */
         if (!H5T_path_noop(tpath)) {
@@ -3304,8 +3303,7 @@ H5Pset_fill_value(hid_t plist_id, hid_t type_id, const void *value)
                 HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, FAIL, "memory allocation failed")
 
             /* Convert the fill value */
-            if (H5T_convert(tpath, type_id, type_id, (size_t)1, (size_t)0, (size_t)0, fill.buf, bkg_buf) <
-                0) {
+            if (H5T_convert(tpath, type_id, type_id, (size_t)1, (size_t)0, (size_t)0, fill.buf, bkg_buf) < 0) {
                 if (bkg_buf)
                     bkg_buf = H5FL_BLK_FREE(type_conv, bkg_buf);
                 HGOTO_ERROR(H5E_DATASET, H5E_CANTCONVERT, FAIL, "datatype conversion failed")

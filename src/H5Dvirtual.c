@@ -3159,7 +3159,7 @@ H5D__virtual_refresh_source_dset(H5D_t **dset)
         HGOTO_ERROR(H5E_DATASET, H5E_CANTREMOVE, FAIL, "can't unregister source dataset ID")
     if (NULL == (*dset = (H5D_t *)H5VL_object_unwrap(vol_obj)))
         HGOTO_ERROR(H5E_DATASET, H5E_CANTGET, FAIL, "can't retrieve library object from VOL object")
-    vol_obj->data = NULL;
+    vol_obj->object = NULL;
 
 done:
     if (vol_obj && H5VL_free_object(vol_obj) < 0)
@@ -3212,9 +3212,9 @@ H5D__virtual_refresh_source_dsets(H5D_t *dset)
         else
             /* Check if source dataset is open */
             if (storage->list[i].source_dset.dset)
-            /* Refresh source dataset */
-            if (H5D__virtual_refresh_source_dset(&storage->list[i].source_dset.dset) < 0)
-                HGOTO_ERROR(H5E_DATASET, H5E_CANTFLUSH, FAIL, "unable to refresh source dataset")
+                /* Refresh source dataset */
+                if (H5D__virtual_refresh_source_dset(&storage->list[i].source_dset.dset) < 0)
+                    HGOTO_ERROR(H5E_DATASET, H5E_CANTFLUSH, FAIL, "unable to refresh source dataset")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)

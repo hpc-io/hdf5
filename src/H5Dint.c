@@ -594,7 +594,7 @@ H5D__init_type(H5F_t *file, const H5D_t *dset, hid_t type_id, const H5T_t *type)
             HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "can't get shared datatype info")
 
         /* Mark any datatypes as being on disk now */
-        if (H5T_set_loc(dset->shared->type, H5F_VOL_OBJ(file), H5T_LOC_DISK) < 0)
+        if (H5T_set_loc(dset->shared->type, H5T_LOC_DISK) < 0)
             HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "can't set datatype location")
 
         /* Set the version for datatype */
@@ -1753,7 +1753,7 @@ H5D__open_oid(H5D_t *dataset, hid_t dapl_id)
     if (NULL == (dataset->shared->type = (H5T_t *)H5O_msg_read(&(dataset->oloc), H5O_DTYPE_ID, NULL)))
         HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "unable to load type info from dataset header")
 
-    if (H5T_set_loc(dataset->shared->type, H5F_VOL_OBJ(dataset->oloc.file), H5T_LOC_DISK) < 0)
+    if (H5T_set_loc(dataset->shared->type, H5T_LOC_DISK) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
 
     if (NULL == (dataset->shared->space = H5S_read(&(dataset->oloc))))
@@ -2258,6 +2258,26 @@ H5D_nameof(const H5D_t *dataset)
 
     FUNC_LEAVE_NOAPI(dataset ? &(dataset->path) : NULL)
 } /* end H5D_nameof() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5D_fileof
+ *
+ * Purpose:     Returns the file to which the specified dataset belongs.
+ *
+ * Return:	Success:	File pointer.
+ *              Failure:        NULL
+ *-------------------------------------------------------------------------
+ */
+H5F_t *
+H5D_fileof(H5D_t *dataset)
+{
+    /* Use FUNC_ENTER_NOAPI_NOINIT_NOERR here to avoid performance issues */
+    FUNC_ENTER_NOAPI_NOINIT_NOERR
+
+    HDassert(dataset);
+
+    FUNC_LEAVE_NOAPI(dataset->oloc.file)
+} /* end H5D_fileof() */
 
 /*-------------------------------------------------------------------------
  * Function: H5D__alloc_storage
@@ -3912,7 +3932,7 @@ H5D__get_type(const H5D_t *dset)
         HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, FAIL, "unable to copy datatype")
 
     /* Mark any datatypes as being in memory now */
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
 
     /* Lock copied type */
@@ -3933,7 +3953,7 @@ H5D__get_type(const H5D_t *dset)
 
 done:
     if (ret_value < 0)
-        if (dt && H5T_close(dt) < 0)
+        if (dt && H5T_close(dt, H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_DATASET, H5E_CLOSEERROR, FAIL, "unable to release datatype")
 
     FUNC_LEAVE_NOAPI(ret_value)

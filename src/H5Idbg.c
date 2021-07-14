@@ -93,7 +93,7 @@ H5I__id_dump_cb(void *_item, void H5_ATTR_UNUSED *_key, void *_udata)
             const H5VL_object_t *vol_obj = (const H5VL_object_t *)info->object;
 
             object = H5VL_object_data(vol_obj);
-            if (H5_VOL_NATIVE == vol_obj->connector->cls->value)
+            if (H5_VOL_NATIVE == vol_obj->container->connector->cls->value)
                 path = H5G_nameof((const H5G_t *)object);
             break;
         }
@@ -102,7 +102,7 @@ H5I__id_dump_cb(void *_item, void H5_ATTR_UNUSED *_key, void *_udata)
             const H5VL_object_t *vol_obj = (const H5VL_object_t *)info->object;
 
             object = H5VL_object_data(vol_obj);
-            if (H5_VOL_NATIVE == vol_obj->connector->cls->value)
+            if (H5_VOL_NATIVE == vol_obj->container->connector->cls->value)
                 path = H5D_nameof((const H5D_t *)object);
             break;
         }

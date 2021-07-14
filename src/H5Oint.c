@@ -30,7 +30,9 @@
 /* Headers */
 /***********/
 #include "H5private.h"   /* Generic Functions                        */
+#include "H5Aprivate.h"  /* Attributes                               */
 #include "H5CXprivate.h" /* API Contexts                             */
+#include "H5Dprivate.h"  /* Datasets                                 */
 #include "H5Eprivate.h"  /* Error handling                           */
 #include "H5Fprivate.h"  /* File access                              */
 #include "H5FLprivate.h" /* Free lists                               */
@@ -3092,3 +3094,65 @@ H5O__reset_info2(H5O_info2_t *oinfo)
 
     FUNC_LEAVE_NOAPI(SUCCEED);
 } /* end H5O__reset_info2() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5O_fileof
+ *
+ * Purpose:     Utility routine to get a native object's file pointer
+ *
+ * Returns:     SUCCEED/FAIL
+ *
+ *-------------------------------------------------------------------------
+ */
+H5F_t *
+H5O_fileof(void *obj, H5I_type_t type)
+{
+    H5F_t *ret_value = NULL; /* Return value */
+
+    FUNC_ENTER_NOAPI(NULL)
+
+    switch (type) {
+        case H5I_FILE:
+            ret_value = obj;
+            break;
+
+        case H5I_GROUP:
+            ret_value = H5G_fileof(obj);
+            break;
+
+        case H5I_DATATYPE:
+            ret_value = H5T_fileof(obj);
+            break;
+
+        case H5I_DATASET:
+            ret_value = H5D_fileof(obj);
+            break;
+
+        case H5I_ATTR:
+            ret_value = H5A_fileof(obj);
+            break;
+
+        case H5I_MAP:
+            HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, NULL, "maps not supported in native VOL connector")
+
+        case H5I_DATASPACE:
+        case H5I_GENPROP_CLS:
+        case H5I_GENPROP_LST:
+        case H5I_ERROR_CLASS:
+        case H5I_ERROR_MSG:
+        case H5I_ERROR_STACK:
+        case H5I_VFL:
+        case H5I_VOL:
+        case H5I_SPACE_SEL_ITER:
+        case H5I_EVENTSET:
+        case H5I_UNINIT:
+        case H5I_BADID:
+        case H5I_NTYPES:
+        default:
+            HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, NULL, "invalid object type")
+    } /* end switch */
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5O_fileof() */
+

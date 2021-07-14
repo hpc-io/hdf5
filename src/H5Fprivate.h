@@ -379,7 +379,6 @@ typedef struct H5F_t H5F_t;
 #define H5F_NULL_FSM_ADDR(F)           ((F)->shared->null_fsm_addr)
 #define H5F_GET_MIN_DSET_OHDR(F)       ((F)->shared->crt_dset_min_ohdr_flag)
 #define H5F_SET_MIN_DSET_OHDR(F, V)    ((F)->shared->crt_dset_min_ohdr_flag = (V))
-#define H5F_VOL_OBJ(F)                 ((F)->vol_obj)
 #define H5F_USE_FILE_LOCKING(F)        ((F)->shared->use_file_locking)
 #else /* H5F_MODULE */
 #define H5F_LOW_BOUND(F)                 (H5F_get_low_bound(F))
@@ -441,7 +440,6 @@ typedef struct H5F_t H5F_t;
 #define H5F_NULL_FSM_ADDR(F)           (H5F_get_null_fsm_addr(F))
 #define H5F_GET_MIN_DSET_OHDR(F)       (H5F_get_min_dset_ohdr(F))
 #define H5F_SET_MIN_DSET_OHDR(F, V)    (H5F_set_min_dset_ohdr((F), (V)))
-#define H5F_VOL_OBJ(F)                 (H5F_get_vol_obj(F))
 #define H5F_USE_FILE_LOCKING(F)        (H5F_get_use_file_locking(F))
 #endif /* H5F_MODULE */
 
@@ -829,6 +827,7 @@ H5_DLL herr_t H5F_init(void);
 H5_DLL H5F_t *H5F_open(const char *name, unsigned flags, hid_t fcpl_id, hid_t fapl_id);
 H5_DLL herr_t H5F_try_close(H5F_t *f, hbool_t *was_closed /*out*/);
 H5_DLL hid_t  H5F_get_file_id(H5VL_object_t *vol_obj, H5I_type_t obj_type, hbool_t app_ref);
+H5_DLL hid_t  H5F_reopen_with_container(H5VL_container_t *container, void **request);
 
 /* Functions that retrieve values from the file struct */
 H5_DLL H5F_libver_t H5F_get_low_bound(const H5F_t *f);
@@ -857,7 +856,6 @@ H5_DLL hbool_t  H5F_get_point_of_no_return(const H5F_t *f);
 H5_DLL hbool_t  H5F_get_null_fsm_addr(const H5F_t *f);
 H5_DLL hbool_t  H5F_get_min_dset_ohdr(const H5F_t *f);
 H5_DLL herr_t   H5F_set_min_dset_ohdr(H5F_t *f, hbool_t minimize);
-H5_DLL H5VL_object_t *H5F_get_vol_obj(const H5F_t *f);
 H5_DLL hbool_t        H5F_get_file_locking(const H5F_t *f);
 
 /* Functions than retrieve values set/cached from the superblock/FCPL */

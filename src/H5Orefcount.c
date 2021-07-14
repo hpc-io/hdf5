@@ -36,8 +36,7 @@ static herr_t H5O__refcount_encode(H5F_t *f, hbool_t disable_shared, uint8_t *p,
 static void * H5O__refcount_copy(const void *_mesg, void *_dest);
 static size_t H5O__refcount_size(const H5F_t *f, hbool_t disable_shared, const void *_mesg);
 static herr_t H5O__refcount_free(void *_mesg);
-static herr_t H5O__refcount_pre_copy_file(H5F_t *file_src, const void *mesg_src, hbool_t *deleted,
-                                          const H5O_copy_t *cpy_info, void *udata);
+static herr_t H5O__refcount_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *udata);
 static herr_t H5O__refcount_debug(H5F_t *f, const void *_mesg, FILE *stream, int indent, int fwidth);
 
 /* This message derives from H5O message class */
@@ -259,9 +258,7 @@ H5O__refcount_free(void *mesg)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__refcount_pre_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const void H5_ATTR_UNUSED *native_src,
-                            hbool_t *deleted, const H5O_copy_t H5_ATTR_UNUSED *cpy_info,
-                            void H5_ATTR_UNUSED *udata)
+H5O__refcount_pre_copy_file(const void H5_ATTR_UNUSED *native_src, hbool_t *deleted, const H5O_copy_t H5_ATTR_UNUSED *cpy_info, void H5_ATTR_UNUSED *udata)
 {
     FUNC_ENTER_STATIC_NOERR
 

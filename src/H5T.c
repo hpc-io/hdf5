@@ -253,7 +253,6 @@
         H5T_INIT_TYPE_ALLOC_COMMON(H5T_REFERENCE)                                                            \
         H5T_INIT_TYPE_NUM_COMMON(H5T_ORDER_NONE)                                                             \
         dt->shared->force_conv            = TRUE;                                                            \
-        dt->shared->u.atomic.u.r.file_obj = NULL;                                                            \
         dt->shared->u.atomic.u.r.loc      = H5T_LOC_BADLOC;                                                  \
         dt->shared->u.atomic.u.r.cls      = NULL;                                                            \
     }
@@ -1048,19 +1047,19 @@ H5T__init_package(void)
 
     /* Deprecated object reference type */
     H5T_INIT_TYPE(OBJREF, H5T_STD_REF_OBJ_g, ALLOC, -, NOSET, -)
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
     objref = dt; /* Keep type for later */
 
     /* Deprecated region reference type */
     H5T_INIT_TYPE(REGREF, H5T_STD_REF_DSETREG_g, ALLOC, -, NOSET, -)
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
     regref = dt; /* Keep type for later */
 
     /* Opaque reference type */
     H5T_INIT_TYPE(REF, H5T_STD_REF_g, ALLOC, -, NOSET, -)
-    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
     ref = dt; /* Keep type for later */
 
@@ -1479,8 +1478,6 @@ done:
             if (copied_dtype)
                 (void)H5T_close_real(dt);
             else {
-                if (dt->shared->owned_vol_obj && H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-                    HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close owned VOL object")
                 dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
                 dt         = H5FL_FREE(H5T_t, dt);
             } /* end else */
@@ -1789,22 +1786,8 @@ H5T__close_cb(H5T_t *dt, void **request)
     HDassert(dt);
     HDassert(dt->shared);
 
-    /* If this datatype is VOL-managed (i.e.: has a VOL object),
-     * close it through the VOL connector.
-     */
-    if (NULL != dt->vol_obj) {
-        /* Close the connector-managed datatype data */
-        if (H5VL_datatype_close(dt->vol_obj, H5P_DATASET_XFER_DEFAULT, request) < 0)
-            HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to close datatype")
-
-        /* Free the VOL object */
-        if (H5VL_free_object(dt->vol_obj) < 0)
-            HGOTO_ERROR(H5E_ATTR, H5E_CANTDEC, FAIL, "unable to free VOL object")
-        dt->vol_obj = NULL;
-    } /* end if */
-
     /* Close the datatype */
-    if (H5T_close(dt) < 0)
+    if (H5T_close(dt, request) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to close datatype")
 
 done:
@@ -2011,7 +1994,6 @@ H5Tclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
     void *         token     = NULL;            /* Request token for async operation        */
     void **        token_ptr = H5_REQUEST_NULL; /* Pointer to request token for async operation        */
     H5VL_object_t *vol_obj   = NULL;            /* VOL object of dset_id */
-    H5VL_t *       connector = NULL;            /* VOL connector */
     herr_t         ret_value = SUCCEED;         /* Return value */
 
     FUNC_ENTER_API(FAIL)
@@ -2023,16 +2005,11 @@ H5Tclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
     if (H5T_STATE_IMMUTABLE == dt->shared->state)
         HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "immutable datatype")
 
-    /* Get dataset object's connector */
-    if (NULL == (vol_obj = H5VL_vol_object(type_id)))
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "can't get VOL object for dataset")
-
     /* Prepare for possible asynchronous operation */
     if (H5ES_NONE != es_id) {
-        /* Increase connector's refcount, so it doesn't get closed if closing
-         * the dataset closes the file */
-        connector = vol_obj->connector;
-        H5VL_conn_inc_rc(connector);
+        /* Get datatype's object */
+        if (NULL == (vol_obj = H5VL_vol_object(type_id)))
+            HGOTO_ERROR(H5E_DATATYPE, H5E_CANTGET, FAIL, "can't get VOL object for dataset")
 
         /* Point at token for operation to set up */
         token_ptr = &token;
@@ -2044,14 +2021,11 @@ H5Tclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
 
     /* If a token was created, add the token to the event set */
     if (NULL != token)
-        if (H5ES_insert(es_id, vol_obj->connector, token,
+        if (H5ES_insert(es_id, vol_obj->container->connector, token,
                         H5ARG_TRACE5(__func__, "*s*sIuii", app_file, app_func, app_line, type_id, es_id)) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINSERT, FAIL, "can't insert token into event set")
 
 done:
-    if (connector && H5VL_conn_dec_rc(connector) < 0)
-        HDONE_ERROR(H5E_DATATYPE, H5E_CANTDEC, FAIL, "can't decrement ref count on connector")
-
     FUNC_LEAVE_API(ret_value)
 } /* end H5Tclose_async() */
 
@@ -3327,7 +3301,7 @@ H5T_decode(size_t buf_size, const unsigned char *buf)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTDECODE, NULL, "can't decode object")
 
     /* Mark datatype as being in memory now */
-    if (H5T_set_loc(ret_value, NULL, H5T_LOC_MEMORY) < 0)
+    if (H5T_set_loc(ret_value, H5T_LOC_MEMORY) < 0)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "invalid datatype location")
 
     /* No VOL object */
@@ -3455,8 +3429,6 @@ H5T__create(H5T_class_t type, size_t size)
 done:
     if (NULL == ret_value) {
         if (dt) {
-            if (dt->shared->owned_vol_obj && H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-                HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
             dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
             dt         = H5FL_FREE(H5T_t, dt);
         }
@@ -3499,10 +3471,6 @@ H5T__initiate_copy(const H5T_t *old_dt)
     /* Copy shared information */
     *(new_dt->shared) = *(old_dt->shared);
 
-    /* Increment ref count on owned VOL object */
-    if (new_dt->shared->owned_vol_obj)
-        (void)H5VL_object_inc_rc(new_dt->shared->owned_vol_obj);
-
     /* Reset vol_obj field */
     new_dt->vol_obj = NULL;
 
@@ -3512,11 +3480,8 @@ H5T__initiate_copy(const H5T_t *old_dt)
 done:
     if (ret_value == NULL)
         if (new_dt) {
-            if (new_dt->shared) {
-                if (new_dt->shared->owned_vol_obj && H5VL_free_object(new_dt->shared->owned_vol_obj) < 0)
-                    HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
+            if (new_dt->shared)
                 new_dt->shared = H5FL_FREE(H5T_shared_t, new_dt->shared);
-            } /* end if */
             new_dt = H5FL_FREE(H5T_t, new_dt);
         } /* end if */
 
@@ -3719,7 +3684,7 @@ H5T__complete_copy(H5T_t *new_dt, const H5T_t *old_dt, H5T_shared_t *reopened_fo
             case H5T_REFERENCE:
                 if (set_memory_type)
                     /* H5T_copy converts any type into a memory type */
-                    if (H5T_set_loc(new_dt, NULL, H5T_LOC_MEMORY) < 0)
+                    if (H5T_set_loc(new_dt, H5T_LOC_MEMORY) < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location")
                 break;
 
@@ -3845,8 +3810,6 @@ done:
     if (ret_value == NULL)
         if (new_dt) {
             HDassert(new_dt->shared);
-            if (new_dt->shared->owned_vol_obj && H5VL_free_object(new_dt->shared->owned_vol_obj) < 0)
-                HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
             new_dt->shared = H5FL_FREE(H5T_shared_t, new_dt->shared);
             new_dt         = H5FL_FREE(H5T_t, new_dt);
         } /* end if */
@@ -3914,8 +3877,6 @@ H5T_copy_reopen(H5T_t *old_dt)
             /* The object is already open.  Free the H5T_shared_t struct
              * we had been using and use the one that already exists.
              * Not terribly efficient. */
-            if (new_dt->shared->owned_vol_obj && H5VL_free_object(new_dt->shared->owned_vol_obj) < 0)
-                HGOTO_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
             new_dt->shared = H5FL_FREE(H5T_shared_t, new_dt->shared);
             new_dt->shared = reopened_fo;
 
@@ -3952,8 +3913,6 @@ done:
     if (ret_value == NULL)
         if (new_dt) {
             HDassert(new_dt->shared);
-            if (new_dt->shared->owned_vol_obj && H5VL_free_object(new_dt->shared->owned_vol_obj) < 0)
-                HDONE_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, NULL, "unable to close owned VOL object")
             new_dt->shared = H5FL_FREE(H5T_shared_t, new_dt->shared);
             new_dt         = H5FL_FREE(H5T_t, new_dt);
         } /* end if */
@@ -4048,10 +4007,8 @@ H5T__alloc(void)
 done:
     if (ret_value == NULL)
         if (dt) {
-            if (dt->shared) {
-                HDassert(!dt->shared->owned_vol_obj);
+            if (dt->shared)
                 dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
-            } /* end if */
             dt = H5FL_FREE(H5T_t, dt);
         } /* end if */
 
@@ -4133,11 +4090,6 @@ H5T__free(H5T_t *dt)
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close parent data type")
     dt->shared->parent = NULL;
 
-    /* Close the owned VOL object */
-    if (dt->shared->owned_vol_obj && H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close owned VOL object")
-    dt->shared->owned_vol_obj = NULL;
-
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T__free() */
@@ -4172,7 +4124,6 @@ H5T_close_real(H5T_t *dt)
         if (H5T__free(dt) < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTFREE, FAIL, "unable to free datatype");
 
-        HDassert(!dt->shared->owned_vol_obj);
         dt->shared = H5FL_FREE(H5T_shared_t, dt->shared);
     } /* end if */
     else
@@ -4185,6 +4136,42 @@ H5T_close_real(H5T_t *dt)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T_close_real() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5T_close_vol_obj
+ *
+ * Purpose:     Close the VOL object for a named datatype.
+ *
+ * Return:      Non-negative on success/Negative on failure
+ *
+ * Programmer:  Quincey Koziol
+ *              Friday, July 10, 2021
+ *
+ *-------------------------------------------------------------------------
+ */
+static herr_t
+H5T__close_vol_obj(H5T_t *dt, void **request)
+{
+    herr_t ret_value = SUCCEED; /* Return value */
+
+    FUNC_ENTER_NOAPI(FAIL)
+
+    /* Sanity check */
+    HDassert(dt);
+    HDassert(dt->vol_obj);
+
+    /* Close the connector-managed datatype data */
+    if (H5VL_datatype_close(dt->vol_obj, H5P_DATASET_XFER_DEFAULT, request) < 0)
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to close datatype")
+
+    /* Free the VOL object */
+    if (H5VL_free_object(dt->vol_obj) < 0)
+        HGOTO_ERROR(H5E_ATTR, H5E_CANTDEC, FAIL, "unable to free VOL object")
+    dt->vol_obj = NULL;
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5T__close_vol_obj() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5T_close
@@ -4200,7 +4187,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5T_close(H5T_t *dt)
+H5T_close(H5T_t *dt, void **request)
 {
     herr_t ret_value = SUCCEED; /* Return value */
 
@@ -4209,6 +4196,14 @@ H5T_close(H5T_t *dt)
     /* Sanity check */
     HDassert(dt);
     HDassert(dt->shared);
+
+    /* If this datatype is VOL-managed (i.e.: has a VOL object),
+     * close it through the VOL connector.
+     */
+    if (NULL != dt->vol_obj)
+        /* Close the connector-managed datatype data */
+        if (H5T__close_vol_obj(dt, request) < 0)
+            HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to close datatype")
 
     /* Named datatype cleanups */
     if (dt->shared->state == H5T_STATE_OPEN) {
@@ -4415,7 +4410,7 @@ H5T__set_size(H5T_t *dt, size_t size)
                     dt->shared->u.vlen.pad  = tmp_strpad;
 
                     /* Set up VL information */
-                    if (H5T_set_loc(dt, NULL, H5T_LOC_MEMORY) < 0)
+                    if (H5T_set_loc(dt, H5T_LOC_MEMORY) < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "invalid datatype location");
                 } /* end if */
                 else {
@@ -4819,12 +4814,6 @@ H5T_cmp(const H5T_t *dt1, const H5T_t *dt2, hbool_t superset)
             else if (dt1->shared->u.vlen.loc == H5T_LOC_BADLOC && dt2->shared->u.vlen.loc != H5T_LOC_BADLOC) {
                 HGOTO_DONE(1);
             }
-
-            /* Don't allow VL types in different files to compare as equal */
-            if (dt1->shared->u.vlen.file_obj < dt2->shared->u.vlen.file_obj)
-                HGOTO_DONE(-1);
-            if (dt1->shared->u.vlen.file_obj > dt2->shared->u.vlen.file_obj)
-                HGOTO_DONE(1);
             break;
 
         case H5T_OPAQUE:
@@ -4969,10 +4958,6 @@ H5T_cmp(const H5T_t *dt1, const H5T_t *dt2, hbool_t superset)
                     if (dt1->shared->u.atomic.u.r.loc < dt2->shared->u.atomic.u.r.loc)
                         HGOTO_DONE(-1);
                     if (dt1->shared->u.atomic.u.r.loc > dt2->shared->u.atomic.u.r.loc)
-                        HGOTO_DONE(1);
-                    if (dt1->shared->u.atomic.u.r.file_obj < dt2->shared->u.atomic.u.r.file_obj)
-                        HGOTO_DONE(-1);
-                    if (dt1->shared->u.atomic.u.r.file_obj > dt2->shared->u.atomic.u.r.file_obj)
                         HGOTO_DONE(1);
                     break;
 
@@ -5623,6 +5608,43 @@ done:
 } /* end H5T_nameof() */
 
 /*-------------------------------------------------------------------------
+ * Function:  H5T_fileof
+ *
+ * Purpose:     Returns the file to which the specified named datatype belongs.
+ *
+ * Return:	Success:	File pointer.
+ *              Failure:        NULL
+ *
+ *-------------------------------------------------------------------------
+ */
+H5F_t *
+H5T_fileof(H5T_t *dt)
+{
+    H5F_t *ret_value = NULL;
+
+    FUNC_ENTER_NOAPI(NULL)
+
+    HDassert(dt);
+
+    switch (dt->shared->state) {
+        case H5T_STATE_TRANSIENT:
+        case H5T_STATE_RDONLY:
+        case H5T_STATE_IMMUTABLE:
+            HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, NULL, "not a named datatype")
+        case H5T_STATE_NAMED:
+        case H5T_STATE_OPEN:
+            HDassert(dt->sh_loc.type == H5O_SHARE_TYPE_COMMITTED);
+            ret_value = dt->oloc.file;
+            break;
+        default:
+            HGOTO_ERROR(H5E_DATATYPE, H5E_BADTYPE, NULL, "invalid datatype state")
+    } /* end switch */
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5T_fileof() */
+
+/*-------------------------------------------------------------------------
  * Function:    H5T_is_immutable
  *
  * Purpose:     Check if a datatype is immutable.
@@ -5715,18 +5737,9 @@ H5T_convert_committed_datatype(H5T_t *dt, H5F_t *f)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, FAIL, "unable to reset path")
 
         /* If the datatype is committed through the VOL, close it */
-        if (NULL != dt->vol_obj) {
-            H5VL_object_t *vol_obj = dt->vol_obj;
-
-            /* Close the datatype through the VOL*/
-            if (H5VL_datatype_close(vol_obj, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (NULL != dt->vol_obj)
+            if (H5T__close_vol_obj(dt, H5_REQUEST_NULL) < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to close datatype")
-
-            /* Free the datatype and set the VOL object pointer to NULL */
-            if (H5VL_free_object(vol_obj) < 0)
-                HGOTO_ERROR(H5E_ATTR, H5E_CANTDEC, FAIL, "unable to free VOL object")
-            dt->vol_obj = NULL;
-        } /* end if */
 
         dt->shared->state = H5T_STATE_TRANSIENT;
     } /* end if */
@@ -5832,7 +5845,6 @@ done:
  USAGE
     htri_t H5T_set_loc(dt,f,loc)
         H5T_t *dt;              IN/OUT: Pointer to the datatype to mark
-        H5VL_object_t *file_obj; IN: Pointer to the VOL file object the datatype is in
         H5T_loc_t loc           IN: location of type
 
  RETURNS
@@ -5846,7 +5858,7 @@ done:
  --------------------------------------------------------------------------
  */
 htri_t
-H5T_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
+H5T_set_loc(H5T_t *dt, H5T_loc_t loc)
 {
     htri_t   changed;       /* Whether H5T_set_loc changed the type (even if the size didn't change) */
     htri_t   ret_value = 0; /* Indicate that success, but no location change */
@@ -5871,7 +5883,7 @@ H5T_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
                     old_size = dt->shared->parent->shared->size;
 
                     /* Mark the VL, compound or array type */
-                    if ((changed = H5T_set_loc(dt->shared->parent, file_obj, loc)) < 0)
+                    if ((changed = H5T_set_loc(dt->shared->parent, loc)) < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "Unable to set VL location")
                     if (changed > 0)
                         ret_value = changed;
@@ -5912,7 +5924,7 @@ H5T_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
                         old_size = memb_type->shared->size;
 
                         /* Mark the VL, compound, enum or array type */
-                        if ((changed = H5T_set_loc(memb_type, file_obj, loc)) < 0)
+                        if ((changed = H5T_set_loc(memb_type, loc)) < 0)
                             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "Unable to set VL location");
                         if (changed > 0)
                             ret_value = changed;
@@ -5948,17 +5960,15 @@ H5T_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
                 /* Recurse if it's VL, compound, enum or array (ignore references here so that we can encode
                  * them as part of the same blob)*/
                 /* (If the force_conv flag is _not_ set, the type cannot change in size, so don't recurse) */
-                if (dt->shared->parent->shared->force_conv &&
-                    H5T_IS_COMPLEX(dt->shared->parent->shared->type) &&
-                    (dt->shared->parent->shared->type != H5T_REFERENCE)) {
-                    if ((changed = H5T_set_loc(dt->shared->parent, file_obj, loc)) < 0)
+                if (dt->shared->parent->shared->force_conv && H5T_IS_COMPLEX(dt->shared->parent->shared->type)) {
+                    if ((changed = H5T_set_loc(dt->shared->parent, loc)) < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "Unable to set VL location");
                     if (changed > 0)
                         ret_value = changed;
                 } /* end if */
 
                 /* Mark this VL sequence */
-                if ((changed = H5T__vlen_set_loc(dt, file_obj, loc)) < 0)
+                if ((changed = H5T__vlen_set_loc(dt, loc)) < 0)
                     HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "Unable to set VL location");
                 if (changed > 0)
                     ret_value = changed;
@@ -5966,7 +5976,7 @@ H5T_set_loc(H5T_t *dt, H5VL_object_t *file_obj, H5T_loc_t loc)
 
             case H5T_REFERENCE:
                 /* Reference types go through type conversion */
-                if ((ret_value = H5T__ref_set_loc(dt, file_obj, loc)) < 0)
+                if ((ret_value = H5T__ref_set_loc(dt, loc)) < 0)
                     HGOTO_ERROR(H5E_DATATYPE, H5E_CANTSET, FAIL, "Unable to set reference location");
                 break;
 
@@ -6295,68 +6305,3 @@ done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T_patch_file() */
 
-/*-------------------------------------------------------------------------
- * Function:    H5T_patch_vlen_file
- *
- * Purpose:     Patch the top-level file pointer contained in (dt->shared->u.vlen.file)
- *              to point to file.  This is possible because
- *              the top-level file pointer can be closed out from under
- *              dt while dt is contained in the shared file's cache.
- *
- * Return:      SUCCEED
- *
- *-------------------------------------------------------------------------
- */
-herr_t
-H5T_patch_vlen_file(H5T_t *dt, H5VL_object_t *file_obj)
-{
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
-
-    /* Sanity check */
-    HDassert(dt);
-    HDassert(dt->shared);
-    HDassert(file_obj);
-
-    if ((dt->shared->type == H5T_VLEN) && dt->shared->u.vlen.file_obj != file_obj)
-        dt->shared->u.vlen.file_obj = file_obj;
-
-    FUNC_LEAVE_NOAPI(SUCCEED)
-} /* end H5T_patch_vlen_file() */
-
-/*-------------------------------------------------------------------------
- * Function:    H5T_own_vol_obj
- *
- * Purpose:     Transfers ownership of the supplied VOL object to the
- *              datatype, the VOL object will be freed when the datatype
- *              is closed.
- *
- * Return:      Non-negative on success/Negative on failure
- *
- *-------------------------------------------------------------------------
- */
-herr_t
-H5T_own_vol_obj(H5T_t *dt, H5VL_object_t *vol_obj)
-{
-    herr_t ret_value = SUCCEED;
-
-    FUNC_ENTER_NOAPI(FAIL)
-
-    /* Sanity check */
-    HDassert(dt);
-    HDassert(dt->shared);
-    HDassert(vol_obj);
-
-    /* Currently no support for owning multiple VOL objects, free the previous
-     * owned object.  Currently this is only used for holding open VOL objects
-     * used in the "loc" for vlens and references, so if this is being
-     * overwritten we don't need the old one anyways. */
-    if (dt->shared->owned_vol_obj && H5VL_free_object(dt->shared->owned_vol_obj) < 0)
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTCLOSEOBJ, FAIL, "unable to close owned VOL object")
-
-    /* Take ownership */
-    dt->shared->owned_vol_obj = vol_obj;
-    (void)H5VL_object_inc_rc(vol_obj);
-
-done:
-    FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5T_own_vol_obj() */

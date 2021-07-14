@@ -330,10 +330,12 @@ typedef struct H5CX_t {
     hbool_t      high_bound_valid; /* Whether high_bound property is valid */
 
     /* Cached VOL settings */
-    H5VL_connector_prop_t vol_connector_prop; /* Property for VOL connector ID & info */
-    hbool_t vol_connector_prop_valid;         /* Whether property for VOL connector ID & info is valid */
-    void *  vol_wrap_ctx;                     /* VOL connector's "wrap context" for creating IDs */
-    hbool_t vol_wrap_ctx_valid; /* Whether VOL connector's "wrap context" for creating IDs is valid */
+    void *  prim_container_ctx;       /* Primary VOL "container context" */
+    hbool_t prim_container_ctx_valid; /* Whether primary VOL "container context" is valid */
+    void *  src_container_ctx;        /* 'src' VOL "container context" */
+    hbool_t src_container_ctx_valid;  /* Whether 'src' VOL "container context" is valid */
+    void *  dst_container_ctx;        /* 'src' VOL "container context" */
+    hbool_t dst_container_ctx_valid;  /* Whether 'src' VOL "container context" is valid */
 } H5CX_t;
 
 /* Typedef for nodes on the API context stack */
@@ -977,44 +979,29 @@ H5CX_retrieve_state(H5CX_state_t **api_state)
     else
         (*api_state)->lcpl_id = H5P_LINK_CREATE_DEFAULT;
 
-    /* Keep a reference to the current VOL wrapping context */
-    (*api_state)->vol_wrap_ctx = (*head)->ctx.vol_wrap_ctx;
-    if (NULL != (*api_state)->vol_wrap_ctx) {
-        HDassert((*head)->ctx.vol_wrap_ctx_valid);
-        if (H5VL_inc_vol_wrapper((*api_state)->vol_wrap_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on VOL wrapping context")
+    /* Keep a reference to the primary VOL container context */
+    (*api_state)->prim_container_ctx = (*head)->ctx.prim_container_ctx;
+    if (NULL != (*api_state)->prim_container_ctx) {
+        HDassert((*head)->ctx.prim_container_ctx_valid);
+        if (H5VL_inc_container_ctx((*api_state)->prim_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on primary VOL container context")
     } /* end if */
 
-    /* Keep a copy of the VOL connector property, if there is one */
-    if ((*head)->ctx.vol_connector_prop_valid && (*head)->ctx.vol_connector_prop.connector_id > 0) {
-        /* Get the connector property */
-        H5MM_memcpy(&(*api_state)->vol_connector_prop, &(*head)->ctx.vol_connector_prop,
-                    sizeof(H5VL_connector_prop_t));
+    /* Keep a reference to the 'src' VOL container context */
+    (*api_state)->src_container_ctx = (*head)->ctx.src_container_ctx;
+    if (NULL != (*api_state)->src_container_ctx) {
+        HDassert((*head)->ctx.src_container_ctx_valid);
+        if (H5VL_inc_container_ctx((*api_state)->src_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on 'src' VOL container context")
+    } /* end if */
 
-        /* Check for actual VOL connector property */
-        if ((*api_state)->vol_connector_prop.connector_id) {
-            /* Copy connector info, if it exists */
-            if ((*api_state)->vol_connector_prop.connector_info) {
-                H5VL_class_t *connector;                 /* Pointer to connector */
-                void *        new_connector_info = NULL; /* Copy of connector info */
-
-                /* Retrieve the connector for the ID */
-                if (NULL ==
-                    (connector = (H5VL_class_t *)H5I_object((*api_state)->vol_connector_prop.connector_id)))
-                    HGOTO_ERROR(H5E_CONTEXT, H5E_BADTYPE, FAIL, "not a VOL connector ID")
-
-                /* Allocate and copy connector info */
-                if (H5VL_copy_connector_info(connector, &new_connector_info,
-                                             (*api_state)->vol_connector_prop.connector_info) < 0)
-                    HGOTO_ERROR(H5E_CONTEXT, H5E_CANTCOPY, FAIL, "connector info copy failed")
-                (*api_state)->vol_connector_prop.connector_info = new_connector_info;
-            } /* end if */
-
-            /* Increment the refcount on the connector ID */
-            if (H5I_inc_ref((*api_state)->vol_connector_prop.connector_id, FALSE) < 0)
-                HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "incrementing VOL connector ID failed")
-        } /* end if */
-    }     /* end if */
+    /* Keep a reference to the 'dst' VOL container context */
+    (*api_state)->dst_container_ctx = (*head)->ctx.dst_container_ctx;
+    if (NULL != (*api_state)->dst_container_ctx) {
+        HDassert((*head)->ctx.dst_container_ctx_valid);
+        if (H5VL_inc_container_ctx((*api_state)->dst_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on 'dst' VOL container context")
+    } /* end if */
 
 #ifdef H5_HAVE_PARALLEL
     /* Save parallel I/O settings */
@@ -1080,16 +1067,22 @@ H5CX_restore_state(const H5CX_state_t *api_state)
     (*head)->ctx.lcpl_id = api_state->lcpl_id;
     (*head)->ctx.lcpl    = NULL;
 
-    /* Restore the VOL wrapper context */
-    (*head)->ctx.vol_wrap_ctx = api_state->vol_wrap_ctx;
-    if (NULL != (*head)->ctx.vol_wrap_ctx)
-        (*head)->ctx.vol_wrap_ctx_valid = TRUE;
+    /* Restore the primary VOL container context */
+    if (NULL != api_state->prim_container_ctx) {
+        (*head)->ctx.prim_container_ctx = api_state->prim_container_ctx;
+        (*head)->ctx.prim_container_ctx_valid = TRUE;
+    } /* end if */
 
-    /* Restore the VOL connector info */
-    if (api_state->vol_connector_prop.connector_id) {
-        H5MM_memcpy(&(*head)->ctx.vol_connector_prop, &api_state->vol_connector_prop,
-                    sizeof(H5VL_connector_prop_t));
-        (*head)->ctx.vol_connector_prop_valid = TRUE;
+    /* Restore the 'src' VOL container context */
+    if (NULL != api_state->src_container_ctx) {
+        (*head)->ctx.src_container_ctx = api_state->src_container_ctx;
+        (*head)->ctx.src_container_ctx_valid = TRUE;
+    } /* end if */
+
+    /* Restore the 'dst' VOL container context */
+    if (NULL != api_state->dst_container_ctx) {
+        (*head)->ctx.dst_container_ctx = api_state->dst_container_ctx;
+        (*head)->ctx.dst_container_ctx_valid = TRUE;
     } /* end if */
 
 #ifdef H5_HAVE_PARALLEL
@@ -1142,22 +1135,20 @@ H5CX_free_state(H5CX_state_t *api_state)
         if (H5I_dec_ref(api_state->lcpl_id) < 0)
             HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on LCPL")
 
-    /* Release the VOL wrapper context */
-    if (api_state->vol_wrap_ctx)
-        if (H5VL_dec_vol_wrapper(api_state->vol_wrap_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on VOL wrapping context")
+    /* Release the primary VOL container context */
+    if (api_state->prim_container_ctx)
+        if (H5VL_dec_container_ctx(api_state->prim_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on primary VOL container context")
 
-    /* Release the VOL connector property, if it was set */
-    if (api_state->vol_connector_prop.connector_id) {
-        /* Clean up any VOL connector info */
-        if (api_state->vol_connector_prop.connector_info)
-            if (H5VL_free_connector_info(api_state->vol_connector_prop.connector_id,
-                                         api_state->vol_connector_prop.connector_info) < 0)
-                HGOTO_ERROR(H5E_CONTEXT, H5E_CANTRELEASE, FAIL, "unable to release VOL connector info object")
-        /* Decrement connector ID */
-        if (H5I_dec_ref(api_state->vol_connector_prop.connector_id) < 0)
-            HDONE_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't close VOL connector ID")
-    } /* end if */
+    /* Release the 'src' VOL container context */
+    if (api_state->src_container_ctx)
+        if (H5VL_dec_container_ctx(api_state->src_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on 'src' VOL container context")
+
+    /* Release the 'dst' VOL container context */
+    if (api_state->dst_container_ctx)
+        if (H5VL_dec_container_ctx(api_state->dst_container_ctx) < 0)
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on 'dst' VOL container context")
 
     /* Free the state */
     api_state = H5FL_FREE(H5CX_state_t, api_state);
@@ -1538,9 +1529,9 @@ done:
 } /* end H5CX_set_loc() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5CX_set_vol_wrap_ctx
+ * Function:    H5CX_set_primary_container_ctx
  *
- * Purpose:     Sets the VOL object wrapping context for an operation.
+ * Purpose:     Sets the primary VOL container context for an operation.
  *
  * Return:      Non-negative on success / Negative on failure
  *
@@ -1550,7 +1541,7 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5CX_set_vol_wrap_ctx(void *vol_wrap_ctx)
+H5CX_set_primary_container_ctx(void *container_ctx)
 {
     H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
     herr_t        ret_value = SUCCEED; /* Return value */
@@ -1562,29 +1553,29 @@ H5CX_set_vol_wrap_ctx(void *vol_wrap_ctx)
     HDassert(head && *head);
 
     /* Set the API context value */
-    (*head)->ctx.vol_wrap_ctx = vol_wrap_ctx;
+    (*head)->ctx.prim_container_ctx = container_ctx;
 
     /* Mark the value as valid */
-    (*head)->ctx.vol_wrap_ctx_valid = TRUE;
+    (*head)->ctx.prim_container_ctx_valid = TRUE;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5CX_set_vol_wrap_ctx() */
+} /* end H5CX_set_primary_container_ctx() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5CX_set_vol_connector_prop
+ * Function:    H5CX_set_src_container_ctx
  *
- * Purpose:     Sets the VOL connector ID & info for an operation.
+ * Purpose:     Sets the 'src' VOL container context for an operation.
  *
  * Return:      Non-negative on success / Negative on failure
  *
  * Programmer:  Quincey Koziol
- *              January 3, 2019
+ *              July 11, 2021
  *
  *-------------------------------------------------------------------------
  */
 herr_t
-H5CX_set_vol_connector_prop(const H5VL_connector_prop_t *vol_connector_prop)
+H5CX_set_src_container_ctx(void *container_ctx)
 {
     H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
     herr_t        ret_value = SUCCEED; /* Return value */
@@ -1596,14 +1587,48 @@ H5CX_set_vol_connector_prop(const H5VL_connector_prop_t *vol_connector_prop)
     HDassert(head && *head);
 
     /* Set the API context value */
-    H5MM_memcpy(&(*head)->ctx.vol_connector_prop, vol_connector_prop, sizeof(H5VL_connector_prop_t));
+    (*head)->ctx.src_container_ctx = container_ctx;
 
     /* Mark the value as valid */
-    (*head)->ctx.vol_connector_prop_valid = TRUE;
+    (*head)->ctx.src_container_ctx_valid = TRUE;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5CX_set_vol_connector_prop() */
+} /* end H5CX_set_src_container_ctx() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5CX_set_dst_container_ctx
+ *
+ * Purpose:     Sets the 'dst' VOL container context for an operation.
+ *
+ * Return:      Non-negative on success / Negative on failure
+ *
+ * Programmer:  Quincey Koziol
+ *              July 11, 2021
+ *
+ *-------------------------------------------------------------------------
+ */
+herr_t
+H5CX_set_dst_container_ctx(void *container_ctx)
+{
+    H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
+    herr_t        ret_value = SUCCEED; /* Return value */
+
+    FUNC_ENTER_NOAPI(FAIL)
+
+    /* Sanity check */
+    head = H5CX_get_my_context(); /* Get the pointer to the head of the API context, for this thread */
+    HDassert(head && *head);
+
+    /* Set the API context value */
+    (*head)->ctx.dst_container_ctx = container_ctx;
+
+    /* Mark the value as valid */
+    (*head)->ctx.dst_container_ctx_valid = TRUE;
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5CX_set_dst_container_ctx() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5CX_get_dxpl
@@ -1666,9 +1691,9 @@ H5CX_get_lapl(void)
 } /* end H5CX_get_lapl() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5CX_get_vol_wrap_ctx
+ * Function:    H5CX_get_primary_container_ctx
  *
- * Purpose:     Retrieves the VOL object wrapping context for an operation.
+ * Purpose:     Retrieves the primary VOL container context for an operation.
  *
  * Return:      Non-negative on success / Negative on failure
  *
@@ -1678,7 +1703,7 @@ H5CX_get_lapl(void)
  *-------------------------------------------------------------------------
  */
 herr_t
-H5CX_get_vol_wrap_ctx(void **vol_wrap_ctx)
+H5CX_get_primary_container_ctx(void **container_ctx)
 {
     H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
     herr_t        ret_value = SUCCEED; /* Return value */
@@ -1686,35 +1711,35 @@ H5CX_get_vol_wrap_ctx(void **vol_wrap_ctx)
     FUNC_ENTER_NOAPI(FAIL)
 
     /* Sanity check */
-    HDassert(vol_wrap_ctx);
+    HDassert(container_ctx);
     head = H5CX_get_my_context(); /* Get the pointer to the head of the API context, for this thread */
     HDassert(head && *head);
 
     /* Check for value that was set */
-    if ((*head)->ctx.vol_wrap_ctx_valid)
+    if ((*head)->ctx.prim_container_ctx_valid)
         /* Get the value */
-        *vol_wrap_ctx = (*head)->ctx.vol_wrap_ctx;
+        *container_ctx = (*head)->ctx.prim_container_ctx;
     else
-        *vol_wrap_ctx = NULL;
+        *container_ctx = NULL;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5CX_get_vol_wrap_ctx() */
+} /* end H5CX_get_primary_container_ctx() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5CX_get_vol_connector_prop
+ * Function:    H5CX_get_src_container_ctx
  *
- * Purpose:     Retrieves the VOL connector ID & info for an operation.
+ * Purpose:     Retrieves the 'src' VOL container context for an operation.
  *
  * Return:      Non-negative on success / Negative on failure
  *
  * Programmer:  Quincey Koziol
- *              January 3, 2019
+ *              July 11, 2021
  *
  *-------------------------------------------------------------------------
  */
 herr_t
-H5CX_get_vol_connector_prop(H5VL_connector_prop_t *vol_connector_prop)
+H5CX_get_src_container_ctx(void **container_ctx)
 {
     H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
     herr_t        ret_value = SUCCEED; /* Return value */
@@ -1722,20 +1747,56 @@ H5CX_get_vol_connector_prop(H5VL_connector_prop_t *vol_connector_prop)
     FUNC_ENTER_NOAPI(FAIL)
 
     /* Sanity check */
-    HDassert(vol_connector_prop);
+    HDassert(container_ctx);
     head = H5CX_get_my_context(); /* Get the pointer to the head of the API context, for this thread */
     HDassert(head && *head);
 
     /* Check for value that was set */
-    if ((*head)->ctx.vol_connector_prop_valid)
+    if ((*head)->ctx.src_container_ctx_valid)
         /* Get the value */
-        H5MM_memcpy(vol_connector_prop, &(*head)->ctx.vol_connector_prop, sizeof(H5VL_connector_prop_t));
+        *container_ctx = (*head)->ctx.src_container_ctx;
     else
-        HDmemset(vol_connector_prop, 0, sizeof(H5VL_connector_prop_t));
+        *container_ctx = NULL;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
-} /* end H5CX_get_vol_connector_prop() */
+} /* end H5CX_get_src_container_ctx() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5CX_get_dst_container_ctx
+ *
+ * Purpose:     Retrieves the 'dst' VOL container context for an operation.
+ *
+ * Return:      Non-negative on success / Negative on failure
+ *
+ * Programmer:  Quincey Koziol
+ *              July 11, 2021
+ *
+ *-------------------------------------------------------------------------
+ */
+herr_t
+H5CX_get_dst_container_ctx(void **container_ctx)
+{
+    H5CX_node_t **head      = NULL;    /* Pointer to head of API context list */
+    herr_t        ret_value = SUCCEED; /* Return value */
+
+    FUNC_ENTER_NOAPI(FAIL)
+
+    /* Sanity check */
+    HDassert(container_ctx);
+    head = H5CX_get_my_context(); /* Get the pointer to the head of the API context, for this thread */
+    HDassert(head && *head);
+
+    /* Check for value that was set */
+    if ((*head)->ctx.dst_container_ctx_valid)
+        /* Get the value */
+        *container_ctx = (*head)->ctx.dst_container_ctx;
+    else
+        *container_ctx = NULL;
+
+done:
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5CX_get_dst_container_ctx() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5CX_get_tag
