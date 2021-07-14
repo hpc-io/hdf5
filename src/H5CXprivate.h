@@ -39,13 +39,13 @@
 
 /* API context state */
 typedef struct H5CX_state_t {
-    hid_t                 dcpl_id;            /* DCPL for operation */
-    hid_t                 dxpl_id;            /* DXPL for operation */
-    hid_t                 lapl_id;            /* LAPL for operation */
-    hid_t                 lcpl_id;            /* LCPL for operation */
-    void *                prim_container_ctx; /* Primary VOL "container context" */
-    void *                src_container_ctx;  /* 'src' VOL "container context" */
-    void *                dst_container_ctx;  /* 'dst' VOL "container context" */
+    hid_t dcpl_id;            /* DCPL for operation */
+    hid_t dxpl_id;            /* DXPL for operation */
+    hid_t lapl_id;            /* LAPL for operation */
+    hid_t lcpl_id;            /* LCPL for operation */
+    void *prim_container_ctx; /* Primary VOL "container context" */
+    void *src_container_ctx;  /* 'src' VOL "container context" */
+    void *dst_container_ctx;  /* 'dst' VOL "container context" */
 #ifdef H5_HAVE_PARALLEL
     /* Internal: Parallel I/O settings */
     hbool_t coll_metadata_read; /* Whether to use collective I/O for metadata read */

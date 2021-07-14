@@ -67,12 +67,12 @@
 ssize_t
 H5I__get_name_test(hid_t id, char *name /*out*/, size_t size, hbool_t *cached)
 {
-    H5VL_object_t *vol_obj;                 /* Object of id */
-    H5G_loc_t      loc;                     /* Object location */
-    hbool_t        api_ctx_pushed  = FALSE; /* Whether API context pushed */
+    H5VL_object_t *vol_obj;                        /* Object of id */
+    H5G_loc_t      loc;                            /* Object location */
+    hbool_t        api_ctx_pushed         = FALSE; /* Whether API context pushed */
     hbool_t        prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    size_t         name_len        = 0;     /* Length of name */
-    ssize_t        ret_value       = -1;    /* Return value */
+    size_t         name_len               = 0;     /* Length of name */
+    ssize_t        ret_value              = -1;    /* Return value */
 
     FUNC_ENTER_PACKAGE
 

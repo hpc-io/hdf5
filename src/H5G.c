@@ -145,7 +145,7 @@ static hid_t
 H5G__create_api_common(hid_t loc_id, const char *name, hid_t lcpl_id, hid_t gcpl_id, hid_t gapl_id,
                        void **token_ptr, H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t *grp_obj         = NULL; /* Group VOL object */
+    H5VL_object_t * grp_obj     = NULL; /* Group VOL object */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
@@ -180,7 +180,8 @@ H5G__create_api_common(hid_t loc_id, const char *name, hid_t lcpl_id, hid_t gcpl
     H5CX_set_lcpl(lcpl_id);
 
     /* Create the group */
-    if (NULL == (grp_obj = H5VL_group_create(*vol_obj_ptr, &loc_params, name, lcpl_id, gcpl_id, gapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
+    if (NULL == (grp_obj = H5VL_group_create(*vol_obj_ptr, &loc_params, name, lcpl_id, gcpl_id, gapl_id,
+                                             H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_SYM, H5E_CANTINIT, H5I_INVALID_HID, "unable to create group")
 
     /* Register an ID for the group */
@@ -262,7 +263,8 @@ H5Gcreate_async(const char *app_file, const char *app_func, unsigned app_line, h
         token_ptr = &token; /* Point at token for VOL connector to set up */
 
     /* Create the group asynchronously */
-    if ((ret_value = H5G__create_api_common(loc_id, name, lcpl_id, gcpl_id, gapl_id, token_ptr, &vol_obj)) < 0)
+    if ((ret_value = H5G__create_api_common(loc_id, name, lcpl_id, gcpl_id, gapl_id, token_ptr, &vol_obj)) <
+        0)
         HGOTO_ERROR(H5E_SYM, H5E_CANTCREATE, H5I_INVALID_HID, "unable to asynchronously create group")
 
     /* If a token was created, add the token to the event set */
@@ -315,7 +317,7 @@ done:
 hid_t
 H5Gcreate_anon(hid_t loc_id, hid_t gcpl_id, hid_t gapl_id)
 {
-    H5VL_object_t *grp_obj         = NULL; /* Group VOL object */
+    H5VL_object_t *   grp_obj = NULL;              /* Group VOL object */
     H5VL_object_t *   vol_obj = NULL;              /* Object for loc_id */
     H5VL_loc_params_t loc_params;                  /* Location parameters for object access */
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
@@ -343,7 +345,7 @@ H5Gcreate_anon(hid_t loc_id, hid_t gcpl_id, hid_t gapl_id)
 
     /* Create the group */
     if (NULL == (grp_obj = H5VL_group_create(vol_obj, &loc_params, NULL, H5P_LINK_CREATE_DEFAULT, gcpl_id,
-                                         gapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+                                             gapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_SYM, H5E_CANTINIT, H5I_INVALID_HID, "unable to create group")
 
     /* Register an ID for the group */
@@ -373,7 +375,7 @@ static hid_t
 H5G__open_api_common(hid_t loc_id, const char *name, hid_t gapl_id, void **token_ptr,
                      H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t *grp_obj         = NULL; /* Group VOL object */
+    H5VL_object_t * grp_obj     = NULL; /* Group VOL object */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
@@ -392,7 +394,8 @@ H5G__open_api_common(hid_t loc_id, const char *name, hid_t gapl_id, void **token
     if (H5VL_setup_acc_args(loc_id, H5P_CLS_GACC, FALSE, &gapl_id, vol_obj_ptr, &loc_params) < 0)
         HGOTO_ERROR(H5E_SYM, H5E_CANTSET, H5I_INVALID_HID, "can't set object access arguments")
 
-    if (NULL == (grp_obj = H5VL_group_open(*vol_obj_ptr, &loc_params, name, gapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
+    if (NULL == (grp_obj = H5VL_group_open(*vol_obj_ptr, &loc_params, name, gapl_id, H5P_DATASET_XFER_DEFAULT,
+                                           token_ptr)))
         HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open group")
 
     /* Register an ID for the group */

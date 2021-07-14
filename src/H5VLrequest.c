@@ -79,8 +79,8 @@ H5FL_DEFINE_STATIC(H5VL_request_t);
 H5VL_request_t *
 H5VL_create_request(void *token, H5VL_connector_t *connector)
 {
-    H5VL_request_t *request  = NULL;  /* Pointer to new VOL request object                    */
-    H5VL_request_t *ret_value    = NULL;  /* Return value                                 */
+    H5VL_request_t *request   = NULL; /* Pointer to new VOL request object                    */
+    H5VL_request_t *ret_value = NULL; /* Return value                                 */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -96,7 +96,7 @@ H5VL_create_request(void *token, H5VL_connector_t *connector)
     H5VL__conn_inc_rc(connector);
 
     /* Set fields */
-    request->token = token;
+    request->token     = token;
     request->connector = connector;
 
     /* Set return value */
@@ -127,8 +127,8 @@ done:
 herr_t
 H5VL_free_token(void *token, H5VL_connector_t *connector)
 {
-    H5VL_request_t request;  /* Static VOL request object                    */
-    herr_t         ret_value   = SUCCEED; /* Return value                                 */
+    H5VL_request_t request;             /* Static VOL request object                    */
+    herr_t         ret_value = SUCCEED; /* Return value                                 */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -137,7 +137,7 @@ H5VL_free_token(void *token, H5VL_connector_t *connector)
     HDassert(connector);
 
     /* Set up request object */
-    request.token = token;
+    request.token     = token;
     request.connector = connector;
 
     /* Free the VOL connector's token */
@@ -163,7 +163,7 @@ done:
 herr_t
 H5VL_free_request(H5VL_request_t *request)
 {
-    herr_t         ret_value   = SUCCEED; /* Return value                                 */
+    herr_t ret_value = SUCCEED; /* Return value                                 */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -184,4 +184,3 @@ H5VL_free_request(H5VL_request_t *request)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL_free_request() */
-

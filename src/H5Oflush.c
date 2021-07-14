@@ -161,12 +161,12 @@ H5O_refresh_metadata(H5O_loc_t *oloc, hid_t oid)
 
     /* If the file is opened with write access, no need to perform refresh actions. */
     if (!(H5F_INTENT(oloc->file) & H5F_ACC_RDWR)) {
-        H5G_loc_t    tmp_loc;
-        H5O_loc_t    obj_oloc;
-        H5G_name_t   obj_path;
-        H5G_loc_t    obj_loc = {&obj_oloc, &obj_path};
-        H5O_shared_t cached_H5O_shared;
-        H5VL_container_t *     container = NULL;
+        H5G_loc_t         tmp_loc;
+        H5O_loc_t         obj_oloc;
+        H5G_name_t        obj_path;
+        H5G_loc_t         obj_loc = {&obj_oloc, &obj_path};
+        H5O_shared_t      cached_H5O_shared;
+        H5VL_container_t *container = NULL;
 
         /* "Fake" another open object in the file, so that it doesn't get closed
          *  if this object is the only thing holding the file open.

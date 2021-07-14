@@ -1820,13 +1820,14 @@ test_register_opt_operation(void)
         const char *    subcls_name;
         H5VL_obj_type_t obj_type;
         reg_opt_oper_t  reg_opt_op;
-    } test_params[] = {{H5VL_SUBCLS_ATTR, "attr", H5VL_OBJ_ATTR, {.obj_op = H5VLattr_optional_op}},
-                       {H5VL_SUBCLS_DATASET, "dataset", H5VL_OBJ_DATASET, {.obj_op = H5VLdataset_optional_op}},
-                       {H5VL_SUBCLS_DATATYPE, "datatype", H5VL_OBJ_DATATYPE, {.obj_op = H5VLdatatype_optional_op}},
-                       {H5VL_SUBCLS_FILE, "file", H5VL_OBJ_FILE, {.obj_op = H5VLfile_optional_op}},
-                       {H5VL_SUBCLS_GROUP, "group", H5VL_OBJ_GROUP, {.obj_op = H5VLgroup_optional_op}},
-                       {H5VL_SUBCLS_LINK, "link", H5VL_OBJ_GROUP, {.link_op = H5VLlink_optional_op}},
-                       {H5VL_SUBCLS_OBJECT, "object", H5VL_OBJ_GROUP, {.link_op = H5VLobject_optional_op}}};
+    } test_params[] = {
+        {H5VL_SUBCLS_ATTR, "attr", H5VL_OBJ_ATTR, {.obj_op = H5VLattr_optional_op}},
+        {H5VL_SUBCLS_DATASET, "dataset", H5VL_OBJ_DATASET, {.obj_op = H5VLdataset_optional_op}},
+        {H5VL_SUBCLS_DATATYPE, "datatype", H5VL_OBJ_DATATYPE, {.obj_op = H5VLdatatype_optional_op}},
+        {H5VL_SUBCLS_FILE, "file", H5VL_OBJ_FILE, {.obj_op = H5VLfile_optional_op}},
+        {H5VL_SUBCLS_GROUP, "group", H5VL_OBJ_GROUP, {.obj_op = H5VLgroup_optional_op}},
+        {H5VL_SUBCLS_LINK, "link", H5VL_OBJ_GROUP, {.link_op = H5VLlink_optional_op}},
+        {H5VL_SUBCLS_OBJECT, "object", H5VL_OBJ_GROUP, {.link_op = H5VLobject_optional_op}}};
     int      op_val = -1;
     unsigned u;
     herr_t   ret = SUCCEED;

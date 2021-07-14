@@ -73,7 +73,7 @@ typedef herr_t (*H5VL_api_oper_t)(void *obj, hbool_t new_api_ctx, void *ctx);
 typedef struct H5VL_attr_create_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    type_id;
     hid_t                    space_id;
@@ -90,7 +90,7 @@ typedef struct H5VL_attr_create_ctx_t {
 typedef struct H5VL_attr_open_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    aapl_id;
     hid_t                    dxpl_id;
@@ -104,26 +104,26 @@ typedef struct H5VL_attr_open_ctx_t {
 typedef struct H5VL_attr_read_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_class_t *cls;
-    hid_t         mem_type_id;
-    void *        buf;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               mem_type_id;
+    void *              buf;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_attr_read_ctx_t;
 
 /* Attribute write "common" callback context data */
 typedef struct H5VL_attr_write_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_class_t *cls;
-    hid_t         mem_type_id;
-    const void *  buf;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               mem_type_id;
+    const void *        buf;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_attr_write_ctx_t;
 
 /* Attribute get "common" callback context data */
 typedef struct H5VL_attr_get_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_attr_get_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -133,7 +133,7 @@ typedef struct H5VL_attr_get_ctx_t {
 typedef struct H5VL_attr_specific_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *  loc_params;
-    const H5VL_class_t *             cls;
+    const H5VL_class_t *       cls;
     H5VL_attr_specific_args_t *args;
     hid_t                      dxpl_id;
     void **                    req;
@@ -145,7 +145,7 @@ typedef struct H5VL_attr_specific_ctx_t {
 /* Attribute optional "common" callback context data */
 typedef struct H5VL_attr_optional_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_optional_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -157,17 +157,17 @@ typedef struct H5VL_attr_optional_ctx_t {
 /* Attribute close "common" callback context data */
 typedef struct H5VL_attr_close_ctx_t {
     /* DOWN: API routine parameters */
-    void *obj;
+    void *              obj;
     const H5VL_class_t *cls;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_attr_close_ctx_t;
 
 /* Dataset create "common" callback context data */
 typedef struct H5VL_dataset_create_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    lcpl_id;
     hid_t                    type_id;
@@ -185,7 +185,7 @@ typedef struct H5VL_dataset_create_ctx_t {
 typedef struct H5VL_dataset_open_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    dapl_id;
     hid_t                    dxpl_id;
@@ -199,30 +199,30 @@ typedef struct H5VL_dataset_open_ctx_t {
 typedef struct H5VL_dataset_read_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_class_t *cls;
-    hid_t         mem_type_id;
-    hid_t         mem_space_id;
-    hid_t         file_space_id;
-    void *        buf;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               mem_type_id;
+    hid_t               mem_space_id;
+    hid_t               file_space_id;
+    void *              buf;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_dataset_read_ctx_t;
 
 /* Dataset write "common" callback context data */
 typedef struct H5VL_dataset_write_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_class_t *cls;
-    hid_t         mem_type_id;
-    hid_t         mem_space_id;
-    hid_t         file_space_id;
-    const void *  buf;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               mem_type_id;
+    hid_t               mem_space_id;
+    hid_t               file_space_id;
+    const void *        buf;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_dataset_write_ctx_t;
 
 /* Dataset get "common" callback context data */
 typedef struct H5VL_dataset_get_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5VL_dataset_get_args_t *args;
     hid_t                    dxpl_id;
     void **                  req;
@@ -231,7 +231,7 @@ typedef struct H5VL_dataset_get_ctx_t {
 /* Dataset specific "common" callback context data */
 typedef struct H5VL_dataset_specific_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *                cls;
+    const H5VL_class_t *          cls;
     H5VL_dataset_specific_args_t *args;
     hid_t                         dxpl_id;
     void **                       req;
@@ -240,7 +240,7 @@ typedef struct H5VL_dataset_specific_ctx_t {
 /* Dataset optional "common" callback context data */
 typedef struct H5VL_dataset_optional_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_optional_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -249,17 +249,17 @@ typedef struct H5VL_dataset_optional_ctx_t {
 /* Dataset close "common" callback context data */
 typedef struct H5VL_dataset_close_ctx_t {
     /* DOWN: API routine parameters */
-    void *obj;
+    void *              obj;
     const H5VL_class_t *cls;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_dataset_close_ctx_t;
 
 /* Named datatype commit "common" callback context data */
 typedef struct H5VL_datatype_commit_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    type_id;
     hid_t                    lcpl_id;
@@ -276,7 +276,7 @@ typedef struct H5VL_datatype_commit_ctx_t {
 typedef struct H5VL_datatype_open_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    tapl_id;
     hid_t                    dxpl_id;
@@ -289,7 +289,7 @@ typedef struct H5VL_datatype_open_ctx_t {
 /* Datatype get "common" callback context data */
 typedef struct H5VL_datatype_get_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *            cls;
+    const H5VL_class_t *      cls;
     H5VL_datatype_get_args_t *args;
     hid_t                     dxpl_id;
     void **                   req;
@@ -298,7 +298,7 @@ typedef struct H5VL_datatype_get_ctx_t {
 /* Datatype specific "common" callback context data */
 typedef struct H5VL_datatype_specific_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *                 cls;
+    const H5VL_class_t *           cls;
     H5VL_datatype_specific_args_t *args;
     hid_t                          dxpl_id;
     void **                        req;
@@ -307,7 +307,7 @@ typedef struct H5VL_datatype_specific_ctx_t {
 /* Datatype optional "common" callback context data */
 typedef struct H5VL_datatype_optional_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_optional_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -316,16 +316,16 @@ typedef struct H5VL_datatype_optional_ctx_t {
 /* Datatype close "common" callback context data */
 typedef struct H5VL_datatype_close_ctx_t {
     /* DOWN: API routine parameters */
-    void *obj;
+    void *              obj;
     const H5VL_class_t *cls;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_datatype_close_ctx_t;
 
 /* File get "common" callback context data */
 typedef struct H5VL_file_get_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_file_get_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -334,7 +334,7 @@ typedef struct H5VL_file_get_ctx_t {
 /* File specific "common" callback context data */
 typedef struct H5VL_file_specific_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *             cls;
+    const H5VL_class_t *       cls;
     H5VL_file_specific_args_t *args;
     hid_t                      dxpl_id;
     void **                    req;
@@ -343,7 +343,7 @@ typedef struct H5VL_file_specific_ctx_t {
 /* File optional "common" callback context data */
 typedef struct H5VL_file_optional_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_optional_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -352,17 +352,17 @@ typedef struct H5VL_file_optional_ctx_t {
 /* File close "common" callback context data */
 typedef struct H5VL_file_close_ctx_t {
     /* DOWN: API routine parameters */
-    void *obj;
+    void *              obj;
     const H5VL_class_t *cls;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_file_close_ctx_t;
 
 /* Group create "common" callback context data */
 typedef struct H5VL_group_create_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    lcpl_id;
     hid_t                    gcpl_id;
@@ -378,7 +378,7 @@ typedef struct H5VL_group_create_ctx_t {
 typedef struct H5VL_group_open_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     const char *             name;
     hid_t                    gapl_id;
     hid_t                    dxpl_id;
@@ -391,7 +391,7 @@ typedef struct H5VL_group_open_ctx_t {
 /* Group get "common" callback context data */
 typedef struct H5VL_group_get_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *         cls;
+    const H5VL_class_t *   cls;
     H5VL_group_get_args_t *args;
     hid_t                  dxpl_id;
     void **                req;
@@ -400,7 +400,7 @@ typedef struct H5VL_group_get_ctx_t {
 /* Group specific "common" callback context data */
 typedef struct H5VL_group_specific_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *              cls;
+    const H5VL_class_t *        cls;
     H5VL_group_specific_args_t *args;
     hid_t                       dxpl_id;
     void **                     req;
@@ -409,7 +409,7 @@ typedef struct H5VL_group_specific_ctx_t {
 /* Group optional "common" callback context data */
 typedef struct H5VL_group_optional_ctx_t {
     /* DOWN: API routine parameters */
-    const H5VL_class_t *        cls;
+    const H5VL_class_t *  cls;
     H5VL_optional_args_t *args;
     hid_t                 dxpl_id;
     void **               req;
@@ -421,10 +421,10 @@ typedef struct H5VL_group_optional_ctx_t {
 /* Group close "common" callback context data */
 typedef struct H5VL_group_close_ctx_t {
     /* DOWN: API routine parameters */
-    void *obj;
+    void *              obj;
     const H5VL_class_t *cls;
-    hid_t         dxpl_id;
-    void **       req;
+    hid_t               dxpl_id;
+    void **             req;
 } H5VL_group_close_ctx_t;
 
 /* Link create "common" callback context data */
@@ -432,7 +432,7 @@ typedef struct H5VL_link_create_ctx_t {
     /* DOWN: API routine parameters */
     H5VL_link_create_args_t *args;
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     hid_t                    lcpl_id;
     hid_t                    lapl_id;
     hid_t                    dxpl_id;
@@ -445,7 +445,7 @@ typedef struct H5VL_link_copy_ctx_t {
     const H5VL_loc_params_t *src_loc_params;
     void *                   dst_obj;
     const H5VL_loc_params_t *dst_loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     hid_t                    lcpl_id;
     hid_t                    lapl_id;
     hid_t                    dxpl_id;
@@ -459,7 +459,7 @@ typedef struct H5VL_link_move_ctx_t {
     const H5VL_loc_params_t *src_loc_params;
     void *                   dst_obj;
     const H5VL_loc_params_t *dst_loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     hid_t                    lcpl_id;
     hid_t                    lapl_id;
     hid_t                    dxpl_id;
@@ -470,7 +470,7 @@ typedef struct H5VL_link_move_ctx_t {
 typedef struct H5VL_link_get_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5VL_link_get_args_t *   args;
     hid_t                    dxpl_id;
     void **                  req;
@@ -480,7 +480,7 @@ typedef struct H5VL_link_get_ctx_t {
 typedef struct H5VL_link_specific_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *  loc_params;
-    const H5VL_class_t *             cls;
+    const H5VL_class_t *       cls;
     H5VL_link_specific_args_t *args;
     hid_t                      dxpl_id;
     void **                    req;
@@ -493,7 +493,7 @@ typedef struct H5VL_link_specific_ctx_t {
 typedef struct H5VL_link_optional_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5VL_optional_args_t *   args;
     hid_t                    dxpl_id;
     void **                  req;
@@ -503,7 +503,7 @@ typedef struct H5VL_link_optional_ctx_t {
 typedef struct H5VL_object_open_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5I_type_t *             opened_type;
     hid_t                    dxpl_id;
     void **                  req;
@@ -521,7 +521,7 @@ typedef struct H5VL_object_copy_ctx_t {
     void *                   dst_obj;
     const H5VL_loc_params_t *dst_loc_params;
     const char *             dst_name;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     hid_t                    ocpypl_id;
     hid_t                    lcpl_id;
     hid_t                    dxpl_id;
@@ -532,7 +532,7 @@ typedef struct H5VL_object_copy_ctx_t {
 typedef struct H5VL_object_get_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5VL_object_get_args_t * args;
     hid_t                    dxpl_id;
     void **                  req;
@@ -542,7 +542,7 @@ typedef struct H5VL_object_get_ctx_t {
 typedef struct H5VL_object_specific_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *    loc_params;
-    const H5VL_class_t *               cls;
+    const H5VL_class_t *         cls;
     H5VL_object_specific_args_t *args;
     hid_t                        dxpl_id;
     void **                      req;
@@ -555,7 +555,7 @@ typedef struct H5VL_object_specific_ctx_t {
 typedef struct H5VL_object_optional_ctx_t {
     /* DOWN: API routine parameters */
     const H5VL_loc_params_t *loc_params;
-    const H5VL_class_t *           cls;
+    const H5VL_class_t *     cls;
     H5VL_optional_args_t *   args;
     hid_t                    dxpl_id;
     void **                  req;
@@ -568,7 +568,9 @@ typedef struct H5VL_object_optional_ctx_t {
 /********************/
 /* Local Prototypes */
 /********************/
-static herr_t H5VL__common_optional_op(hid_t id, H5I_type_t id_type, H5VL_reg_opt_oper_t reg_opt_op, H5VL_optional_args_t *args, hid_t dxpl_id, void **req, H5VL_object_t **_vol_obj_ptr);
+static herr_t H5VL__common_optional_op(hid_t id, H5I_type_t id_type, H5VL_reg_opt_oper_t reg_opt_op,
+                                       H5VL_optional_args_t *args, hid_t dxpl_id, void **req,
+                                       H5VL_object_t **_vol_obj_ptr);
 static herr_t H5VL__common_api_op(void *obj, hid_t dxpl_id, H5VL_api_oper_t wrap_op, void *wrap_ctx);
 static herr_t H5VL__get_wrap_ctx(const H5VL_connector_t *connector, void *obj, void **wrap_ctx);
 static herr_t H5VL__free_wrap_ctx(const H5VL_connector_t *connector, void *wrap_ctx);
@@ -644,7 +646,8 @@ static void * H5VL__file_open(const H5VL_class_t *cls, const char *name, unsigne
                               hid_t dxpl_id, void **req);
 static herr_t H5VL__file_open_find_connector_cb(H5PL_type_t plugin_type, const void *plugin_info,
                                                 void *op_data);
-static herr_t H5VL__file_get(void *obj, const H5VL_class_t *cls, H5VL_file_get_args_t *args, hid_t dxpl_id, void **req);
+static herr_t H5VL__file_get(void *obj, const H5VL_class_t *cls, H5VL_file_get_args_t *args, hid_t dxpl_id,
+                             void **req);
 static herr_t H5VL__file_get_api_op(void *obj, hbool_t new_api_ctx, void *ctx);
 static herr_t H5VL__file_specific(void *obj, const H5VL_class_t *cls, H5VL_file_specific_args_t *args,
                                   hid_t dxpl_id, void **req);
@@ -761,8 +764,8 @@ static herr_t H5VL__optional(void *obj, const H5VL_class_t *cls, H5VL_optional_a
 herr_t
 H5VLinitialize(hid_t connector_id, hid_t vipl_id)
 {
-    H5VL_connector_t *connector;      /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE2("e", "ii", connector_id, vipl_id);
@@ -792,8 +795,8 @@ done:
 herr_t
 H5VLterminate(hid_t connector_id)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE1("e", "i", connector_id);
@@ -823,8 +826,8 @@ done:
 herr_t
 H5VLget_cap_flags(hid_t connector_id, unsigned *cap_flags /*out*/)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE2("e", "ix", connector_id, cap_flags);
@@ -854,8 +857,8 @@ done:
 herr_t
 H5VLget_value(hid_t connector_id, H5VL_class_value_t *value /*out*/)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE2("e", "ix", connector_id, value);
@@ -886,11 +889,11 @@ static herr_t
 H5VL__common_optional_op(hid_t id, H5I_type_t id_type, H5VL_reg_opt_oper_t reg_opt_op,
                          H5VL_optional_args_t *args, hid_t dxpl_id, void **req, H5VL_object_t **_vol_obj_ptr)
 {
-    void *obj;                  /* Object to operate on */
+    void *          obj;                                                        /* Object to operate on */
     H5VL_object_t * tmp_vol_obj = NULL;                                         /* Object for id */
     H5VL_object_t **vol_obj_ptr = (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for id */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t          ret_value       = SUCCEED; /* Return value */
+    hbool_t         prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t          ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -904,7 +907,8 @@ H5VL__common_optional_op(hid_t id, H5I_type_t id_type, H5VL_reg_opt_oper_t reg_o
     prim_container_ctx_set = TRUE;
 
     /* Get actual object */
-    obj = ((*vol_obj_ptr)->obj_type == H5VL_OBJ_FILE) ? (*vol_obj_ptr)->container->object : (*vol_obj_ptr)->object;
+    obj = ((*vol_obj_ptr)->obj_type == H5VL_OBJ_FILE) ? (*vol_obj_ptr)->container->object
+                                                      : (*vol_obj_ptr)->object;
 
     /* Call the corresponding internal VOL routine */
     /* (Must return value from callback, for iterators) */
@@ -935,12 +939,12 @@ done:
 static herr_t
 H5VL__common_api_op(void *obj, hid_t dxpl_id, H5VL_api_oper_t wrap_op, void *wrap_ctx)
 {
-    H5P_genplist_t *dxpl_plist  = NULL;    /* DXPL property list pointer */
-    hbool_t         new_api_ctx = FALSE;   /* Whether to start a new API context */
-    hbool_t         api_pushed  = FALSE;   /* Indicate that a new API context was pushed */
-    hbool_t         prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t         new_api_ctx_prop_reset = FALSE; /* Whether the 'new API context' property was reset */
-    herr_t          ret_value   = SUCCEED; /* Return value */
+    H5P_genplist_t *dxpl_plist             = NULL;    /* DXPL property list pointer */
+    hbool_t         new_api_ctx            = FALSE;   /* Whether to start a new API context */
+    hbool_t         api_pushed             = FALSE;   /* Indicate that a new API context was pushed */
+    hbool_t         prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t         new_api_ctx_prop_reset = FALSE;   /* Whether the 'new API context' property was reset */
+    herr_t          ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -954,8 +958,8 @@ H5VL__common_api_op(void *obj, hid_t dxpl_id, H5VL_api_oper_t wrap_op, void *wra
 
         /* Start a new API context, if requested */
         if (new_api_ctx) {
-            H5VL_object_t *vol_obj;             /* VOL object */
-            hbool_t reset_api_ctx = FALSE; /* Flag to reset the 'new API context' */
+            H5VL_object_t *vol_obj;               /* VOL object */
+            hbool_t        reset_api_ctx = FALSE; /* Flag to reset the 'new API context' */
 
             /* Push new API context */
             if (H5CX_push() < 0)
@@ -1060,8 +1064,8 @@ done:
 herr_t
 H5VLcopy_connector_info(hid_t connector_id, void **dst_vol_info, void *src_vol_info)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "i**x*x", connector_id, dst_vol_info, src_vol_info);
@@ -1151,8 +1155,8 @@ done:
 herr_t
 H5VLcmp_connector_info(int *cmp, hid_t connector_id, const void *info1, const void *info2)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE4("e", "*Isi*x*x", cmp, connector_id, info1, info2);
@@ -1182,8 +1186,8 @@ done:
 herr_t
 H5VL_free_connector_info(hid_t connector_id, const void *info)
 {
-    H5VL_connector_t *connector;       /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -1359,8 +1363,8 @@ done:
 void *
 H5VLget_object(void *obj, hid_t connector_id)
 {
-    H5VL_connector_t *connector;    /* VOL connector struct */
-    void *        ret_value = NULL; /* Return value */
+    H5VL_connector_t *connector;        /* VOL connector struct */
+    void *            ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
     H5TRACE2("*x", "*xi", obj, connector_id);
@@ -1432,8 +1436,8 @@ done:
 herr_t
 H5VLget_wrap_ctx(void *obj, hid_t connector_id, void **wrap_ctx /*out*/)
 {
-    H5VL_connector_t *connector;                 /* VOL connector's class struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector's class struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "*xix", obj, connector_id, wrap_ctx);
@@ -1497,8 +1501,8 @@ done:
 void *
 H5VLwrap_object(void *obj, H5I_type_t obj_type, hid_t connector_id, void *wrap_ctx)
 {
-    H5VL_connector_t *connector;    /* VOL connector struct */
-    void *        ret_value = NULL; /* Return value */
+    H5VL_connector_t *connector;        /* VOL connector struct */
+    void *            ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
     H5TRACE4("*x", "*xIti*x", obj, obj_type, connector_id, wrap_ctx);
@@ -1564,8 +1568,8 @@ done:
 void *
 H5VLunwrap_object(void *obj, hid_t connector_id)
 {
-    H5VL_connector_t *connector;    /* VOL connector struct */
-    void *        ret_value = NULL; /* Return value */
+    H5VL_connector_t *connector;        /* VOL connector struct */
+    void *            ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
     H5TRACE2("*x", "*xi", obj, connector_id);
@@ -1627,8 +1631,8 @@ done:
 herr_t
 H5VLfree_wrap_ctx(void *wrap_ctx, hid_t connector_id)
 {
-    H5VL_connector_t *connector;                 /* VOL connector's class struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector's class struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE2("e", "*xi", wrap_ctx, connector_id);
@@ -1668,7 +1672,8 @@ H5VL__attr_create(void *obj, const H5VL_loc_params_t *loc_params, const H5VL_cla
         HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, NULL, "VOL connector has no 'attr create' method")
 
     /* Call the corresponding VOL callback */
-    if (NULL == (ret_value = (cls->attr_cls.create)(obj, loc_params, name, type_id, space_id, acpl_id, aapl_id, dxpl_id, req)))
+    if (NULL == (ret_value = (cls->attr_cls.create)(obj, loc_params, name, type_id, space_id, acpl_id,
+                                                    aapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "attribute create failed")
 
 done:
@@ -1689,10 +1694,10 @@ H5VL_object_t *
 H5VL_attr_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                  hid_t type_id, hid_t space_id, hid_t acpl_id, hid_t aapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *attr = NULL;          /* Attribute object from VOL connector */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *ret_value       = NULL;  /* Return value */
+    void *         obj;                            /* Object to operate on */
+    void *         attr                   = NULL;  /* Attribute object from VOL connector */
+    hbool_t        prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -1705,7 +1710,8 @@ H5VL_attr_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_para
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (attr = H5VL__attr_create(obj, loc_params, vol_obj->container->connector->cls, name, type_id, space_id, acpl_id, aapl_id, dxpl_id, req)))
+    if (NULL == (attr = H5VL__attr_create(obj, loc_params, vol_obj->container->connector->cls, name, type_id,
+                                          space_id, acpl_id, aapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "attribute create failed")
 
     /* Create VOL object for attribute */
@@ -1715,7 +1721,8 @@ H5VL_attr_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_para
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (attr && H5VL__attr_close(attr, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (attr && H5VL__attr_close(attr, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                     H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "attribute close failed")
 
     /* Reset container info in API context */
@@ -1738,9 +1745,9 @@ done:
 static herr_t
 H5VL__attr_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_attr_create_ctx_t *ctx       = (H5VL_attr_create_ctx_t *)_ctx; /* Get pointer to context */
-    void *attr;         /* Attribute from VOL connector */
-    herr_t                  ret_value = SUCCEED;                        /* Return value */
+    H5VL_attr_create_ctx_t *ctx = (H5VL_attr_create_ctx_t *)_ctx; /* Get pointer to context */
+    void *                  attr;                                 /* Attribute from VOL connector */
+    herr_t                  ret_value = SUCCEED;                  /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -1748,11 +1755,12 @@ H5VL__attr_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (attr = H5VL__attr_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->type_id, ctx->space_id, ctx->acpl_id, ctx->aapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (attr = H5VL__attr_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->type_id,
+                                          ctx->space_id, ctx->acpl_id, ctx->aapl_id, ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "unable to create attribute")
 
     /* Set up object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_ATTR, attr)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for attribute")
     } /* end if */
@@ -1779,7 +1787,7 @@ H5VLattr_create(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_
                 void **req /*out*/)
 {
     H5VL_attr_create_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *         connector;              /* VOL connector struct */
+    H5VL_connector_t *     connector;        /* VOL connector struct */
     void *                 ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -1859,10 +1867,10 @@ H5VL_object_t *
 H5VL_attr_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                hid_t aapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *attr = NULL;          /* Attribute object from VOL connector */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *         obj;                            /* Object to operate on */
+    void *         attr                   = NULL;  /* Attribute object from VOL connector */
+    hbool_t        prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -1875,7 +1883,8 @@ H5VL_attr_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (attr = H5VL__attr_open(obj, loc_params, vol_obj->container->connector->cls, name, aapl_id, dxpl_id, req)))
+    if (NULL == (attr = H5VL__attr_open(obj, loc_params, vol_obj->container->connector->cls, name, aapl_id,
+                                        dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "attribute open failed")
 
     /* Create VOL object for attribute */
@@ -1885,7 +1894,8 @@ H5VL_attr_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (attr && H5VL__attr_close(attr, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (attr && H5VL__attr_close(attr, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                     H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "attribute close failed")
 
     /* Reset container info in API context */
@@ -1908,9 +1918,9 @@ done:
 static herr_t
 H5VL__attr_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_attr_open_ctx_t *ctx       = (H5VL_attr_open_ctx_t *)_ctx; /* Get pointer to context */
-    void *attr;         /* Attribute from VOL connector */
-    herr_t                ret_value = SUCCEED;                      /* Return value */
+    H5VL_attr_open_ctx_t *ctx = (H5VL_attr_open_ctx_t *)_ctx; /* Get pointer to context */
+    void *                attr;                               /* Attribute from VOL connector */
+    herr_t                ret_value = SUCCEED;                /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -1918,11 +1928,12 @@ H5VL__attr_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (attr = H5VL__attr_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->aapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (attr = H5VL__attr_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->aapl_id, ctx->dxpl_id,
+                                        ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, FAIL, "unable to open attribute")
 
     /* Set up attribute object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_ATTR, attr)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for attribute")
     } /* end if */
@@ -1948,7 +1959,7 @@ H5VLattr_open(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_id
               hid_t aapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_attr_open_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *         connector;              /* VOL connector struct */
+    H5VL_connector_t *   connector;        /* VOL connector struct */
     void *               ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -2022,10 +2033,10 @@ done:
 herr_t
 H5VL_attr_read(const H5VL_object_t *vol_obj, hid_t mem_type_id, void *buf, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2099,7 +2110,7 @@ herr_t
 H5VLattr_read(void *obj, hid_t connector_id, hid_t mem_type_id, void *buf, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_attr_read_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *   connector;                 /* VOL connector struct */
+    H5VL_connector_t *   connector;           /* VOL connector struct */
     herr_t               ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2169,10 +2180,10 @@ done:
 herr_t
 H5VL_attr_write(const H5VL_object_t *vol_obj, hid_t mem_type_id, const void *buf, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t dst_container_ctx_set  = FALSE;   /* Whether the 'dst' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2247,7 +2258,7 @@ H5VLattr_write(void *obj, hid_t connector_id, hid_t mem_type_id, const void *buf
                void **req /*out*/)
 {
     H5VL_attr_write_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *    connector;           /* VOL connector struct */
     herr_t                ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2316,9 +2327,9 @@ done:
 herr_t
 H5VL_attr_get(const H5VL_object_t *vol_obj, H5VL_attr_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2385,7 +2396,7 @@ herr_t
 H5VLattr_get(void *obj, hid_t connector_id, H5VL_attr_get_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_attr_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *  connector;           /* VOL connector struct */
     herr_t              ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2458,9 +2469,9 @@ herr_t
 H5VL_attr_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                    H5VL_attr_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2474,7 +2485,8 @@ H5VL_attr_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_pa
 
     /* Call the corresponding internal VOL routine */
     /* (Must return value from callback, for iterators) */
-    if ((ret_value = H5VL__attr_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id, req)) < 0)
+    if ((ret_value = H5VL__attr_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id,
+                                         req)) < 0)
         HERROR(H5E_VOL, H5E_CANTOPERATE, "unable to execute attribute 'specific' callback");
 
 done:
@@ -2527,7 +2539,7 @@ H5VLattr_specific(void *obj, const H5VL_loc_params_t *loc_params, hid_t connecto
                   H5VL_attr_specific_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_attr_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2602,9 +2614,9 @@ done:
 herr_t
 H5VL_attr_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2671,7 +2683,7 @@ H5VLattr_optional(void *obj, hid_t connector_id, H5VL_optional_args_t *args, hid
                   void **req /*out*/)
 {
     H5VL_attr_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2729,7 +2741,8 @@ H5VLattr_optional_op(const char *app_file, const char *app_func, unsigned app_li
         token_ptr = &token; /* Point at token for VOL connector to set up */
 
     /* Call the common VOL connector optional routine */
-    if ((ret_value = H5VL__common_optional_op(attr_id, H5I_ATTR, H5VL__attr_optional, args, dxpl_id, token_ptr, &vol_obj)) < 0)
+    if ((ret_value = H5VL__common_optional_op(attr_id, H5I_ATTR, H5VL__attr_optional, args, dxpl_id,
+                                              token_ptr, &vol_obj)) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute attribute 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -2786,9 +2799,9 @@ done:
 herr_t
 H5VL_attr_close(const H5VL_object_t *vol_obj, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t ret_value = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -2841,7 +2854,7 @@ H5VL__attr_close_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, FAIL, "unable to close attribute")
 
     /* Close VOL object, if API context */
-    if(new_api_ctx)
+    if (new_api_ctx)
         if (H5VL_free_object(ctx->obj) < 0)
             HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free attribute VOL object")
 
@@ -2863,7 +2876,7 @@ herr_t
 H5VLattr_close(void *obj, hid_t connector_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_attr_close_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *    connector;           /* VOL connector struct */
     herr_t                ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -2913,7 +2926,8 @@ H5VL__dataset_create(void *obj, const H5VL_loc_params_t *loc_params, const H5VL_
         HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, NULL, "VOL connector has no 'dataset create' method")
 
     /* Call the corresponding VOL callback */
-    if (NULL == (ret_value = (cls->dataset_cls.create)(obj, loc_params, name, lcpl_id, type_id, space_id, dcpl_id, dapl_id, dxpl_id, req)))
+    if (NULL == (ret_value = (cls->dataset_cls.create)(obj, loc_params, name, lcpl_id, type_id, space_id,
+                                                       dcpl_id, dapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "dataset create failed")
 
 done:
@@ -2935,13 +2949,13 @@ H5VL_dataset_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_p
                     hid_t lcpl_id, hid_t type_id, hid_t space_id, hid_t dcpl_id, hid_t dapl_id, hid_t dxpl_id,
                     void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *dset = NULL;          /* Dataset object from VOL connector */
-    H5VL_container_t *dset_container = NULL;    /* Container for dataset */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            dset                   = NULL;  /* Dataset object from VOL connector */
+    H5VL_container_t *dset_container         = NULL;  /* Container for dataset */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    hbool_t           src_container_ctx_set  = FALSE; /* Whether the 'src' VOL container context was set up */
+    hbool_t           dst_container_ctx_set  = FALSE; /* Whether the 'dst' VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -2969,7 +2983,8 @@ H5VL_dataset_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_p
     dset_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (dset = H5VL__dataset_create(obj, loc_params, vol_obj->container->connector->cls, name, lcpl_id, type_id, space_id, dcpl_id, dapl_id, dxpl_id, req)))
+    if (NULL == (dset = H5VL__dataset_create(obj, loc_params, vol_obj->container->connector->cls, name,
+                                             lcpl_id, type_id, space_id, dcpl_id, dapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "dataset create failed")
 
     /* Get container for dataset (accommodates external links) */
@@ -2983,7 +2998,9 @@ H5VL_dataset_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_p
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (dset && dset_container && H5VL__dataset_close(dset, dset_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (dset && dset_container &&
+            H5VL__dataset_close(dset, dset_container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "dataset close failed")
 
     /* Reset container info in API context */
@@ -3010,9 +3027,9 @@ done:
 static herr_t
 H5VL__dataset_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_dataset_create_ctx_t *ctx       = (H5VL_dataset_create_ctx_t *)_ctx; /* Get pointer to context */
-    void *dset;         /* Dataset from VOL connector */
-    herr_t                     ret_value = SUCCEED;                           /* Return value */
+    H5VL_dataset_create_ctx_t *ctx = (H5VL_dataset_create_ctx_t *)_ctx; /* Get pointer to context */
+    void *                     dset;                                    /* Dataset from VOL connector */
+    herr_t                     ret_value = SUCCEED;                     /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -3020,11 +3037,13 @@ H5VL__dataset_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (dset = H5VL__dataset_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->lcpl_id, ctx->type_id, ctx->space_id, ctx->dcpl_id, ctx->dapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL ==
+        (dset = H5VL__dataset_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->lcpl_id, ctx->type_id,
+                                     ctx->space_id, ctx->dcpl_id, ctx->dapl_id, ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "unable to create dataset")
 
     /* Set up object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_DATASET, dset)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for dataset")
     } /* end if */
@@ -3051,7 +3070,7 @@ H5VLdataset_create(void *obj, const H5VL_loc_params_t *loc_params, hid_t connect
                    void **req /*out*/)
 {
     H5VL_dataset_create_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *        connector;              /* VOL connector struct */
+    H5VL_connector_t *        connector;        /* VOL connector struct */
     void *                    ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -3132,11 +3151,11 @@ H5VL_object_t *
 H5VL_dataset_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                   hid_t dapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *dset = NULL;          /* Dataset object from VOL connector */
-    H5VL_container_t *dset_container = NULL;    /* Container for dataset */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            dset                   = NULL;  /* Dataset object from VOL connector */
+    H5VL_container_t *dset_container         = NULL;  /* Container for dataset */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -3152,7 +3171,8 @@ H5VL_dataset_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_par
     dset_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (dset = H5VL__dataset_open(obj, loc_params, dset_container->connector->cls, name, dapl_id, dxpl_id, req)))
+    if (NULL == (dset = H5VL__dataset_open(obj, loc_params, dset_container->connector->cls, name, dapl_id,
+                                           dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "dataset open failed")
 
     /* Get container for dataset (accommodates external links) */
@@ -3166,7 +3186,9 @@ H5VL_dataset_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_par
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (dset && dset_container && H5VL__dataset_close(dset, dset_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (dset && dset_container &&
+            H5VL__dataset_close(dset, dset_container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "dataset close failed")
 
     /* Reset container info in API context */
@@ -3190,8 +3212,8 @@ static herr_t
 H5VL__dataset_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
     H5VL_dataset_open_ctx_t *ctx       = (H5VL_dataset_open_ctx_t *)_ctx; /* Get pointer to context */
-    void *dset = NULL;          /* Dataset object from VOL connector */
-    herr_t                   ret_value = SUCCEED;                         /* Return value */
+    void *                   dset      = NULL;    /* Dataset object from VOL connector */
+    herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -3199,11 +3221,12 @@ H5VL__dataset_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (dset = H5VL__dataset_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->dapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (dset = H5VL__dataset_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->dapl_id,
+                                           ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, FAIL, "unable to open dataset")
 
     /* Set up dataset object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_DATASET, dset)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for dataset")
     } /* end if */
@@ -3229,7 +3252,7 @@ H5VLdataset_open(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector
                  hid_t dapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_dataset_open_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;              /* VOL connector struct */
+    H5VL_connector_t *      connector;        /* VOL connector struct */
     void *                  ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -3305,11 +3328,11 @@ herr_t
 H5VL_dataset_read(const H5VL_object_t *vol_obj, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id,
                   hid_t dxpl_id, void *buf, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    hbool_t dst_container_ctx_set  = FALSE;   /* Whether the 'dst' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -3333,7 +3356,8 @@ H5VL_dataset_read(const H5VL_object_t *vol_obj, hid_t mem_type_id, hid_t mem_spa
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__dataset_read(obj, vol_obj->container->connector->cls, mem_type_id, mem_space_id, file_space_id, dxpl_id, buf, req) < 0)
+    if (H5VL__dataset_read(obj, vol_obj->container->connector->cls, mem_type_id, mem_space_id, file_space_id,
+                           dxpl_id, buf, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_READERROR, FAIL, "dataset read failed")
 
 done:
@@ -3370,7 +3394,8 @@ H5VL__dataset_read_api_op(void *obj, hbool_t H5_ATTR_UNUSED new_api_ctx, void *_
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__dataset_read(obj, ctx->cls, ctx->mem_type_id, ctx->mem_space_id, ctx->file_space_id, ctx->dxpl_id, ctx->buf, ctx->req) < 0)
+    if (H5VL__dataset_read(obj, ctx->cls, ctx->mem_type_id, ctx->mem_space_id, ctx->file_space_id,
+                           ctx->dxpl_id, ctx->buf, ctx->req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, FAIL, "unable to read dataset")
 
 done:
@@ -3392,7 +3417,7 @@ H5VLdataset_read(void *obj, hid_t connector_id, hid_t mem_type_id, hid_t mem_spa
                  hid_t dxpl_id, void *buf, void **req /*out*/)
 {
     H5VL_dataset_read_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;                 /* VOL connector struct */
+    H5VL_connector_t *      connector;           /* VOL connector struct */
     herr_t                  ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -3466,11 +3491,11 @@ herr_t
 H5VL_dataset_write(const H5VL_object_t *vol_obj, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id,
                    hid_t dxpl_id, const void *buf, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    hbool_t dst_container_ctx_set  = FALSE;   /* Whether the 'dst' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -3494,7 +3519,8 @@ H5VL_dataset_write(const H5VL_object_t *vol_obj, hid_t mem_type_id, hid_t mem_sp
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__dataset_write(obj, vol_obj->container->connector->cls, mem_type_id, mem_space_id, file_space_id, dxpl_id, buf, req) < 0)
+    if (H5VL__dataset_write(obj, vol_obj->container->connector->cls, mem_type_id, mem_space_id, file_space_id,
+                            dxpl_id, buf, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_WRITEERROR, FAIL, "dataset write failed")
 
 done:
@@ -3531,7 +3557,8 @@ H5VL__dataset_write_api_op(void *obj, hbool_t H5_ATTR_UNUSED new_api_ctx, void *
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__dataset_write(obj, ctx->cls, ctx->mem_type_id, ctx->mem_space_id, ctx->file_space_id, ctx->dxpl_id, ctx->buf, ctx->req) < 0)
+    if (H5VL__dataset_write(obj, ctx->cls, ctx->mem_type_id, ctx->mem_space_id, ctx->file_space_id,
+                            ctx->dxpl_id, ctx->buf, ctx->req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, FAIL, "unable to write dataset")
 
 done:
@@ -3553,7 +3580,7 @@ H5VLdataset_write(void *obj, hid_t connector_id, hid_t mem_type_id, hid_t mem_sp
                   hid_t dxpl_id, const void *buf, void **req /*out*/)
 {
     H5VL_dataset_write_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -3626,10 +3653,10 @@ done:
 herr_t
 H5VL_dataset_get(const H5VL_object_t *vol_obj, H5VL_dataset_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -3705,7 +3732,7 @@ H5VLdataset_get(void *obj, hid_t connector_id, H5VL_dataset_get_args_t *args, hi
                 void **req /*out*/)
 {
     H5VL_dataset_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *     connector;           /* VOL connector struct */
     herr_t                 ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -3775,11 +3802,11 @@ herr_t
 H5VL_dataset_specific(const H5VL_object_t *vol_obj, H5VL_dataset_specific_args_t *args, hid_t dxpl_id,
                       void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    hbool_t dst_container_ctx_set  = FALSE;   /* Whether the 'dst' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -3863,7 +3890,7 @@ H5VLdataset_specific(void *obj, hid_t connector_id, H5VL_dataset_specific_args_t
                      void **req /*out*/)
 {
     H5VL_dataset_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *          connector;           /* VOL connector struct */
     herr_t                      ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -3932,10 +3959,10 @@ done:
 herr_t
 H5VL_dataset_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -4010,7 +4037,7 @@ H5VLdataset_optional(void *obj, hid_t connector_id, H5VL_optional_args_t *args, 
                      void **req /*out*/)
 {
     H5VL_dataset_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *          connector;           /* VOL connector struct */
     herr_t                      ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -4063,7 +4090,8 @@ H5VLdataset_optional_op(const char *app_file, const char *app_func, unsigned app
         token_ptr = &token; /* Point at token for VOL connector to set up */
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__common_optional_op(dset_id, H5I_DATASET, H5VL__dataset_optional, args, dxpl_id, token_ptr, &vol_obj) < 0)
+    if (H5VL__common_optional_op(dset_id, H5I_DATASET, H5VL__dataset_optional, args, dxpl_id, token_ptr,
+                                 &vol_obj) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute dataset 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -4124,9 +4152,9 @@ done:
 herr_t
 H5VL_dataset_close(const H5VL_object_t *vol_obj, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -4176,7 +4204,7 @@ H5VL__dataset_close_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, FAIL, "unable to close dataset")
 
     /* Close VOL object, if API context */
-    if(new_api_ctx)
+    if (new_api_ctx)
         if (H5VL_free_object(ctx->obj) < 0)
             HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free dataset VOL object")
 
@@ -4198,7 +4226,7 @@ herr_t
 H5VLdataset_close(void *obj, hid_t connector_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_dataset_close_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -4270,11 +4298,11 @@ H5VL_object_t *
 H5VL_datatype_commit(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                      hid_t type_id, hid_t lcpl_id, hid_t tcpl_id, hid_t tapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *type = NULL;          /* Named datatype object from VOL connector */
-    H5VL_container_t *type_container = NULL;    /* Container for named datatype */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            type                   = NULL;  /* Named datatype object from VOL connector */
+    H5VL_container_t *type_container         = NULL;  /* Container for named datatype */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -4290,7 +4318,8 @@ H5VL_datatype_commit(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_
     type_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (type = H5VL__datatype_commit(obj, loc_params, vol_obj->container->connector->cls, name, type_id, lcpl_id, tcpl_id, tapl_id, dxpl_id, req)))
+    if (NULL == (type = H5VL__datatype_commit(obj, loc_params, vol_obj->container->connector->cls, name,
+                                              type_id, lcpl_id, tcpl_id, tapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "datatype commit failed")
 
     /* Get container for named datatype (accommodates external links) */
@@ -4304,7 +4333,9 @@ H5VL_datatype_commit(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (type && type_container && H5VL__datatype_close(type, type_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (type && type_container &&
+            H5VL__datatype_close(type, type_container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                 H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "named datatype close failed")
 
     /* Reset container info in API context */
@@ -4327,9 +4358,9 @@ done:
 static herr_t
 H5VL__datatype_commit_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_datatype_commit_ctx_t *ctx       = (H5VL_datatype_commit_ctx_t *)_ctx; /* Get pointer to context */
-    void *type;         /* Named datatype from VOL connector */
-    herr_t                      ret_value = SUCCEED;                            /* Return value */
+    H5VL_datatype_commit_ctx_t *ctx = (H5VL_datatype_commit_ctx_t *)_ctx; /* Get pointer to context */
+    void *                      type;                /* Named datatype from VOL connector */
+    herr_t                      ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -4337,11 +4368,13 @@ H5VL__datatype_commit_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (type = H5VL__datatype_commit(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->type_id, ctx->lcpl_id, ctx->tcpl_id, ctx->tapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL ==
+        (type = H5VL__datatype_commit(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->type_id, ctx->lcpl_id,
+                                      ctx->tcpl_id, ctx->tapl_id, ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "unable to commit datatype")
 
     /* Set up object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_DATATYPE, type)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for named datatype")
     } /* end if */
@@ -4368,7 +4401,7 @@ H5VLdatatype_commit(void *obj, const H5VL_loc_params_t *loc_params, hid_t connec
                     void **req /*out*/)
 {
     H5VL_datatype_commit_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *        connector;              /* VOL connector struct */
+    H5VL_connector_t *         connector;        /* VOL connector struct */
     void *                     ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -4448,11 +4481,11 @@ H5VL_object_t *
 H5VL_datatype_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                    hid_t tapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *type = NULL;          /* Named datatype object from VOL connector */
-    H5VL_container_t *type_container = NULL;    /* Container for named datatype */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            type                   = NULL;  /* Named datatype object from VOL connector */
+    H5VL_container_t *type_container         = NULL;  /* Container for named datatype */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -4468,7 +4501,8 @@ H5VL_datatype_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_pa
     type_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (type = H5VL__datatype_open(obj, loc_params, type_container->connector->cls, name, tapl_id, dxpl_id, req)))
+    if (NULL == (type = H5VL__datatype_open(obj, loc_params, type_container->connector->cls, name, tapl_id,
+                                            dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "named datatype open failed")
 
     /* Get container for named datatype (accommodates external links) */
@@ -4482,7 +4516,9 @@ H5VL_datatype_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_pa
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (type && type_container && H5VL__datatype_close(type, type_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (type && type_container &&
+            H5VL__datatype_close(type, type_container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                                 H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "named datatype close failed")
 
     /* Reset container info in API context */
@@ -4506,8 +4542,8 @@ static herr_t
 H5VL__datatype_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
     H5VL_datatype_open_ctx_t *ctx       = (H5VL_datatype_open_ctx_t *)_ctx; /* Get pointer to context */
-    void *type = NULL;          /* Named datatype object from VOL connector */
-    herr_t                    ret_value = SUCCEED;                          /* Return value */
+    void *                    type      = NULL;    /* Named datatype object from VOL connector */
+    herr_t                    ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -4515,11 +4551,12 @@ H5VL__datatype_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (ctx->ret_value = H5VL__datatype_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->tapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (ctx->ret_value = H5VL__datatype_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->tapl_id,
+                                                      ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, FAIL, "unable to open named datatype")
 
     /* Set up named datatype object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_DATATYPE, type)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for named datatype")
     } /* end if */
@@ -4545,7 +4582,7 @@ H5VLdatatype_open(void *obj, const H5VL_loc_params_t *loc_params, hid_t connecto
                   hid_t tapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_datatype_open_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;              /* VOL connector struct */
+    H5VL_connector_t *       connector;        /* VOL connector struct */
     void *                   ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -4620,9 +4657,9 @@ done:
 herr_t
 H5VL_datatype_get(const H5VL_object_t *vol_obj, H5VL_datatype_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -4690,7 +4727,7 @@ H5VLdatatype_get(void *obj, hid_t connector_id, H5VL_datatype_get_args_t *args, 
                  void **req /*out*/)
 {
     H5VL_datatype_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;                 /* VOL connector struct */
+    H5VL_connector_t *      connector;           /* VOL connector struct */
     herr_t                  ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -4760,9 +4797,9 @@ herr_t
 H5VL_datatype_specific(const H5VL_object_t *vol_obj, H5VL_datatype_specific_args_t *args, hid_t dxpl_id,
                        void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -4830,7 +4867,7 @@ H5VLdatatype_specific(void *obj, hid_t connector_id, H5VL_datatype_specific_args
                       void **req /*out*/)
 {
     H5VL_datatype_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *           connector;           /* VOL connector struct */
     herr_t                       ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -4899,9 +4936,9 @@ done:
 herr_t
 H5VL_datatype_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -4939,11 +4976,11 @@ herr_t
 H5VL_datatype_optional_op(H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req,
                           H5VL_object_t **_vol_obj_ptr)
 {
-    void *obj;                  /* Object to operate on */
+    void *          obj;                                                        /* Object to operate on */
     H5VL_object_t * tmp_vol_obj = NULL;                                         /* Object for id */
     H5VL_object_t **vol_obj_ptr = (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for id */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t          ret_value       = SUCCEED; /* Return value */
+    hbool_t         prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t          ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -5017,7 +5054,7 @@ H5VLdatatype_optional(void *obj, hid_t connector_id, H5VL_optional_args_t *args,
                       void **req /*out*/)
 {
     H5VL_datatype_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *           connector;           /* VOL connector struct */
     herr_t                       ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -5132,9 +5169,9 @@ done:
 herr_t
 H5VL_datatype_close(const H5VL_object_t *vol_obj, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -5184,7 +5221,7 @@ H5VL__datatype_close_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, FAIL, "unable to close datatype")
 
     /* Close VOL object, if API context */
-    if(new_api_ctx)
+    if (new_api_ctx)
         if (H5VL_free_object(ctx->obj) < 0)
             HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free named datatype VOL object")
 
@@ -5206,7 +5243,7 @@ herr_t
 H5VLdatatype_close(void *obj, hid_t connector_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_datatype_close_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *        connector;           /* VOL connector struct */
     herr_t                    ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -5278,12 +5315,12 @@ done:
 hid_t
 H5VL_file_create(const char *name, unsigned flags, hid_t fcpl_id, hid_t fapl_id, hid_t dxpl_id, void **req)
 {
-    H5P_genplist_t *      fapl_plist;       /* Property list pointer                    */
-    H5VL_connector_t *    connector;        /* VOL connector    */
-    H5VL_object_t *       vol_obj = NULL;   /* Temporary VOL object for file */
-    H5VL_container_t *    container = NULL; /* VOL container for file */
-    H5VL_connector_prop_t connector_prop;   /* Property for VOL connector ID & info     */
-    void *                file      = NULL; /* New file created */
+    H5P_genplist_t *      fapl_plist;                  /* Property list pointer                    */
+    H5VL_connector_t *    connector;                   /* VOL connector    */
+    H5VL_object_t *       vol_obj   = NULL;            /* Temporary VOL object for file */
+    H5VL_container_t *    container = NULL;            /* VOL container for file */
+    H5VL_connector_prop_t connector_prop;              /* Property for VOL connector ID & info     */
+    void *                file      = NULL;            /* New file created */
     hid_t                 ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
@@ -5336,14 +5373,14 @@ H5VLfile_create(const char *name, unsigned flags, hid_t fcpl_id, hid_t fapl_id, 
     H5P_genplist_t *      fapl_plist = NULL;   /* FAPL property list pointer */
     H5P_genplist_t *      dxpl_plist = NULL;   /* DXPL property list pointer */
     H5VL_object_t *       vol_obj    = NULL;   /* Temporary VOL object for file */
-    H5VL_container_t *    container = NULL; /* VOL container for file */
+    H5VL_container_t *    container  = NULL;   /* VOL container for file */
     H5VL_connector_prop_t connector_prop;      /* Property for VOL connector ID & info */
     H5VL_connector_t *    connector;           /* VOL connector */
-    void *                file      = NULL; /* New file created */
+    void *                file        = NULL;  /* New file created */
     hbool_t               new_api_ctx = FALSE; /* Whether to start a new API context */
     hbool_t               api_pushed  = FALSE; /* Indicate that a new API context was pushed */
-    hbool_t             new_api_ctx_prop_reset = FALSE; /* Whether the 'new API context' property was reset */
-    void *                ret_value   = NULL;  /* Return value */
+    hbool_t new_api_ctx_prop_reset    = FALSE; /* Whether the 'new API context' property was reset */
+    void *  ret_value                 = NULL;  /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
     H5TRACE6("*x", "*sIuiiix", name, flags, fcpl_id, fapl_id, dxpl_id, req);
@@ -5393,13 +5430,14 @@ H5VLfile_create(const char *name, unsigned flags, hid_t fcpl_id, hid_t fapl_id, 
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "VOL container create failed")
 
         /* Create a VOL object for the file */
-        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object) */
+        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object)
+         */
         if (NULL == (vol_obj = H5VL__create_object(H5VL_OBJ_FILE, NULL, container)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, NULL, "can't create VOL object")
 
         /* Set return value to VOL object */
         ret_value = vol_obj;
-    }     /* end if */
+    } /* end if */
     else
         /* Set return value to file object */
         ret_value = file;
@@ -5567,15 +5605,15 @@ H5VL_object_t *
 H5VL_file_open(const char *name, unsigned flags, hid_t fapl_id, hid_t dxpl_id, void **req,
                hid_t *ret_id /*out*/)
 {
-    H5P_genplist_t *      fapl_plist;       /* Property list pointer                    */
-    H5VL_connector_t *    connector;        /* VOL connector    */
-    H5VL_object_t *       vol_obj = NULL;   /* Temporary VOL object for file */
-    H5VL_container_t *    container = NULL; /* VOL container for file */
-    H5VL_connector_prop_t connector_prop;   /* Property for VOL connector ID & info     */
-    void *                file = NULL;      /* File pointer */
-    H5VL_file_open_find_connector_t find_connector_ud;  /* Callback context for iteration over connectors */
-    hbool_t               found_by_iteration = FALSE;   /* Whether connector was found by iteration */
-    H5VL_object_t *       ret_value = NULL; /* Return value */
+    H5P_genplist_t *                fapl_plist;        /* Property list pointer                    */
+    H5VL_connector_t *              connector;         /* VOL connector    */
+    H5VL_object_t *                 vol_obj   = NULL;  /* Temporary VOL object for file */
+    H5VL_container_t *              container = NULL;  /* VOL container for file */
+    H5VL_connector_prop_t           connector_prop;    /* Property for VOL connector ID & info     */
+    void *                          file = NULL;       /* File pointer */
+    H5VL_file_open_find_connector_t find_connector_ud; /* Callback context for iteration over connectors */
+    hbool_t                         found_by_iteration = FALSE; /* Whether connector was found by iteration */
+    H5VL_object_t *                 ret_value          = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -5604,7 +5642,7 @@ H5VL_file_open(const char *name, unsigned flags, hid_t fapl_id, hid_t dxpl_id, v
         H5VL__is_default_conn(fapl_id, connector_prop.connector_id, &is_default_conn);
 
         if (is_default_conn) {
-            herr_t                          iter_ret;
+            herr_t iter_ret;
 
             /* Set up iteration context info */
             find_connector_ud.connector_prop = &connector_prop;
@@ -5625,8 +5663,11 @@ H5VL_file_open(const char *name, unsigned flags, hid_t fapl_id, hid_t dxpl_id, v
                  */
                 H5E_clear_stack(NULL);
 
-                if (NULL == (file = H5VL__file_open(find_connector_ud.cls, name, flags, find_connector_ud.fapl_id, dxpl_id, req)))
-                    HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "can't open file '%s' with VOL connector '%s'", name, find_connector_ud.cls->name)
+                if (NULL == (file = H5VL__file_open(find_connector_ud.cls, name, flags,
+                                                    find_connector_ud.fapl_id, dxpl_id, req)))
+                    HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL,
+                                "can't open file '%s' with VOL connector '%s'", name,
+                                find_connector_ud.cls->name)
 
                 /* Get the connector */
                 if (NULL == (connector = H5I_object_verify(connector_prop.connector_id, H5I_VOL)))
@@ -5671,7 +5712,8 @@ done:
     if (found_by_iteration) {
         if (find_connector_ud.fapl_id >= 0 && H5I_dec_app_ref(find_connector_ud.fapl_id) < 0)
             HDONE_ERROR(H5E_PLIST, H5E_CANTCLOSEOBJ, NULL, "can't close fapl")
-        if (find_connector_ud.connector_prop->connector_id >= 0 && H5I_dec_app_ref(find_connector_ud.connector_prop->connector_id) < 0)
+        if (find_connector_ud.connector_prop->connector_id >= 0 &&
+            H5I_dec_app_ref(find_connector_ud.connector_prop->connector_id) < 0)
             HDONE_ERROR(H5E_ID, H5E_CANTCLOSEOBJ, NULL, "can't close VOL connector ID")
     } /* end if */
 
@@ -5694,14 +5736,14 @@ H5VLfile_open(const char *name, unsigned flags, hid_t fapl_id, hid_t dxpl_id, vo
     H5P_genplist_t *      fapl_plist = NULL;   /* FAPL property list pointer */
     H5P_genplist_t *      dxpl_plist = NULL;   /* DXPL property list pointer */
     H5VL_object_t *       vol_obj    = NULL;   /* Temporary VOL object for file */
-    H5VL_container_t *    container = NULL; /* VOL container for file */
+    H5VL_container_t *    container  = NULL;   /* VOL container for file */
     H5VL_connector_prop_t connector_prop;      /* Property for VOL connector ID & info */
     H5VL_connector_t *    connector;           /* VOL connector */
-    void *                file = NULL;      /* File pointer */
+    void *                file        = NULL;  /* File pointer */
     hbool_t               new_api_ctx = FALSE; /* Whether to start a new API context */
     hbool_t               api_pushed  = FALSE; /* Indicate that a new API context was pushed */
-    hbool_t             new_api_ctx_prop_reset = FALSE; /* Whether the 'new API context' property was reset */
-    void *                ret_value   = NULL;  /* Return value */
+    hbool_t new_api_ctx_prop_reset    = FALSE; /* Whether the 'new API context' property was reset */
+    void *  ret_value                 = NULL;  /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
     H5TRACE5("*x", "*sIuiix", name, flags, fapl_id, dxpl_id, req);
@@ -5751,13 +5793,14 @@ H5VLfile_open(const char *name, unsigned flags, hid_t fapl_id, hid_t dxpl_id, vo
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "VOL container create failed")
 
         /* Create a VOL object for the file */
-        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object) */
+        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object)
+         */
         if (NULL == (vol_obj = H5VL__create_object(H5VL_OBJ_FILE, NULL, container)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, NULL, "can't create VOL object")
 
         /* Set return value to VOL object */
         ret_value = vol_obj;
-    }     /* end if */
+    } /* end if */
     else
         /* Set return value to file object */
         ret_value = file;
@@ -5822,9 +5865,9 @@ done:
 herr_t
 H5VL_file_get(const H5VL_object_t *vol_obj, H5VL_file_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -5841,9 +5884,10 @@ H5VL_file_get(const H5VL_object_t *vol_obj, H5VL_file_get_args_t *args, hid_t dx
         HGOTO_ERROR(H5E_VOL, H5E_CANTGET, FAIL, "file get failed")
 
     /* Update FAPL connector info, if retrieved */
-    if(H5VL_FILE_GET_FAPL == args->op_type)
+    if (H5VL_FILE_GET_FAPL == args->op_type)
         if (H5VL__update_fapl_vol(args->args.get_fapl.fapl_id, vol_obj->container) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTSET, FAIL, "can't set VOL connector info in file access property list")
+            HGOTO_ERROR(H5E_VOL, H5E_CANTSET, FAIL,
+                        "can't set VOL connector info in file access property list")
 
 done:
     /* Reset container info in API context */
@@ -5896,7 +5940,7 @@ herr_t
 H5VLfile_get(void *obj, hid_t connector_id, H5VL_file_get_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_file_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *  connector;           /* VOL connector struct */
     herr_t              ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -5918,13 +5962,14 @@ H5VLfile_get(void *obj, hid_t connector_id, H5VL_file_get_args_t *args, hid_t dx
     if (H5VL__common_api_op(obj, dxpl_id, H5VL__file_get_api_op, &ctx) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute common wrapper operation")
 
-// QQQQ
-// QQQQ: Fix me, after all public VOL callback API calls are dealing with H5VL_object_t's
-// QQQQ
-//    /* Update FAPL connector info, if retrieved */
-//    if(H5VL_FILE_GET_FAPL == args->args.op_type)
-//        if (H5VL__update_fapl_vol(args->args.get_fapl.fapl_id, vol_obj->container) < 0)
-//            HGOTO_ERROR(H5E_VOL, H5E_CANTSET, FAIL, "can't set VOL connector info in file access property list")
+    // QQQQ
+    // QQQQ: Fix me, after all public VOL callback API calls are dealing with H5VL_object_t's
+    // QQQQ
+    //    /* Update FAPL connector info, if retrieved */
+    //    if(H5VL_FILE_GET_FAPL == args->args.op_type)
+    //        if (H5VL__update_fapl_vol(args->args.get_fapl.fapl_id, vol_obj->container) < 0)
+    //            HGOTO_ERROR(H5E_VOL, H5E_CANTSET, FAIL, "can't set VOL connector info in file access
+    //            property list")
 
 done:
     FUNC_LEAVE_API_WRAPPER(ret_value)
@@ -5973,11 +6018,11 @@ done:
 herr_t
 H5VL_file_specific(const H5VL_object_t *vol_obj, H5VL_file_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    H5VL_connector_t *connector;                   /* VOL connector */
-    H5VL_object_t *     reopen_vol_obj  = NULL;    /* Temporary VOL object for file */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t              ret_value       = SUCCEED; /* Return value */
+    void *            obj;                              /* Object to operate on */
+    H5VL_connector_t *connector;                        /* VOL connector */
+    H5VL_object_t *   reopen_vol_obj         = NULL;    /* Temporary VOL object for file */
+    hbool_t           prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t            ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -6030,19 +6075,21 @@ H5VL_file_specific(const H5VL_object_t *vol_obj, H5VL_file_specific_args_t *args
 
     /* Special treatment of file re-open operation */
     if (args->op_type == H5VL_FILE_REOPEN) {
-        H5VL_container_t *container;    /* New container for reopened file */
-        void *   reopen_file; /* Pointer to re-opened file */
+        H5VL_container_t *container;   /* New container for reopened file */
+        void *            reopen_file; /* Pointer to re-opened file */
 
         /* Get pointer to re-opened file */
         reopen_file = *args->args.reopen.file;
         HDassert(reopen_file);
 
         /* Create container for the file */
-        if (NULL == (container = H5VL_create_container(reopen_file, vol_obj->container->connector, &vol_obj->container->conn_prop)))
+        if (NULL == (container = H5VL_create_container(reopen_file, vol_obj->container->connector,
+                                                       &vol_obj->container->conn_prop)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "VOL container create failed")
 
         /* Create a VOL object for the re-opened file struct */
-        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object) */
+        /* (Note that the 'object' pointer is passed as NULL, as the container holds the actual file object)
+         */
         if (NULL == (reopen_vol_obj = H5VL__create_object(H5VL_OBJ_FILE, NULL, container)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTINIT, FAIL, "can't create VOL object")
 
@@ -6104,7 +6151,7 @@ H5VLfile_specific(void *obj, hid_t connector_id, H5VL_file_specific_args_t *args
                   void **req /*out*/)
 {
     H5VL_file_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -6170,9 +6217,9 @@ done:
 herr_t
 H5VL_file_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -6240,7 +6287,7 @@ H5VLfile_optional(void *obj, hid_t connector_id, H5VL_optional_args_t *args, hid
                   void **req /*out*/)
 {
     H5VL_file_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -6293,7 +6340,8 @@ H5VLfile_optional_op(const char *app_file, const char *app_func, unsigned app_li
         token_ptr = &token; /* Point at token for VOL connector to set up */
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__common_optional_op(file_id, H5I_FILE, H5VL__file_optional, args, dxpl_id, token_ptr, &vol_obj) < 0)
+    if (H5VL__common_optional_op(file_id, H5I_FILE, H5VL__file_optional, args, dxpl_id, token_ptr, &vol_obj) <
+        0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute file 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -6354,9 +6402,9 @@ done:
 herr_t
 H5VL_file_close(const H5VL_object_t *vol_obj, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -6406,7 +6454,7 @@ H5VL__file_close_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCLOSEFILE, FAIL, "unable to close file")
 
     /* Close VOL object, if API context */
-    if(new_api_ctx)
+    if (new_api_ctx)
         if (H5VL_free_object(ctx->obj) < 0)
             HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free file VOL object")
 
@@ -6428,7 +6476,7 @@ herr_t
 H5VLfile_close(void *obj, hid_t connector_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_file_close_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *    connector;           /* VOL connector struct */
     herr_t                ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -6477,7 +6525,8 @@ H5VL__group_create(void *obj, const H5VL_loc_params_t *loc_params, const H5VL_cl
         HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, NULL, "VOL connector has no 'group create' method")
 
     /* Call the corresponding VOL callback */
-    if (NULL == (ret_value = (cls->group_cls.create)(obj, loc_params, name, lcpl_id, gcpl_id, gapl_id, dxpl_id, req)))
+    if (NULL ==
+        (ret_value = (cls->group_cls.create)(obj, loc_params, name, lcpl_id, gcpl_id, gapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "group create failed")
 
 done:
@@ -6498,11 +6547,11 @@ H5VL_object_t *
 H5VL_group_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                   hid_t lcpl_id, hid_t gcpl_id, hid_t gapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *grp = NULL;          /* Group object from VOL connector */
-    H5VL_container_t *grp_container = NULL;    /* Container for group */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            grp                    = NULL;  /* Group object from VOL connector */
+    H5VL_container_t *grp_container          = NULL;  /* Container for group */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -6518,7 +6567,8 @@ H5VL_group_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_par
     grp_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (grp = H5VL__group_create(obj, loc_params, grp_container->connector->cls, name, lcpl_id, gcpl_id, gapl_id, dxpl_id, req)))
+    if (NULL == (grp = H5VL__group_create(obj, loc_params, grp_container->connector->cls, name, lcpl_id,
+                                          gcpl_id, gapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, NULL, "group create failed")
 
     /* Get container for group (accommodates external links) */
@@ -6532,7 +6582,9 @@ H5VL_group_create(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_par
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (grp && grp_container && H5VL__group_close(grp, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (grp && grp_container &&
+            H5VL__group_close(grp, vol_obj->container->connector->cls, H5P_DATASET_XFER_DEFAULT,
+                              H5_REQUEST_NULL) < 0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "group close failed")
 
     /* Reset container info in API context */
@@ -6556,8 +6608,8 @@ static herr_t
 H5VL__group_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
     H5VL_group_create_ctx_t *ctx       = (H5VL_group_create_ctx_t *)_ctx; /* Get pointer to context */
-    void *grp = NULL;          /* Group object from VOL connector */
-    herr_t                   ret_value = SUCCEED;                         /* Return value */
+    void *                   grp       = NULL;    /* Group object from VOL connector */
+    herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -6565,11 +6617,12 @@ H5VL__group_create_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (grp = H5VL__group_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->lcpl_id, ctx->gcpl_id, ctx->gapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (grp = H5VL__group_create(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->lcpl_id,
+                                          ctx->gcpl_id, ctx->gapl_id, ctx->dxpl_id, ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "unable to create group")
 
     /* Set up object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_GROUP, grp)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for group")
     } /* end if */
@@ -6595,7 +6648,7 @@ H5VLgroup_create(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector
                  hid_t lcpl_id, hid_t gcpl_id, hid_t gapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_group_create_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *        connector;              /* VOL connector struct */
+    H5VL_connector_t *      connector;        /* VOL connector struct */
     void *                  ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -6674,11 +6727,11 @@ H5VL_object_t *
 H5VL_group_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, const char *name,
                 hid_t gapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    void *grp = NULL;          /* Group object from VOL connector */
-    H5VL_container_t *grp_container = NULL;    /* Container for group */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *            obj;                            /* Object to operate on */
+    void *            grp                    = NULL;  /* Group object from VOL connector */
+    H5VL_container_t *grp_container          = NULL;  /* Container for group */
+    hbool_t           prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t *   ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -6694,7 +6747,8 @@ H5VL_group_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_param
     grp_container = vol_obj->container;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (grp = H5VL__group_open(obj, loc_params, grp_container->connector->cls, name, gapl_id, dxpl_id, req)))
+    if (NULL ==
+        (grp = H5VL__group_open(obj, loc_params, grp_container->connector->cls, name, gapl_id, dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "group open failed")
 
     /* Get container for group (accommodates external links) */
@@ -6708,7 +6762,9 @@ H5VL_group_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_param
 done:
     /* Clean up on failure */
     if (NULL == ret_value)
-        if (grp && grp_container && H5VL__group_close(grp, grp_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (grp && grp_container &&
+            H5VL__group_close(grp, grp_container->connector->cls, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) <
+                0)
             HDONE_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, NULL, "group close failed")
 
     /* Reset container info in API context */
@@ -6732,7 +6788,7 @@ static herr_t
 H5VL__group_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
     H5VL_group_open_ctx_t *ctx       = (H5VL_group_open_ctx_t *)_ctx; /* Get pointer to context */
-    void *grp = NULL;          /* Group object from VOL connector */
+    void *                 grp       = NULL;                          /* Group object from VOL connector */
     herr_t                 ret_value = SUCCEED;                       /* Return value */
 
     FUNC_ENTER_STATIC
@@ -6741,11 +6797,12 @@ H5VL__group_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (grp = H5VL__group_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->gapl_id, ctx->dxpl_id, ctx->req)))
+    if (NULL == (grp = H5VL__group_open(obj, ctx->loc_params, ctx->cls, ctx->name, ctx->gapl_id, ctx->dxpl_id,
+                                        ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, FAIL, "unable to open group")
 
     /* Set up dataset object to return */
-    if(new_api_ctx) {
+    if (new_api_ctx) {
         if (NULL == (ctx->ret_value = H5VL__create_object_with_container_ctx(H5VL_OBJ_GROUP, grp)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "can't create VOL object for group")
     } /* end if */
@@ -6771,7 +6828,7 @@ H5VLgroup_open(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_i
                hid_t gapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_group_open_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;              /* VOL connector struct */
+    H5VL_connector_t *    connector;        /* VOL connector struct */
     void *                ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -6845,9 +6902,9 @@ done:
 herr_t
 H5VL_group_get(const H5VL_object_t *vol_obj, H5VL_group_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -6914,7 +6971,7 @@ herr_t
 H5VLgroup_get(void *obj, hid_t connector_id, H5VL_group_get_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_group_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *   connector;           /* VOL connector struct */
     herr_t               ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -6983,9 +7040,9 @@ done:
 herr_t
 H5VL_group_specific(const H5VL_object_t *vol_obj, H5VL_group_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7053,7 +7110,7 @@ H5VLgroup_specific(void *obj, hid_t connector_id, H5VL_group_specific_args_t *ar
                    void **req /*out*/)
 {
     H5VL_group_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *        connector;           /* VOL connector struct */
     herr_t                    ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7123,9 +7180,9 @@ done:
 herr_t
 H5VL_group_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7192,7 +7249,7 @@ H5VLgroup_optional(void *obj, hid_t connector_id, H5VL_optional_args_t *args, hi
                    void **req /*out*/)
 {
     H5VL_group_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *        connector;           /* VOL connector struct */
     herr_t                    ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7250,7 +7307,8 @@ H5VLgroup_optional_op(const char *app_file, const char *app_func, unsigned app_l
         token_ptr = &token; /* Point at token for VOL connector to set up */
 
     /* Call the corresponding internal VOL routine */
-    if ((ret_value = H5VL__common_optional_op(group_id, H5I_GROUP, H5VL__group_optional, args, dxpl_id, token_ptr, &vol_obj)) < 0)
+    if ((ret_value = H5VL__common_optional_op(group_id, H5I_GROUP, H5VL__group_optional, args, dxpl_id,
+                                              token_ptr, &vol_obj)) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute group 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -7311,9 +7369,9 @@ done:
 herr_t
 H5VL_group_close(const H5VL_object_t *vol_obj, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7363,7 +7421,7 @@ H5VL__group_close_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCLOSEOBJ, FAIL, "unable to close group")
 
     /* Close VOL object, if API context */
-    if(new_api_ctx)
+    if (new_api_ctx)
         if (H5VL_free_object(ctx->obj) < 0)
             HGOTO_ERROR(H5E_VOL, H5E_CANTDEC, FAIL, "unable to free group VOL object")
 
@@ -7385,7 +7443,7 @@ herr_t
 H5VLgroup_close(void *obj, hid_t connector_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_group_close_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *    connector;                 /* VOL connector struct */
+    H5VL_connector_t *     connector;           /* VOL connector struct */
     herr_t                 ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7457,9 +7515,9 @@ herr_t
 H5VL_link_create(H5VL_link_create_args_t *args, const H5VL_object_t *vol_obj,
                  const H5VL_loc_params_t *loc_params, hid_t lcpl_id, hid_t lapl_id, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t        ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7472,7 +7530,8 @@ H5VL_link_create(H5VL_link_create_args_t *args, const H5VL_object_t *vol_obj,
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_create(args, obj, loc_params, vol_obj->container->connector->cls, lcpl_id, lapl_id, dxpl_id, req) < 0)
+    if (H5VL__link_create(args, obj, loc_params, vol_obj->container->connector->cls, lcpl_id, lapl_id,
+                          dxpl_id, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "link create failed")
 
 done:
@@ -7505,7 +7564,8 @@ H5VL__link_create_api_op(void *obj, hbool_t H5_ATTR_UNUSED new_api_ctx, void *_c
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_create(ctx->args, obj, ctx->loc_params, ctx->cls, ctx->lcpl_id, ctx->lapl_id, ctx->dxpl_id, ctx->req) < 0)
+    if (H5VL__link_create(ctx->args, obj, ctx->loc_params, ctx->cls, ctx->lcpl_id, ctx->lapl_id, ctx->dxpl_id,
+                          ctx->req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, FAIL, "unable to create link")
 
 done:
@@ -7529,7 +7589,7 @@ H5VLlink_create(H5VL_link_create_args_t *args, void *obj, const H5VL_loc_params_
                 hid_t connector_id, hid_t lcpl_id, hid_t lapl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_create_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *     connector;           /* VOL connector struct */
     herr_t                 ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7580,7 +7640,8 @@ H5VL__link_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params, void *ds
         HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, FAIL, "VOL connector has no 'link copy' method")
 
     /* Call the corresponding VOL callback */
-    if ((cls->link_cls.copy)(src_obj, src_loc_params, dst_obj, dst_loc_params, lcpl_id, lapl_id, dxpl_id, req) < 0)
+    if ((cls->link_cls.copy)(src_obj, src_loc_params, dst_obj, dst_loc_params, lcpl_id, lapl_id, dxpl_id,
+                             req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCOPY, FAIL, "link copy failed")
 
 done:
@@ -7602,9 +7663,9 @@ H5VL_link_copy(const H5VL_object_t *src_vol_obj, const H5VL_loc_params_t *src_lo
                const H5VL_object_t *dst_vol_obj, const H5VL_loc_params_t *dst_loc_params, hid_t lcpl_id,
                hid_t lapl_id, hid_t dxpl_id, void **req)
 {
-    void *s_obj, *d_obj;                  /* Objects to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t               ret_value       = SUCCEED; /* Return value */
+    void *  s_obj, *d_obj;                    /* Objects to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7615,13 +7676,15 @@ H5VL_link_copy(const H5VL_object_t *src_vol_obj, const H5VL_loc_params_t *src_lo
 
     /* Get actual objects */
     s_obj = (src_vol_obj->obj_type == H5VL_OBJ_FILE) ? src_vol_obj->container->object : src_vol_obj->object;
-    if(dst_vol_obj)
-        d_obj = (dst_vol_obj->obj_type == H5VL_OBJ_FILE) ? dst_vol_obj->container->object : dst_vol_obj->object;
+    if (dst_vol_obj)
+        d_obj =
+            (dst_vol_obj->obj_type == H5VL_OBJ_FILE) ? dst_vol_obj->container->object : dst_vol_obj->object;
     else
         d_obj = NULL;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_copy(s_obj, src_loc_params, d_obj, dst_loc_params, src_vol_obj->container->connector->cls, lcpl_id, lapl_id, dxpl_id, req) < 0)
+    if (H5VL__link_copy(s_obj, src_loc_params, d_obj, dst_loc_params, src_vol_obj->container->connector->cls,
+                        lcpl_id, lapl_id, dxpl_id, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCOPY, FAIL, "link copy failed")
 
 done:
@@ -7645,9 +7708,9 @@ done:
 static herr_t
 H5VL__link_copy_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_link_copy_ctx_t *ctx       = (H5VL_link_copy_ctx_t *)_ctx; /* Get pointer to context */
-    void *dst_obj;              /* Destination VOL connector object */
-    herr_t                ret_value = SUCCEED;                      /* Return value */
+    H5VL_link_copy_ctx_t *ctx = (H5VL_link_copy_ctx_t *)_ctx; /* Get pointer to context */
+    void *                dst_obj;                            /* Destination VOL connector object */
+    herr_t                ret_value = SUCCEED;                /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -7658,7 +7721,8 @@ H5VL__link_copy_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     dst_obj = new_api_ctx ? ((H5VL_object_t *)ctx->dst_obj)->object : ctx->dst_obj;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_copy(obj, ctx->src_loc_params, dst_obj, ctx->dst_loc_params, ctx->cls, ctx->lcpl_id, ctx->lapl_id, ctx->dxpl_id, ctx->req) < 0)
+    if (H5VL__link_copy(obj, ctx->src_loc_params, dst_obj, ctx->dst_loc_params, ctx->cls, ctx->lcpl_id,
+                        ctx->lapl_id, ctx->dxpl_id, ctx->req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCOPY, FAIL, "unable to copy object")
 
 done:
@@ -7683,7 +7747,7 @@ H5VLlink_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params, void *dst_
               hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_copy_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *   connector;           /* VOL connector struct */
     herr_t               ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7759,9 +7823,9 @@ H5VL_link_move(const H5VL_object_t *src_vol_obj, const H5VL_loc_params_t *src_lo
                const H5VL_object_t *dst_vol_obj, const H5VL_loc_params_t *dst_loc_params, hid_t lcpl_id,
                hid_t lapl_id, hid_t dxpl_id, void **req)
 {
-    void *s_obj, *d_obj;                  /* Objects to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t               ret_value       = SUCCEED; /* Return value */
+    void *  s_obj, *d_obj;                    /* Objects to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7772,13 +7836,15 @@ H5VL_link_move(const H5VL_object_t *src_vol_obj, const H5VL_loc_params_t *src_lo
 
     /* Get actual objects */
     s_obj = (src_vol_obj->obj_type == H5VL_OBJ_FILE) ? src_vol_obj->container->object : src_vol_obj->object;
-    if(dst_vol_obj)
-        d_obj = (dst_vol_obj->obj_type == H5VL_OBJ_FILE) ? dst_vol_obj->container->object : dst_vol_obj->object;
+    if (dst_vol_obj)
+        d_obj =
+            (dst_vol_obj->obj_type == H5VL_OBJ_FILE) ? dst_vol_obj->container->object : dst_vol_obj->object;
     else
         d_obj = NULL;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_move(s_obj, src_loc_params, d_obj, dst_loc_params, src_vol_obj->container->connector->cls, lcpl_id, lapl_id, dxpl_id, req) < 0)
+    if (H5VL__link_move(s_obj, src_loc_params, d_obj, dst_loc_params, src_vol_obj->container->connector->cls,
+                        lcpl_id, lapl_id, dxpl_id, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTMOVE, FAIL, "link move failed")
 
 done:
@@ -7802,9 +7868,9 @@ done:
 static herr_t
 H5VL__link_move_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_link_move_ctx_t *ctx       = (H5VL_link_move_ctx_t *)_ctx; /* Get pointer to context */
-    void *dst_obj;              /* Destination VOL connector object */
-    herr_t                ret_value = SUCCEED;                      /* Return value */
+    H5VL_link_move_ctx_t *ctx = (H5VL_link_move_ctx_t *)_ctx; /* Get pointer to context */
+    void *                dst_obj;                            /* Destination VOL connector object */
+    herr_t                ret_value = SUCCEED;                /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -7815,7 +7881,8 @@ H5VL__link_move_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     dst_obj = new_api_ctx ? ((H5VL_object_t *)ctx->dst_obj)->object : ctx->dst_obj;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_move(obj, ctx->src_loc_params, dst_obj, ctx->dst_loc_params, ctx->cls, ctx->lcpl_id, ctx->lapl_id, ctx->dxpl_id, ctx->req) < 0)
+    if (H5VL__link_move(obj, ctx->src_loc_params, dst_obj, ctx->dst_loc_params, ctx->cls, ctx->lcpl_id,
+                        ctx->lapl_id, ctx->dxpl_id, ctx->req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTMOVE, FAIL, "unable to move object")
 
 done:
@@ -7840,7 +7907,7 @@ H5VLlink_move(void *src_obj, const H5VL_loc_params_t *src_loc_params, void *dst_
               hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_move_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *       connector;                 /* VOL connector struct */
+    H5VL_connector_t *   connector;           /* VOL connector struct */
     herr_t               ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -7913,9 +7980,9 @@ herr_t
 H5VL_link_get(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, H5VL_link_get_args_t *args,
               hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -7983,7 +8050,7 @@ H5VLlink_get(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_id,
              hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *  connector;           /* VOL connector struct */
     herr_t              ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -8055,9 +8122,9 @@ herr_t
 H5VL_link_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                    H5VL_link_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -8071,7 +8138,8 @@ H5VL_link_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_pa
 
     /* Call the corresponding internal VOL routine */
     /* (Must return value from callback, for iterators) */
-    if ((ret_value = H5VL__link_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id, req)) < 0)
+    if ((ret_value = H5VL__link_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id,
+                                         req)) < 0)
         HERROR(H5E_VOL, H5E_CANTOPERATE, "unable to execute link 'specific' callback");
 
 done:
@@ -8124,7 +8192,7 @@ H5VLlink_specific(void *obj, const H5VL_loc_params_t *loc_params, hid_t connecto
                   H5VL_link_specific_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -8200,9 +8268,9 @@ herr_t
 H5VL_link_optional(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                    H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -8270,7 +8338,7 @@ H5VLlink_optional(void *obj, const H5VL_loc_params_t *loc_params, hid_t connecto
                   H5VL_optional_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_link_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *       connector;           /* VOL connector struct */
     herr_t                   ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -8315,8 +8383,8 @@ H5VLlink_optional_op(const char *app_file, const char *app_func, unsigned app_li
     H5VL_loc_params_t loc_params;                  /* Location parameters for object access */
     void *            token     = NULL;            /* Request token for async operation        */
     void **           token_ptr = H5_REQUEST_NULL; /* Pointer to request token for async operation        */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t            ret_value       = SUCCEED;   /* Return value */
+    hbool_t           prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t            ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE9("e", "*s*sIui*si*!ii", app_file, app_func, app_line, loc_id, name, lapl_id, args, dxpl_id,
@@ -8339,7 +8407,8 @@ H5VLlink_optional_op(const char *app_file, const char *app_func, unsigned app_li
     prim_container_ctx_set = TRUE;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__link_optional(vol_obj->object, &loc_params, vol_obj->container->connector->cls, args, dxpl_id, token_ptr) < 0)
+    if (H5VL__link_optional(vol_obj->object, &loc_params, vol_obj->container->connector->cls, args, dxpl_id,
+                            token_ptr) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute link 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -8401,11 +8470,11 @@ H5VL_object_t *
 H5VL_object_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params, H5I_type_t *opened_type,
                  hid_t dxpl_id, void **req)
 {
-    void *v_obj;                  /* Object to operate on */
-    void *obj = NULL;          /* Object from VOL connector */
-    H5VL_obj_type_t vol_obj_type = 0;       /* VOL object type for object */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    H5VL_object_t *  ret_value       = NULL;  /* Return value */
+    void *          v_obj;                          /* Object to operate on */
+    void *          obj                    = NULL;  /* Object from VOL connector */
+    H5VL_obj_type_t vol_obj_type           = 0;     /* VOL object type for object */
+    hbool_t         prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
+    H5VL_object_t * ret_value              = NULL;  /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -8418,7 +8487,8 @@ H5VL_object_open(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_para
     v_obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (obj = H5VL__object_open(v_obj, loc_params, vol_obj->container->connector->cls, opened_type, dxpl_id, req)))
+    if (NULL == (obj = H5VL__object_open(v_obj, loc_params, vol_obj->container->connector->cls, opened_type,
+                                         dxpl_id, req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, NULL, "object open failed")
 
     /* Get the VOL object type for the object */
@@ -8452,7 +8522,7 @@ static herr_t
 H5VL__object_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
     H5VL_object_open_ctx_t *ctx       = (H5VL_object_open_ctx_t *)_ctx; /* Get pointer to context */
-    void *new_obj = NULL;          /* Object from VOL connector */
+    void *                  new_obj   = NULL;                           /* Object from VOL connector */
     herr_t                  ret_value = SUCCEED;                        /* Return value */
 
     FUNC_ENTER_STATIC
@@ -8461,12 +8531,13 @@ H5VL__object_open_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
     HDassert(ctx);
 
     /* Call the corresponding internal VOL routine */
-    if (NULL == (new_obj = H5VL__object_open(obj, ctx->loc_params, ctx->cls, ctx->opened_type, ctx->dxpl_id, ctx->req)))
+    if (NULL == (new_obj = H5VL__object_open(obj, ctx->loc_params, ctx->cls, ctx->opened_type, ctx->dxpl_id,
+                                             ctx->req)))
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPENOBJ, FAIL, "unable to open object")
 
     /* Set up dataset object to return */
-    if(new_api_ctx) {
-        H5VL_obj_type_t vol_obj_type = 0;       /* VOL object type for object */
+    if (new_api_ctx) {
+        H5VL_obj_type_t vol_obj_type = 0; /* VOL object type for object */
 
         /* Get the VOL object type for the object */
         if (H5VL_id_to_obj_type(*ctx->opened_type, &vol_obj_type) < 0)
@@ -8498,7 +8569,7 @@ H5VLobject_open(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_
                 hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_object_open_ctx_t ctx;              /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;              /* VOL connector struct */
+    H5VL_connector_t *     connector;        /* VOL connector struct */
     void *                 ret_value = NULL; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(NULL)
@@ -8553,7 +8624,8 @@ H5VL__object_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params, const 
         HGOTO_ERROR(H5E_VOL, H5E_UNSUPPORTED, FAIL, "VOL connector has no 'object copy' method")
 
     /* Call the corresponding VOL callback */
-    if ((cls->object_cls.copy)(src_obj, src_loc_params, src_name, dst_obj, dst_loc_params, dst_name, ocpypl_id, lcpl_id, dxpl_id, req) < 0)
+    if ((cls->object_cls.copy)(src_obj, src_loc_params, src_name, dst_obj, dst_loc_params, dst_name,
+                               ocpypl_id, lcpl_id, dxpl_id, req) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCOPY, FAIL, "object copy failed")
 
 done:
@@ -8575,17 +8647,18 @@ H5VL_object_copy(const H5VL_object_t *src_obj, const H5VL_loc_params_t *src_loc_
                  const H5VL_object_t *dst_obj, const H5VL_loc_params_t *dst_loc_params, const char *dst_name,
                  hid_t ocpypl_id, hid_t lcpl_id, hid_t dxpl_id, void **req)
 {
-    void *s_obj, *d_obj;                  /* Objects to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    hbool_t src_container_ctx_set = FALSE; /* Whether the 'src' VOL container context was set up */
-    hbool_t dst_container_ctx_set = FALSE; /* Whether the 'dst' VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  s_obj, *d_obj;                    /* Objects to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    hbool_t src_container_ctx_set  = FALSE;   /* Whether the 'src' VOL container context was set up */
+    hbool_t dst_container_ctx_set  = FALSE;   /* Whether the 'dst' VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
     /* Make sure that the VOL connectors are the same */
     if (src_obj->container->connector->cls->value != dst_obj->container->connector->cls->value)
-        HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "objects are accessed through different VOL connectors and can't be copied")
+        HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
+                    "objects are accessed through different VOL connectors and can't be copied")
 
     /* Set container info in API context */
     if (H5VL_set_primary_container_ctx(src_obj) < 0)
@@ -8636,9 +8709,9 @@ done:
 static herr_t
 H5VL__object_copy_api_op(void *obj, hbool_t new_api_ctx, void *_ctx)
 {
-    H5VL_object_copy_ctx_t *ctx       = (H5VL_object_copy_ctx_t *)_ctx; /* Get pointer to context */
-    void *dst_obj;              /* Destination VOL connector object */
-    herr_t                  ret_value = SUCCEED;                        /* Return value */
+    H5VL_object_copy_ctx_t *ctx = (H5VL_object_copy_ctx_t *)_ctx; /* Get pointer to context */
+    void *                  dst_obj;                              /* Destination VOL connector object */
+    herr_t                  ret_value = SUCCEED;                  /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -8673,7 +8746,7 @@ H5VLobject_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params, const ch
                 hid_t ocpypl_id, hid_t lcpl_id, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_object_copy_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *      connector;              /* VOL connector struct */
+    H5VL_connector_t *     connector;           /* VOL connector struct */
     herr_t                 ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -8750,9 +8823,9 @@ herr_t
 H5VL_object_get(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                 H5VL_object_get_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -8820,7 +8893,7 @@ H5VLobject_get(void *obj, const H5VL_loc_params_t *loc_params, hid_t connector_i
                H5VL_object_get_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_object_get_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *    connector;           /* VOL connector struct */
     herr_t                ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -8892,9 +8965,9 @@ herr_t
 H5VL_object_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                      H5VL_object_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -8908,7 +8981,8 @@ H5VL_object_specific(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_
 
     /* Call the corresponding internal VOL routine */
     /* (Must return value from callback, for iterators) */
-    if ((ret_value = H5VL__object_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id, req)) < 0)
+    if ((ret_value = H5VL__object_specific(obj, loc_params, vol_obj->container->connector->cls, args, dxpl_id,
+                                           req)) < 0)
         HERROR(H5E_VOL, H5E_CANTOPERATE, "object specific failed");
 
 done:
@@ -8961,7 +9035,7 @@ H5VLobject_specific(void *obj, const H5VL_loc_params_t *loc_params, hid_t connec
                     H5VL_object_specific_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_object_specific_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *         connector;           /* VOL connector struct */
     herr_t                     ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -9037,9 +9111,9 @@ herr_t
 H5VL_object_optional(const H5VL_object_t *vol_obj, const H5VL_loc_params_t *loc_params,
                      H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -9107,7 +9181,7 @@ H5VLobject_optional(void *obj, const H5VL_loc_params_t *loc_params, hid_t connec
                     H5VL_optional_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
     H5VL_object_optional_ctx_t ctx;                 /* Context for common API wrapper call */
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
+    H5VL_connector_t *         connector;           /* VOL connector struct */
     herr_t                     ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
@@ -9149,13 +9223,13 @@ H5VLobject_optional_op(const char *app_file, const char *app_func, unsigned app_
                        const char *name, hid_t lapl_id, H5VL_optional_args_t *args, hid_t dxpl_id,
                        hid_t es_id)
 {
-    void *obj;                  /* Object to operate on */
+    void *            obj;                         /* Object to operate on */
     H5VL_object_t *   vol_obj = NULL;              /* Object for loc_id */
     H5VL_loc_params_t loc_params;                  /* Location parameters for object access */
     void *            token     = NULL;            /* Request token for async operation        */
     void **           token_ptr = H5_REQUEST_NULL; /* Pointer to request token for async operation        */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t            ret_value       = SUCCEED;   /* Return value */
+    hbool_t           prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t            ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE9("e", "*s*sIui*si*!ii", app_file, app_func, app_line, loc_id, name, lapl_id, args, dxpl_id,
@@ -9181,7 +9255,8 @@ H5VLobject_optional_op(const char *app_file, const char *app_func, unsigned app_
     obj = (vol_obj->obj_type == H5VL_OBJ_FILE) ? vol_obj->container->object : vol_obj->object;
 
     /* Call the corresponding internal VOL routine */
-    if (H5VL__object_optional(obj, &loc_params, vol_obj->container->connector->cls, args, dxpl_id, token_ptr) < 0)
+    if (H5VL__object_optional(obj, &loc_params, vol_obj->container->connector->cls, args, dxpl_id,
+                              token_ptr) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute object 'optional' callback")
 
     /* If a token was created, add the token to the event set */
@@ -9251,9 +9326,9 @@ herr_t
 H5VL_introspect_get_conn_cls(const H5VL_object_t *vol_obj, H5VL_get_conn_lvl_t lvl,
                              const H5VL_class_t **conn_cls)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -9292,8 +9367,8 @@ herr_t
 H5VLintrospect_get_conn_cls(void *obj, hid_t connector_id, H5VL_get_conn_lvl_t lvl,
                             const H5VL_class_t **conn_cls /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE4("e", "*xiVLx", obj, connector_id, lvl, conn_cls);
@@ -9364,8 +9439,8 @@ done:
 herr_t
 H5VLintrospect_get_cap_flags(const void *info, hid_t connector_id, unsigned *cap_flags /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "*xix", info, connector_id, cap_flags);
@@ -9431,9 +9506,9 @@ done:
 herr_t
 H5VL_introspect_opt_query(const H5VL_object_t *vol_obj, H5VL_subclass_t subcls, int opt_type, uint64_t *flags)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -9472,8 +9547,8 @@ herr_t
 H5VLintrospect_opt_query(void *obj, hid_t connector_id, H5VL_subclass_t subcls, int opt_type,
                          uint64_t *flags /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE5("e", "*xiVSIsx", obj, connector_id, subcls, opt_type, flags);
@@ -9565,8 +9640,8 @@ done:
 herr_t
 H5VLrequest_wait(void *req, hid_t connector_id, uint64_t timeout, H5VL_request_status_t *status /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE4("e", "*xiULx", req, connector_id, timeout, status);
@@ -9660,8 +9735,8 @@ done:
 herr_t
 H5VLrequest_notify(void *req, hid_t connector_id, H5VL_request_notify_t cb, void *ctx)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE4("e", "*xiVN*x", req, connector_id, cb, ctx);
@@ -9752,8 +9827,8 @@ done:
 herr_t
 H5VLrequest_cancel(void *req, hid_t connector_id, H5VL_request_status_t *status /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "*xix", req, connector_id, status);
@@ -9846,8 +9921,8 @@ done:
 herr_t
 H5VLrequest_specific(void *req, hid_t connector_id, H5VL_request_specific_args_t *args)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "*xi*!", req, connector_id, args);
@@ -9858,7 +9933,8 @@ H5VLrequest_specific(void *req, hid_t connector_id, H5VL_request_specific_args_t
 
     /* Call the corresponding internal VOL routine */
     if (H5VL__request_specific(req, connector->cls, args) < 0)
-        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute asynchronous request 'specific' callback")
+        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL,
+                    "unable to execute asynchronous request 'specific' callback")
 
 done:
     FUNC_LEAVE_API_WRAPPER(ret_value)
@@ -9891,7 +9967,8 @@ H5VL__request_optional(void *req, const H5VL_class_t *cls, H5VL_optional_args_t 
 
     /* Call the corresponding VOL callback */
     if ((cls->request_cls.optional)(req, args) < 0)
-        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute asynchronous request 'optional' callback")
+        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL,
+                    "unable to execute asynchronous request 'optional' callback")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -9919,7 +9996,8 @@ H5VL_request_optional(const H5VL_request_t *request, H5VL_optional_args_t *args)
 
     /* Call the corresponding internal VOL routine */
     if (H5VL__request_optional(request->token, request->connector->cls, args) < 0)
-        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute asynchronous request 'optional' callback")
+        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL,
+                    "unable to execute asynchronous request 'optional' callback")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -9938,8 +10016,8 @@ done:
 herr_t
 H5VLrequest_optional(void *req, hid_t connector_id, H5VL_optional_args_t *args)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE3("e", "*xi*!", req, connector_id, args);
@@ -9950,7 +10028,8 @@ H5VLrequest_optional(void *req, hid_t connector_id, H5VL_optional_args_t *args)
 
     /* Call the corresponding internal VOL routine */
     if (H5VL__request_optional(req, connector->cls, args) < 0)
-        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL, "unable to execute asynchronous request 'optional' callback")
+        HGOTO_ERROR(H5E_VOL, H5E_CANTOPERATE, FAIL,
+                    "unable to execute asynchronous request 'optional' callback")
 
 done:
     FUNC_LEAVE_API_WRAPPER(ret_value)
@@ -9969,8 +10048,8 @@ done:
 herr_t
 H5VLrequest_optional_op(void *req, hid_t connector_id, H5VL_optional_args_t *args)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("e", "*xi*!", req, connector_id, args);
@@ -10067,8 +10146,8 @@ done:
 herr_t
 H5VLrequest_free(void *req, hid_t connector_id)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE2("e", "*xi", req, connector_id);
@@ -10163,8 +10242,8 @@ done:
 herr_t
 H5VLblob_put(void *obj, hid_t connector_id, const void *buf, size_t size, void *blob_id, void *ctx)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE6("e", "*xi*xz*x*x", obj, connector_id, buf, size, blob_id, ctx);
@@ -10258,8 +10337,8 @@ done:
 herr_t
 H5VLblob_get(void *obj, hid_t connector_id, const void *blob_id, void *buf /*out*/, size_t size, void *ctx)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE6("e", "*xi*xxz*x", obj, connector_id, blob_id, buf, size, ctx);
@@ -10355,8 +10434,8 @@ done:
 herr_t
 H5VLblob_specific(void *obj, hid_t connector_id, void *blob_id, H5VL_blob_specific_args_t *args)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE4("e", "*xi*x*!", obj, connector_id, blob_id, args);
@@ -10452,8 +10531,8 @@ done:
 herr_t
 H5VLblob_optional(void *obj, hid_t connector_id, void *blob_id, H5VL_optional_args_t *args)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE4("e", "*xi*x*!", obj, connector_id, blob_id, args);
@@ -10539,7 +10618,7 @@ herr_t
 H5VL_token_cmp(const H5VL_object_t *vol_obj, const H5O_token_t *token1, const H5O_token_t *token2,
                int *cmp_value)
 {
-    void *obj;                  /* Object to operate on */
+    void * obj;                 /* Object to operate on */
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
@@ -10578,8 +10657,8 @@ herr_t
 H5VLtoken_cmp(void *obj, hid_t connector_id, const H5O_token_t *token1, const H5O_token_t *token2,
               int *cmp_value)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE5("e", "*xi*k*k*Is", obj, connector_id, token1, token2, cmp_value);
@@ -10652,7 +10731,7 @@ herr_t
 H5VL_token_to_str(const H5VL_object_t *vol_obj, H5I_type_t obj_type, const H5O_token_t *token,
                   char **token_str)
 {
-    void *obj;                  /* Object to operate on */
+    void * obj;                 /* Object to operate on */
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
@@ -10687,8 +10766,8 @@ herr_t
 H5VLtoken_to_str(void *obj, H5I_type_t obj_type, hid_t connector_id, const H5O_token_t *token,
                  char **token_str)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE5("e", "*xIti*k**s", obj, obj_type, connector_id, token, token_str);
@@ -10763,7 +10842,7 @@ herr_t
 H5VL_token_from_str(const H5VL_object_t *vol_obj, H5I_type_t obj_type, const char *token_str,
                     H5O_token_t *token)
 {
-    void *obj;                  /* Object to operate on */
+    void * obj;                 /* Object to operate on */
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
@@ -10798,8 +10877,8 @@ herr_t
 H5VLtoken_from_str(void *obj, H5I_type_t obj_type, hid_t connector_id, const char *token_str,
                    H5O_token_t *token)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE5("e", "*xIti*s*k", obj, obj_type, connector_id, token_str, token);
@@ -10864,9 +10943,9 @@ done:
 herr_t
 H5VL_optional(const H5VL_object_t *vol_obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
-    void *obj;                  /* Object to operate on */
-    hbool_t prim_container_ctx_set = FALSE; /* Whether the VOL container context was set up */
-    herr_t  ret_value       = SUCCEED; /* Return value */
+    void *  obj;                              /* Object to operate on */
+    hbool_t prim_container_ctx_set = FALSE;   /* Whether the VOL container context was set up */
+    herr_t  ret_value              = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -10903,8 +10982,8 @@ done:
 herr_t
 H5VLoptional(void *obj, hid_t connector_id, H5VL_optional_args_t *args, hid_t dxpl_id, void **req /*out*/)
 {
-    H5VL_connector_t *  connector;                 /* VOL connector struct */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *connector;           /* VOL connector struct */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API_WRAPPER(FAIL)
     H5TRACE5("e", "*xi*!ix", obj, connector_id, args, dxpl_id, req);

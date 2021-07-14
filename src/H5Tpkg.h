@@ -181,11 +181,18 @@ struct H5T_path_t {
 };
 
 /* Reference function pointers */
-typedef herr_t (*H5T_ref_isnullfunc_t)(const H5VL_container_t *container, const void *src_buf, hbool_t *isnull);
+typedef herr_t (*H5T_ref_isnullfunc_t)(const H5VL_container_t *container, const void *src_buf,
+                                       hbool_t *isnull);
 typedef herr_t (*H5T_ref_setnullfunc_t)(const H5VL_container_t *container, void *dst_buf, void *bg_buf);
-typedef size_t (*H5T_ref_getsizefunc_t)(const H5VL_container_t *src_container, const void *src_buf, size_t src_size, const H5VL_container_t *dst_container, hbool_t *dst_copy);
-typedef herr_t (*H5T_ref_readfunc_t)(const H5VL_container_t *src_container, const void *src_buf, size_t src_size, const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size);
-typedef herr_t (*H5T_ref_writefunc_t)(H5VL_container_t *src_container, const void *src_buf, size_t src_size, H5R_type_t src_type, const H5VL_container_t *dst_file, void *dst_buf, size_t dst_size, void *bg_buf);
+typedef size_t (*H5T_ref_getsizefunc_t)(const H5VL_container_t *src_container, const void *src_buf,
+                                        size_t src_size, const H5VL_container_t *dst_container,
+                                        hbool_t *dst_copy);
+typedef herr_t (*H5T_ref_readfunc_t)(const H5VL_container_t *src_container, const void *src_buf,
+                                     size_t src_size, const H5VL_container_t *dst_container, void *dst_buf,
+                                     size_t dst_size);
+typedef herr_t (*H5T_ref_writefunc_t)(H5VL_container_t *src_container, const void *src_buf, size_t src_size,
+                                      H5R_type_t src_type, const H5VL_container_t *dst_file, void *dst_buf,
+                                      size_t dst_size, void *bg_buf);
 
 typedef struct H5T_ref_class_t {
     H5T_ref_isnullfunc_t  isnull;  /* check if reference value is NIL */
@@ -196,11 +203,11 @@ typedef struct H5T_ref_class_t {
 } H5T_ref_class_t;
 
 typedef struct H5T_atomic_ref_t {
-    H5R_type_t             rtype;    /* type of reference stored             */
-    unsigned               version;  /* version of encoded reference         */
-    hbool_t                opaque;   /* opaque reference type                */
-    H5T_loc_t              loc;      /* location of data in buffer           */
-    const H5T_ref_class_t *cls;      /* Pointer to ref class callbacks */
+    H5R_type_t             rtype;   /* type of reference stored             */
+    unsigned               version; /* version of encoded reference         */
+    hbool_t                opaque;  /* opaque reference type                */
+    H5T_loc_t              loc;     /* location of data in buffer           */
+    const H5T_ref_class_t *cls;     /* Pointer to ref class callbacks */
 } H5T_atomic_ref_t;
 
 typedef struct H5T_atomic_t {
@@ -282,8 +289,9 @@ typedef void *(*H5T_vlen_getptr_func_t)(void *vl_addr);
 typedef herr_t (*H5T_vlen_isnull_func_t)(const H5VL_container_t *container, void *vl_addr, hbool_t *isnull);
 typedef herr_t (*H5T_vlen_setnull_func_t)(const H5VL_container_t *container, void *_vl, void *_bg);
 typedef herr_t (*H5T_vlen_read_func_t)(const H5VL_container_t *container, void *_vl, void *buf, size_t len);
-typedef herr_t (*H5T_vlen_write_func_t)(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                                        void *_vl, void *buf, void *_bg, size_t seq_len, size_t base_size);
+typedef herr_t (*H5T_vlen_write_func_t)(const H5VL_container_t *     container,
+                                        const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *buf,
+                                        void *_bg, size_t seq_len, size_t base_size);
 typedef herr_t (*H5T_vlen_delete_func_t)(const H5VL_container_t *container, const void *_vl);
 
 /* VL datatype callbacks */
@@ -299,11 +307,11 @@ typedef struct H5T_vlen_class_t {
 
 /* A VL datatype */
 typedef struct H5T_vlen_t {
-    H5T_vlen_type_t type;             /* Type of VL data in buffer */
-    H5T_loc_t       loc;              /* Location of VL data in buffer */
-    H5T_cset_t      cset;             /* For VL string: character set */
-    H5T_str_t       pad;              /* For VL string: space or null padding of extra bytes */
-    const H5T_vlen_class_t *cls;      /* Pointer to VL class callbacks */
+    H5T_vlen_type_t         type; /* Type of VL data in buffer */
+    H5T_loc_t               loc;  /* Location of VL data in buffer */
+    H5T_cset_t              cset; /* For VL string: character set */
+    H5T_str_t               pad;  /* For VL string: space or null padding of extra bytes */
+    const H5T_vlen_class_t *cls;  /* Pointer to VL class callbacks */
 } H5T_vlen_t;
 
 /* An opaque datatype */
@@ -334,8 +342,8 @@ typedef struct H5T_shared_t {
     size_t      size;     /*total size of an instance of this type     */
     unsigned    version;  /* Version of object header message to encode this object with */
     hbool_t
-                   force_conv; /* Set if this type always needs to be converted and H5T__conv_noop cannot be called */
-    struct H5T_t * parent;        /*parent type for derived datatypes	     */
+                  force_conv; /* Set if this type always needs to be converted and H5T__conv_noop cannot be called */
+    struct H5T_t *parent; /*parent type for derived datatypes	     */
     union {
         H5T_atomic_t atomic; /* an atomic datatype              */
         H5T_compnd_t compnd; /* a compound datatype (struct)    */

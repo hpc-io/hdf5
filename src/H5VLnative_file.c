@@ -748,8 +748,8 @@ H5VL__native_file_close(void *file, hid_t H5_ATTR_UNUSED dxpl_id, void H5_ATTR_U
      * disabled by an option/property to improve performance.
      */
     if (H5F_ID_EXISTS(f) && (H5F_NREFS(f) > 1) && (H5F_INTENT(f) & H5F_ACC_RDWR)) {
-        hid_t  file_id   = H5I_INVALID_HID;
-        int    nref;
+        hid_t file_id = H5I_INVALID_HID;
+        int   nref;
 
         /* Get the file ID corresponding to the H5F_t struct */
         if (H5I_find_id(f, H5I_FILE, &file_id) < 0 || H5I_INVALID_HID == file_id)

@@ -98,8 +98,8 @@ static hid_t
 H5O__open_api_common(hid_t loc_id, const char *name, hid_t lapl_id, void **token_ptr,
                      H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
-    H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
+    H5VL_object_t * opened_vol_obj = NULL; /* VOL object opened */
+    H5VL_object_t * tmp_vol_obj    = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
     H5I_type_t        opened_type;
@@ -117,7 +117,7 @@ H5O__open_api_common(hid_t loc_id, const char *name, hid_t lapl_id, void **token
 
     /* Open the object */
     if (NULL == (opened_vol_obj = H5VL_object_open(*vol_obj_ptr, &loc_params, &opened_type,
-                                               H5P_DATASET_XFER_DEFAULT, token_ptr)))
+                                                   H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object")
 
     /* Register an ID for the object */
@@ -230,8 +230,8 @@ static hid_t
 H5O__open_by_idx_api_common(hid_t loc_id, const char *group_name, H5_index_t idx_type, H5_iter_order_t order,
                             hsize_t n, hid_t lapl_id, void **token_ptr, H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
-    H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
+    H5VL_object_t * opened_vol_obj = NULL; /* VOL object opened */
+    H5VL_object_t * tmp_vol_obj    = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
     H5I_type_t        opened_type;
@@ -248,7 +248,8 @@ H5O__open_by_idx_api_common(hid_t loc_id, const char *group_name, H5_index_t idx
         HGOTO_ERROR(H5E_LINK, H5E_CANTSET, H5I_INVALID_HID, "can't set object access arguments")
 
     /* Open the object */
-    if (NULL == (opened_vol_obj = H5VL_object_open(*vol_obj_ptr, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, token_ptr)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(*vol_obj_ptr, &loc_params, &opened_type,
+                                                   H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object")
 
     /* Register an ID for the object */
@@ -369,8 +370,8 @@ hid_t
 H5Oopen_by_token(hid_t loc_id, H5O_token_t token)
 {
     H5VL_object_t *   vol_obj;                     /* Object of loc_id */
-    H5I_type_t        vol_obj_type = H5I_BADID;    /* Object type of loc_id */
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
+    H5I_type_t        vol_obj_type   = H5I_BADID;  /* Object type of loc_id */
+    H5VL_object_t *   opened_vol_obj = NULL;       /* VOL object opened */
     H5I_type_t        opened_type;                 /* Opened object type */
     H5VL_loc_params_t loc_params;                  /* Location parameters */
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
@@ -395,7 +396,8 @@ H5Oopen_by_token(hid_t loc_id, H5O_token_t token)
     loc_params.obj_type                    = vol_obj_type;
 
     /* Open the object */
-    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type,
+                                                   H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object")
 
     /* Register an ID for the object */
@@ -902,15 +904,17 @@ H5Olink(hid_t obj_id, hid_t new_loc_id, const char *new_name, hid_t lcpl_id, hid
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector, vol_obj2->container->connector) < 0)
+        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector,
+                               vol_obj2->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
+                        "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
 
     /* Construct a temporary VOL object */
-    tmp_vol_obj.obj_type      = vol_obj2->obj_type;
-    tmp_vol_obj.object      = vol_obj2->object;
+    tmp_vol_obj.obj_type  = vol_obj2->obj_type;
+    tmp_vol_obj.object    = vol_obj2->object;
     tmp_vol_obj.container = vol_obj1->container;
 
     /* Set up VOL callback arguments */
@@ -920,7 +924,8 @@ H5Olink(hid_t obj_id, hid_t new_loc_id, const char *new_name, hid_t lcpl_id, hid
     vol_cb_args.args.hard.curr_loc_params.obj_type = H5I_get_type(obj_id);
 
     /* Create a link to the object */
-    if (H5VL_link_create(&vol_cb_args, &tmp_vol_obj, &new_loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+    if (H5VL_link_create(&vol_cb_args, &tmp_vol_obj, &new_loc_params, lcpl_id, lapl_id,
+                         H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
         HGOTO_ERROR(H5E_OHDR, H5E_CANTCREATE, FAIL, "unable to create link")
 
 done:

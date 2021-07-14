@@ -57,8 +57,9 @@ static void * H5T__vlen_mem_seq_getptr(void *_vl);
 static herr_t H5T__vlen_mem_seq_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
 static herr_t H5T__vlen_mem_seq_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
 static herr_t H5T__vlen_mem_seq_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_mem_seq_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                                      void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
+static herr_t H5T__vlen_mem_seq_write(const H5VL_container_t *     container,
+                                      const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *_buf,
+                                      void *_bg, size_t seq_len, size_t base_size);
 
 /* Memory-based VL string callbacks */
 static herr_t H5T__vlen_mem_str_getlen(const H5VL_container_t *container, const void *_vl, size_t *len);
@@ -66,16 +67,18 @@ static void * H5T__vlen_mem_str_getptr(void *_vl);
 static herr_t H5T__vlen_mem_str_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
 static herr_t H5T__vlen_mem_str_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
 static herr_t H5T__vlen_mem_str_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_mem_str_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                                      void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
+static herr_t H5T__vlen_mem_str_write(const H5VL_container_t *     container,
+                                      const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *_buf,
+                                      void *_bg, size_t seq_len, size_t base_size);
 
 /* Disk-based VL sequence (and string) callbacks */
 static herr_t H5T__vlen_disk_getlen(const H5VL_container_t *container, const void *_vl, size_t *len);
 static herr_t H5T__vlen_disk_isnull(const H5VL_container_t *container, void *_vl, hbool_t *isnull);
 static herr_t H5T__vlen_disk_setnull(const H5VL_container_t *container, void *_vl, void *_bg);
 static herr_t H5T__vlen_disk_read(const H5VL_container_t *container, void *_vl, void *_buf, size_t len);
-static herr_t H5T__vlen_disk_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                                   void *_vl, void *_buf, void *_bg, size_t seq_len, size_t base_size);
+static herr_t H5T__vlen_disk_write(const H5VL_container_t *     container,
+                                   const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *_buf,
+                                   void *_bg, size_t seq_len, size_t base_size);
 static herr_t H5T__vlen_disk_delete(const H5VL_container_t *container, const void *_vl);
 
 /*********************/
@@ -282,9 +285,9 @@ H5T__vlen_set_loc(H5T_t *dt, H5T_loc_t loc)
 
             /* Disk based VL datatype */
             case H5T_LOC_DISK: {
-                const H5VL_container_t *container;    /* Container that reference is in*/
-                H5VL_file_cont_info_t cont_info = {H5VL_CONTAINER_INFO_VERSION, 0, 0, 0};
-                H5VL_file_get_args_t  vol_cb_args; /* Arguments to VOL callback */
+                const H5VL_container_t *container; /* Container that reference is in*/
+                H5VL_file_cont_info_t   cont_info = {H5VL_CONTAINER_INFO_VERSION, 0, 0, 0};
+                H5VL_file_get_args_t    vol_cb_args; /* Arguments to VOL callback */
 
                 /* Mark this type as being stored on disk */
                 dt->shared->u.vlen.loc = H5T_LOC_DISK;
@@ -459,7 +462,8 @@ H5T__vlen_mem_seq_isnull(const H5VL_container_t H5_ATTR_UNUSED *container, void 
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void H5_ATTR_UNUSED *_bg)
+H5T__vlen_mem_seq_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl,
+                          void H5_ATTR_UNUSED *_bg)
 {
     hvl_t vl; /* Temporary hvl_t to use during operation */
 
@@ -531,8 +535,9 @@ H5T__vlen_mem_seq_read(const H5VL_container_t H5_ATTR_UNUSED *container, void *_
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_seq_write(const H5VL_container_t H5_ATTR_UNUSED *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                        void *_vl, void *buf, void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
+H5T__vlen_mem_seq_write(const H5VL_container_t H5_ATTR_UNUSED *container,
+                        const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *buf,
+                        void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
 {
     hvl_t  vl;                  /* Temporary hvl_t to use during operation */
     herr_t ret_value = SUCCEED; /* Return value */
@@ -686,7 +691,8 @@ H5T__vlen_mem_str_isnull(const H5VL_container_t H5_ATTR_UNUSED *container, void 
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl, void H5_ATTR_UNUSED *_bg)
+H5T__vlen_mem_str_setnull(const H5VL_container_t H5_ATTR_UNUSED *container, void *_vl,
+                          void H5_ATTR_UNUSED *_bg)
 {
     char *t = NULL; /* Pointer to temporary buffer allocated */
 
@@ -750,8 +756,9 @@ H5T__vlen_mem_str_read(const H5VL_container_t H5_ATTR_UNUSED *container, void *_
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_mem_str_write(const H5VL_container_t H5_ATTR_UNUSED *container, const H5T_vlen_alloc_info_t *vl_alloc_info,
-                        void *_vl, void *buf, void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
+H5T__vlen_mem_str_write(const H5VL_container_t H5_ATTR_UNUSED *container,
+                        const H5T_vlen_alloc_info_t *vl_alloc_info, void *_vl, void *buf,
+                        void H5_ATTR_UNUSED *_bg, size_t seq_len, size_t base_size)
 {
     char * t;                   /* Pointer to temporary buffer allocated */
     size_t len;                 /* Maximum length of the string to copy */
@@ -949,8 +956,9 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__vlen_disk_write(const H5VL_container_t *container, const H5T_vlen_alloc_info_t H5_ATTR_UNUSED *vl_alloc_info,
-                     void *_vl, void *buf, void *_bg, size_t seq_len, size_t base_size)
+H5T__vlen_disk_write(const H5VL_container_t *    container,
+                     const H5T_vlen_alloc_info_t H5_ATTR_UNUSED *vl_alloc_info, void *_vl, void *buf,
+                     void *_bg, size_t seq_len, size_t base_size)
 {
     uint8_t *      vl        = (uint8_t *)_vl;       /* Pointer to the user's hvl_t information */
     const uint8_t *bg        = (const uint8_t *)_bg; /* Pointer to the old data hvl_t */
@@ -1016,7 +1024,8 @@ H5T__vlen_disk_delete(const H5VL_container_t *container, const void *_vl)
             /* Set up VOL callback arguments */
             vol_cb_args.op_type = H5VL_BLOB_DELETE;
 
-            if (H5VL_blob_specific(container, (void *)vl, &vol_cb_args) < 0) /* Casting away 'const' OK -QAK */
+            if (H5VL_blob_specific(container, (void *)vl, &vol_cb_args) <
+                0) /* Casting away 'const' OK -QAK */
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL, "unable to delete blob")
         } /* end if */
     }     /* end if */

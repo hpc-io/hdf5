@@ -3212,9 +3212,9 @@ H5D__virtual_refresh_source_dsets(H5D_t *dset)
         else
             /* Check if source dataset is open */
             if (storage->list[i].source_dset.dset)
-                /* Refresh source dataset */
-                if (H5D__virtual_refresh_source_dset(&storage->list[i].source_dset.dset) < 0)
-                    HGOTO_ERROR(H5E_DATASET, H5E_CANTFLUSH, FAIL, "unable to refresh source dataset")
+            /* Refresh source dataset */
+            if (H5D__virtual_refresh_source_dset(&storage->list[i].source_dset.dset) < 0)
+                HGOTO_ERROR(H5E_DATASET, H5E_CANTFLUSH, FAIL, "unable to refresh source dataset")
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)

@@ -2556,7 +2556,7 @@ main(void)
         FAIL_STACK_ERROR;
 
     if (is_native) {
-        hid_t                 fcpl_id = H5I_INVALID_HID;
+        hid_t fcpl_id = H5I_INVALID_HID;
 
         fcpl_id = H5Pcreate(H5P_FILE_CREATE);
 

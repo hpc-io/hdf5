@@ -984,7 +984,8 @@ H5CX_retrieve_state(H5CX_state_t **api_state)
     if (NULL != (*api_state)->prim_container_ctx) {
         HDassert((*head)->ctx.prim_container_ctx_valid);
         if (H5VL_inc_container_ctx((*api_state)->prim_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on primary VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL,
+                        "can't increment refcount on primary VOL container context")
     } /* end if */
 
     /* Keep a reference to the 'src' VOL container context */
@@ -992,7 +993,8 @@ H5CX_retrieve_state(H5CX_state_t **api_state)
     if (NULL != (*api_state)->src_container_ctx) {
         HDassert((*head)->ctx.src_container_ctx_valid);
         if (H5VL_inc_container_ctx((*api_state)->src_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on 'src' VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL,
+                        "can't increment refcount on 'src' VOL container context")
     } /* end if */
 
     /* Keep a reference to the 'dst' VOL container context */
@@ -1000,7 +1002,8 @@ H5CX_retrieve_state(H5CX_state_t **api_state)
     if (NULL != (*api_state)->dst_container_ctx) {
         HDassert((*head)->ctx.dst_container_ctx_valid);
         if (H5VL_inc_container_ctx((*api_state)->dst_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL, "can't increment refcount on 'dst' VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTINC, FAIL,
+                        "can't increment refcount on 'dst' VOL container context")
     } /* end if */
 
 #ifdef H5_HAVE_PARALLEL
@@ -1069,19 +1072,19 @@ H5CX_restore_state(const H5CX_state_t *api_state)
 
     /* Restore the primary VOL container context */
     if (NULL != api_state->prim_container_ctx) {
-        (*head)->ctx.prim_container_ctx = api_state->prim_container_ctx;
+        (*head)->ctx.prim_container_ctx       = api_state->prim_container_ctx;
         (*head)->ctx.prim_container_ctx_valid = TRUE;
     } /* end if */
 
     /* Restore the 'src' VOL container context */
     if (NULL != api_state->src_container_ctx) {
-        (*head)->ctx.src_container_ctx = api_state->src_container_ctx;
+        (*head)->ctx.src_container_ctx       = api_state->src_container_ctx;
         (*head)->ctx.src_container_ctx_valid = TRUE;
     } /* end if */
 
     /* Restore the 'dst' VOL container context */
     if (NULL != api_state->dst_container_ctx) {
-        (*head)->ctx.dst_container_ctx = api_state->dst_container_ctx;
+        (*head)->ctx.dst_container_ctx       = api_state->dst_container_ctx;
         (*head)->ctx.dst_container_ctx_valid = TRUE;
     } /* end if */
 
@@ -1138,17 +1141,20 @@ H5CX_free_state(H5CX_state_t *api_state)
     /* Release the primary VOL container context */
     if (api_state->prim_container_ctx)
         if (H5VL_dec_container_ctx(api_state->prim_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on primary VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL,
+                        "can't decrement refcount on primary VOL container context")
 
     /* Release the 'src' VOL container context */
     if (api_state->src_container_ctx)
         if (H5VL_dec_container_ctx(api_state->src_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on 'src' VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL,
+                        "can't decrement refcount on 'src' VOL container context")
 
     /* Release the 'dst' VOL container context */
     if (api_state->dst_container_ctx)
         if (H5VL_dec_container_ctx(api_state->dst_container_ctx) < 0)
-            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL, "can't decrement refcount on 'dst' VOL container context")
+            HGOTO_ERROR(H5E_CONTEXT, H5E_CANTDEC, FAIL,
+                        "can't decrement refcount on 'dst' VOL container context")
 
     /* Free the state */
     api_state = H5FL_FREE(H5CX_state_t, api_state);

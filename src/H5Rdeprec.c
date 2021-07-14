@@ -308,14 +308,14 @@ done:
 hid_t
 H5Rdereference1(hid_t obj_id, H5R_type_t ref_type, const void *ref)
 {
-    H5VL_object_t *      vol_obj      = NULL;                     /* Object of loc_id */
-    H5I_type_t           vol_obj_type = H5I_BADID;                /* Object type of loc_id */
-    H5VL_loc_params_t    loc_params;                              /* Location parameters */
-    H5O_token_t          obj_token = {0};                         /* Object token */
-    H5I_type_t           opened_type;                             /* Opened object type */
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
-    const unsigned char *buf        = (const unsigned char *)ref; /* Reference buffer */
-    hid_t                ret_value  = H5I_INVALID_HID;            /* Return value */
+    H5VL_object_t *      vol_obj      = NULL;                         /* Object of loc_id */
+    H5I_type_t           vol_obj_type = H5I_BADID;                    /* Object type of loc_id */
+    H5VL_loc_params_t    loc_params;                                  /* Location parameters */
+    H5O_token_t          obj_token = {0};                             /* Object token */
+    H5I_type_t           opened_type;                                 /* Opened object type */
+    H5VL_object_t *      opened_vol_obj = NULL;                       /* VOL object opened */
+    const unsigned char *buf            = (const unsigned char *)ref; /* Reference buffer */
+    hid_t                ret_value      = H5I_INVALID_HID;            /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
     H5TRACE3("i", "iRt*x", obj_id, ref_type, ref);
@@ -344,7 +344,8 @@ H5Rdereference1(hid_t obj_id, H5R_type_t ref_type, const void *ref)
     loc_params.obj_type                    = vol_obj_type;
 
     /* Dereference */
-    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type,
+                                                   H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_REFERENCE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object by token")
 
     /* Register an ID for the object */
@@ -563,14 +564,14 @@ done:
 hid_t
 H5Rdereference2(hid_t obj_id, hid_t oapl_id, H5R_type_t ref_type, const void *ref)
 {
-    H5VL_object_t *      vol_obj      = NULL;                     /* Object of loc_id */
-    H5I_type_t           vol_obj_type = H5I_BADID;                /* Object type of loc_id */
-    H5VL_loc_params_t    loc_params;                              /* Location parameters */
-    H5O_token_t          obj_token = {0};                         /* Object token */
-    H5I_type_t           opened_type;                             /* Opened object type */
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
-    const unsigned char *buf        = (const unsigned char *)ref; /* Reference pointer */
-    hid_t                ret_value  = H5I_INVALID_HID;            /* Return value */
+    H5VL_object_t *      vol_obj      = NULL;                         /* Object of loc_id */
+    H5I_type_t           vol_obj_type = H5I_BADID;                    /* Object type of loc_id */
+    H5VL_loc_params_t    loc_params;                                  /* Location parameters */
+    H5O_token_t          obj_token = {0};                             /* Object token */
+    H5I_type_t           opened_type;                                 /* Opened object type */
+    H5VL_object_t *      opened_vol_obj = NULL;                       /* VOL object opened */
+    const unsigned char *buf            = (const unsigned char *)ref; /* Reference pointer */
+    hid_t                ret_value      = H5I_INVALID_HID;            /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
     H5TRACE4("i", "iiRt*x", obj_id, oapl_id, ref_type, ref);
@@ -605,7 +606,8 @@ H5Rdereference2(hid_t obj_id, hid_t oapl_id, H5R_type_t ref_type, const void *re
     loc_params.obj_type                    = vol_obj_type;
 
     /* Open object by token */
-    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type,
+                                                   H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_REFERENCE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object by token")
 
     /* Register an ID for the object */

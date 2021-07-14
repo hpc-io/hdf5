@@ -537,8 +537,8 @@ done:
 herr_t
 H5VLcmp_connector_cls(int *cmp, hid_t connector_id1, hid_t connector_id2)
 {
-    H5VL_connector_t *conn1, *conn2;         /* connectors for IDs */
-    herr_t        ret_value = SUCCEED; /* Return value */
+    H5VL_connector_t *conn1, *conn2;       /* connectors for IDs */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("e", "*Isii", cmp, connector_id1, connector_id2);

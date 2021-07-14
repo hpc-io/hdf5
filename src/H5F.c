@@ -1070,10 +1070,10 @@ done:
 herr_t
 H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
 {
-    H5VL_object_t *            loc_vol_obj   = NULL; /* Parent object        */
-    H5VL_object_t *            child_vol_obj = NULL; /* Child object         */
-    H5VL_group_specific_args_t vol_cb_args;          /* Arguments to VOL callback */
-    H5I_type_t                 loc_type = H5I_UNINIT;             /* ID type of location  */
+    H5VL_object_t *            loc_vol_obj   = NULL;        /* Parent object        */
+    H5VL_object_t *            child_vol_obj = NULL;        /* Child object         */
+    H5VL_group_specific_args_t vol_cb_args;                 /* Arguments to VOL callback */
+    H5I_type_t                 loc_type       = H5I_UNINIT; /* ID type of location  */
     int                        same_connector = 0; /* Whether parent and child files use the same connector */
     herr_t                     ret_value      = SUCCEED; /* Return value         */
 
@@ -1116,7 +1116,8 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
         loc_params.obj_type = loc_type;
 
         /* Open the root group object */
-        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, NULL)))
+        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT,
+                                                   H5P_DATASET_XFER_DEFAULT, NULL)))
             HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "unable to open group")
     } /* end if */
     else {
@@ -1130,7 +1131,8 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "could not get child object")
 
     /* Check if both objects are associated with the same VOL connector */
-    if (H5VL_cmp_connector(&same_connector, loc_vol_obj->container->connector, child_vol_obj->container->connector) < 0)
+    if (H5VL_cmp_connector(&same_connector, loc_vol_obj->container->connector,
+                           child_vol_obj->container->connector) < 0)
         HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
     if (same_connector)
         HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "can't mount file onto object from different VOL connector")
@@ -1138,7 +1140,10 @@ H5Fmount(hid_t loc_id, const char *name, hid_t child_id, hid_t plist_id)
     /* Set up VOL callback arguments */
     vol_cb_args.op_type         = H5VL_GROUP_MOUNT;
     vol_cb_args.args.mount.name = name;
-    vol_cb_args.args.mount.child_file = (child_vol_obj->obj_type == H5VL_OBJ_FILE) ? child_vol_obj->container->object : child_vol_obj->object; /* Don't unwrap fully, so each connector can see its object */
+    vol_cb_args.args.mount.child_file =
+        (child_vol_obj->obj_type == H5VL_OBJ_FILE)
+            ? child_vol_obj->container->object
+            : child_vol_obj->object; /* Don't unwrap fully, so each connector can see its object */
     vol_cb_args.args.mount.fmpl_id = plist_id;
 
     /* Perform the mount operation */
@@ -1180,10 +1185,10 @@ done:
 herr_t
 H5Funmount(hid_t loc_id, const char *name)
 {
-    H5VL_object_t *            loc_vol_obj = NULL;  /* Parent object        */
-    H5VL_group_specific_args_t vol_cb_args;         /* Arguments to VOL callback */
-    H5I_type_t                 loc_type = H5I_UNINIT;            /* ID type of location  */
-    herr_t                     ret_value = SUCCEED; /* Return value         */
+    H5VL_object_t *            loc_vol_obj = NULL;     /* Parent object        */
+    H5VL_group_specific_args_t vol_cb_args;            /* Arguments to VOL callback */
+    H5I_type_t                 loc_type  = H5I_UNINIT; /* ID type of location  */
+    herr_t                     ret_value = SUCCEED;    /* Return value         */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE2("e", "i*s", loc_id, name);
@@ -1218,7 +1223,8 @@ H5Funmount(hid_t loc_id, const char *name)
         loc_params.obj_type = loc_type;
 
         /* Open the root group object */
-        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, NULL)))
+        if (NULL == (loc_vol_obj = H5VL_group_open(vol_obj, &loc_params, "/", H5P_GROUP_ACCESS_DEFAULT,
+                                                   H5P_DATASET_XFER_DEFAULT, NULL)))
             HGOTO_ERROR(H5E_FILE, H5E_CANTOPENOBJ, FAIL, "unable to open group")
     } /* end if */
     else {
@@ -1265,8 +1271,8 @@ done:
 static hid_t
 H5F__reopen_api_common(hid_t file_id, void **token_ptr)
 {
-    H5VL_object_t *vol_obj = NULL;                /* Object for loc_id */
-    hid_t          ret_value   = H5I_INVALID_HID; /* Return value */
+    H5VL_object_t *vol_obj   = NULL;            /* Object for loc_id */
+    hid_t          ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_STATIC
 

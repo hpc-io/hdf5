@@ -27,10 +27,10 @@
 /* Headers */
 /***********/
 
-#include "H5private.h"   /* Generic Functions                    */
-#include "H5Eprivate.h"  /* Error handling                       */
-#include "H5Iprivate.h"  /* IDs                                  */
-#include "H5VLpkg.h"     /* Virtual Object Layer                 */
+#include "H5private.h"  /* Generic Functions                    */
+#include "H5Eprivate.h" /* Error handling                       */
+#include "H5Iprivate.h" /* IDs                                  */
+#include "H5VLpkg.h"    /* Virtual Object Layer                 */
 
 /****************/
 /* Local Macros */
@@ -89,14 +89,15 @@ H5VL_conn_prop_copy(H5VL_connector_prop_t *connector_prop)
             /* Copy connector info, if it exists */
             if (connector_prop->connector_info) {
                 H5VL_connector_t *connector;                 /* Pointer to connector */
-                void *        new_connector_info = NULL; /* Copy of connector info */
+                void *            new_connector_info = NULL; /* Copy of connector info */
 
                 /* Retrieve the connector for the ID */
                 if (NULL == (connector = H5I_object(connector_prop->connector_id)))
                     HGOTO_ERROR(H5E_PLIST, H5E_BADTYPE, FAIL, "not a VOL connector ID")
 
                 /* Allocate and copy connector info */
-                if (H5VL_copy_connector_info(connector, &new_connector_info, connector_prop->connector_info) < 0)
+                if (H5VL_copy_connector_info(connector, &new_connector_info, connector_prop->connector_info) <
+                    0)
                     HGOTO_ERROR(H5E_PLIST, H5E_CANTCOPY, FAIL, "connector info copy failed")
 
                 /* Set the connector info to the copy */
@@ -131,7 +132,8 @@ H5VL_conn_prop_free(H5VL_connector_prop_t *connector_prop)
         if (connector_prop->connector_id > 0) {
             if (connector_prop->connector_info) {
                 /* Free the connector info */
-                if (H5VL_free_connector_info(connector_prop->connector_id, connector_prop->connector_info) < 0)
+                if (H5VL_free_connector_info(connector_prop->connector_id, connector_prop->connector_info) <
+                    0)
                     HGOTO_ERROR(H5E_VOL, H5E_CANTRELEASE, FAIL, "unable to release VOL connector info object")
                 connector_prop->connector_info = NULL;
             } /* end if */

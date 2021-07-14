@@ -121,9 +121,9 @@ done:
 herr_t
 H5ESinsert_request(hid_t es_id, hid_t connector_id, void *request)
 {
-    H5ES_t *es;                  /* Event set */
+    H5ES_t *          es;                  /* Event set */
     H5VL_connector_t *connector = NULL;    /* VOL connector */
-    herr_t  ret_value = SUCCEED; /* Return value */
+    herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
     H5TRACE3("e", "ii*x", es_id, connector_id, request);

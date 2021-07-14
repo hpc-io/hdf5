@@ -334,12 +334,12 @@ H5F__parse_file_lock_env_var(htri_t *use_locks)
 hid_t
 H5F_get_access_plist(H5F_t *f, hbool_t app_ref)
 {
-    H5P_genplist_t *      new_plist;                  /* New property list */
-    H5P_genplist_t *      old_plist;                  /* Old property list */
-    H5FD_driver_prop_t    driver_prop;                /* Property for driver ID & info */
-    hbool_t               driver_prop_copied = FALSE; /* Whether the driver property has been set up */
-    unsigned              efc_size  = 0;
-    hid_t                 ret_value = H5I_INVALID_HID; /* Return value */
+    H5P_genplist_t *   new_plist;                  /* New property list */
+    H5P_genplist_t *   old_plist;                  /* Old property list */
+    H5FD_driver_prop_t driver_prop;                /* Property for driver ID & info */
+    hbool_t            driver_prop_copied = FALSE; /* Whether the driver property has been set up */
+    unsigned           efc_size           = 0;
+    hid_t              ret_value          = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(H5I_INVALID_HID)
 
@@ -2505,15 +2505,16 @@ done:
 hid_t
 H5F_reopen_with_container(H5VL_container_t *container, void **request)
 {
-    H5VL_file_specific_args_t vol_cb_args;                   /* Arguments to VOL callback */
-    H5VL_object_t *           reopen_file_obj = NULL;        /* Pointer to the VOL object for the re-opened file object */
-    hid_t                     ret_value   = H5I_INVALID_HID; /* Return value */
+    H5VL_file_specific_args_t vol_cb_args; /* Arguments to VOL callback */
+    H5VL_object_t *reopen_file_obj = NULL; /* Pointer to the VOL object for the re-opened file object */
+    hid_t          ret_value       = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(H5I_INVALID_HID)
 
     /* Set up VOL callback arguments */
-    vol_cb_args.op_type          = H5VL_FILE_REOPEN;
-    vol_cb_args.args.reopen.file = (void **)&reopen_file_obj;    /* Internal file 'specific' callback will create VOL object */
+    vol_cb_args.op_type = H5VL_FILE_REOPEN;
+    vol_cb_args.args.reopen.file =
+        (void **)&reopen_file_obj; /* Internal file 'specific' callback will create VOL object */
 
     /* Reopen the file */
     if (H5VL_container_specific(container, &vol_cb_args, request) < 0)
@@ -3555,18 +3556,18 @@ done:
 herr_t
 H5F__start_swmr_write(H5F_t *f)
 {
-    hbool_t     ci_load        = FALSE;  /* whether MDC ci load requested */
-    hbool_t     ci_write       = FALSE;  /* whether MDC CI write requested */
-    size_t      grp_dset_count = 0;      /* # of open objects: groups & datasets */
-    size_t      nt_attr_count  = 0;      /* # of opened named datatypes  + opened attributes */
-    hid_t *     obj_ids        = NULL;   /* List of ids */
-    H5G_loc_t * obj_glocs      = NULL;   /* Group location of the object */
-    H5O_loc_t * obj_olocs      = NULL;   /* Object location */
-    H5G_name_t *obj_paths      = NULL;   /* Group hierarchy path */
-    size_t      u;                       /* Local index variable */
-    hbool_t     setup         = FALSE;   /* Boolean flag to indicate whether SWMR setting is enabled */
-    H5VL_container_t *container = NULL;    /* VOL container for file */
-    herr_t      ret_value     = SUCCEED; /* Return value */
+    hbool_t           ci_load        = FALSE; /* whether MDC ci load requested */
+    hbool_t           ci_write       = FALSE; /* whether MDC CI write requested */
+    size_t            grp_dset_count = 0;     /* # of open objects: groups & datasets */
+    size_t            nt_attr_count  = 0;     /* # of opened named datatypes  + opened attributes */
+    hid_t *           obj_ids        = NULL;  /* List of ids */
+    H5G_loc_t *       obj_glocs      = NULL;  /* Group location of the object */
+    H5O_loc_t *       obj_olocs      = NULL;  /* Object location */
+    H5G_name_t *      obj_paths      = NULL;  /* Group hierarchy path */
+    size_t            u;                      /* Local index variable */
+    hbool_t           setup     = FALSE;      /* Boolean flag to indicate whether SWMR setting is enabled */
+    H5VL_container_t *container = NULL;       /* VOL container for file */
+    herr_t            ret_value = SUCCEED;    /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -3845,11 +3846,11 @@ done:
 hid_t
 H5F_get_file_id(H5VL_object_t *vol_obj, H5I_type_t obj_type, hbool_t app_ref)
 {
-    void *                 vol_obj_file = NULL;               /* File object pointer */
-    H5VL_object_get_args_t vol_cb_args;                       /* Arguments to VOL callback */
-    H5VL_loc_params_t      loc_params;                        /* Location parameters */
-    hid_t                  file_id         = H5I_INVALID_HID; /* File ID for object */
-    hid_t                  ret_value       = H5I_INVALID_HID; /* Return value */
+    void *                 vol_obj_file = NULL;         /* File object pointer */
+    H5VL_object_get_args_t vol_cb_args;                 /* Arguments to VOL callback */
+    H5VL_loc_params_t      loc_params;                  /* Location parameters */
+    hid_t                  file_id   = H5I_INVALID_HID; /* File ID for object */
+    hid_t                  ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(H5I_INVALID_HID)
 

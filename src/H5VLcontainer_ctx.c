@@ -48,8 +48,8 @@
 /********************/
 /* Local Prototypes */
 /********************/
-static H5VL_container_ctx_t * H5VL__create_container_ctx(H5VL_container_t *container);
-static herr_t H5VL__free_container_ctx(H5VL_container_ctx_t *container_ctx);
+static H5VL_container_ctx_t *H5VL__create_container_ctx(H5VL_container_t *container);
+static herr_t                H5VL__free_container_ctx(H5VL_container_ctx_t *container_ctx);
 
 /*********************/
 /* Package Variables */
@@ -80,7 +80,7 @@ H5VL_object_t *
 H5VL__create_object_with_container_ctx(H5VL_obj_type_t type, void *object)
 {
     H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
-    H5VL_object_t *ret_value = NULL; /* Return value */
+    H5VL_object_t *       ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -115,8 +115,8 @@ done:
 H5VL_container_t *
 H5VL_get_primary_container(void)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    H5VL_container_t *ret_value = NULL;     /* Return value */
+    H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
+    H5VL_container_t *    ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -146,8 +146,8 @@ done:
 H5VL_container_t *
 H5VL_get_src_container(void)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    H5VL_container_t *ret_value = NULL;     /* Return value */
+    H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
+    H5VL_container_t *    ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -177,8 +177,8 @@ done:
 H5VL_container_t *
 H5VL_get_dst_container(void)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    H5VL_container_t *ret_value = NULL;     /* Return value */
+    H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
+    H5VL_container_t *    ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -207,9 +207,9 @@ done:
 static H5VL_container_ctx_t *
 H5VL__create_container_ctx(H5VL_container_t *container)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    void *obj_wrap_ctx = NULL; /* VOL connector's wrapping context */
-    H5VL_container_ctx_t *ret_value    = NULL; /* Return value */
+    H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
+    void *                obj_wrap_ctx  = NULL; /* VOL connector's wrapping context */
+    H5VL_container_ctx_t *ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -265,7 +265,7 @@ herr_t
 H5VL_inc_container_ctx(void *_container_ctx)
 {
     H5VL_container_ctx_t *container_ctx = (H5VL_container_ctx_t *)_container_ctx; /* VOL container context */
-    herr_t           ret_value    = SUCCEED;                          /* Return value */
+    herr_t                ret_value     = SUCCEED;                                /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -299,7 +299,7 @@ herr_t
 H5VL_dec_container_ctx(void *_container_ctx)
 {
     H5VL_container_ctx_t *container_ctx = (H5VL_container_ctx_t *)_container_ctx; /* VOL container context */
-    herr_t           ret_value    = SUCCEED;                          /* Return value */
+    herr_t                ret_value     = SUCCEED;                                /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -350,8 +350,10 @@ H5VL__free_container_ctx(H5VL_container_ctx_t *container_ctx)
     /* If there is a VOL connector object wrapping context, release it */
     if (container_ctx->obj_wrap_ctx)
         /* Release the VOL connector's object wrapping context */
-        if ((*container_ctx->container->connector->cls->wrap_cls.free_wrap_ctx)(container_ctx->obj_wrap_ctx) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTRELEASE, FAIL, "unable to release connector's object wrapping context")
+        if ((*container_ctx->container->connector->cls->wrap_cls.free_wrap_ctx)(container_ctx->obj_wrap_ctx) <
+            0)
+            HGOTO_ERROR(H5E_VOL, H5E_CANTRELEASE, FAIL,
+                        "unable to release connector's object wrapping context")
 
     /* Decrement refcount on container */
     if (H5VL_container_dec_rc(container_ctx->container) < 0)
@@ -376,9 +378,9 @@ done:
 herr_t
 H5VL_set_primary_container_ctx(const H5VL_object_t *vol_obj)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    hbool_t container_ctx_created = FALSE;      /* Whether container context was created */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    H5VL_container_ctx_t *container_ctx         = NULL;    /* Container context */
+    hbool_t               container_ctx_created = FALSE;   /* Whether container context was created */
+    herr_t                ret_value             = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -425,7 +427,7 @@ herr_t
 H5VL_reset_primary_container_ctx(void)
 {
     H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    herr_t                ret_value     = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -468,9 +470,9 @@ done:
 herr_t
 H5VL__set_src_container_ctx(const H5VL_object_t *vol_obj)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    hbool_t container_ctx_created = FALSE;      /* Whether container context was created */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    H5VL_container_ctx_t *container_ctx         = NULL;    /* Container context */
+    hbool_t               container_ctx_created = FALSE;   /* Whether container context was created */
+    herr_t                ret_value             = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -517,7 +519,7 @@ herr_t
 H5VL__reset_src_container_ctx(void)
 {
     H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    herr_t                ret_value     = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -560,9 +562,9 @@ done:
 herr_t
 H5VL__set_dst_container_ctx(const H5VL_object_t *vol_obj)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    hbool_t container_ctx_created = FALSE;      /* Whether container context was created */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    H5VL_container_ctx_t *container_ctx         = NULL;    /* Container context */
+    hbool_t               container_ctx_created = FALSE;   /* Whether container context was created */
+    herr_t                ret_value             = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -609,7 +611,7 @@ herr_t
 H5VL__reset_dst_container_ctx(void)
 {
     H5VL_container_ctx_t *container_ctx = NULL;    /* Container context */
-    herr_t           ret_value    = SUCCEED; /* Return value */
+    herr_t                ret_value     = SUCCEED; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -639,4 +641,3 @@ H5VL__reset_dst_container_ctx(void)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL__reset_dst_container_ctx() */
-

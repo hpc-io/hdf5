@@ -93,7 +93,7 @@ static hid_t
 H5D__create_api_common(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t lcpl_id,
                        hid_t dcpl_id, hid_t dapl_id, void **token_ptr, H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t * dset_obj    = NULL;              /* Dataset VOL object */
+    H5VL_object_t * dset_obj    = NULL; /* Dataset VOL object */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
@@ -133,7 +133,7 @@ H5D__create_api_common(hid_t loc_id, const char *name, hid_t type_id, hid_t spac
 
     /* Create the dataset */
     if (NULL == (dset_obj = H5VL_dataset_create(*vol_obj_ptr, &loc_params, name, lcpl_id, type_id, space_id,
-                                            dcpl_id, dapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
+                                                dcpl_id, dapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_DATASET, H5E_CANTCREATE, H5I_INVALID_HID, "unable to create dataset")
 
     /* Register an ID for the dataset */
@@ -274,8 +274,8 @@ done:
 hid_t
 H5Dcreate_anon(hid_t loc_id, hid_t type_id, hid_t space_id, hid_t dcpl_id, hid_t dapl_id)
 {
-    H5VL_object_t * dset_obj    = NULL;              /* Dataset VOL object */
-    H5VL_object_t *   vol_obj = NULL;              /* Object for loc_id */
+    H5VL_object_t *   dset_obj = NULL;             /* Dataset VOL object */
+    H5VL_object_t *   vol_obj  = NULL;             /* Object for loc_id */
     H5VL_loc_params_t loc_params;                  /* Location parameters for object access */
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -304,9 +304,9 @@ H5Dcreate_anon(hid_t loc_id, hid_t type_id, hid_t space_id, hid_t dcpl_id, hid_t
     loc_params.obj_type = H5I_get_type(loc_id);
 
     /* Create the dataset */
-    if (NULL ==
-        (dset_obj = H5VL_dataset_create(vol_obj, &loc_params, NULL, H5P_LINK_CREATE_DEFAULT, type_id, space_id,
-                                    dcpl_id, dapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (dset_obj = H5VL_dataset_create(vol_obj, &loc_params, NULL, H5P_LINK_CREATE_DEFAULT, type_id,
+                                                space_id, dcpl_id, dapl_id, H5P_DATASET_XFER_DEFAULT,
+                                                H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_DATASET, H5E_CANTINIT, H5I_INVALID_HID, "unable to create dataset")
 
     /* Register an ID for the dataset */
@@ -336,7 +336,7 @@ static hid_t
 H5D__open_api_common(hid_t loc_id, const char *name, hid_t dapl_id, void **token_ptr,
                      H5VL_object_t **_vol_obj_ptr)
 {
-    H5VL_object_t * dset_obj    = NULL;              /* Dataset VOL object */
+    H5VL_object_t * dset_obj    = NULL; /* Dataset VOL object */
     H5VL_object_t * tmp_vol_obj = NULL; /* Object for loc_id */
     H5VL_object_t **vol_obj_ptr =
         (_vol_obj_ptr ? _vol_obj_ptr : &tmp_vol_obj); /* Ptr to object ptr for loc_id */
@@ -356,8 +356,8 @@ H5D__open_api_common(hid_t loc_id, const char *name, hid_t dapl_id, void **token
         HGOTO_ERROR(H5E_DATASET, H5E_CANTSET, H5I_INVALID_HID, "can't set object access arguments")
 
     /* Open the dataset */
-    if (NULL == (dset_obj = H5VL_dataset_open(*vol_obj_ptr, &loc_params, name, dapl_id, H5P_DATASET_XFER_DEFAULT,
-                                          token_ptr)))
+    if (NULL == (dset_obj = H5VL_dataset_open(*vol_obj_ptr, &loc_params, name, dapl_id,
+                                              H5P_DATASET_XFER_DEFAULT, token_ptr)))
         HGOTO_ERROR(H5E_DATASET, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open dataset")
 
     /* Register an ID for the dataset */

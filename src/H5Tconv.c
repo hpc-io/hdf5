@@ -3162,10 +3162,10 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, si
             break;
 
         case H5T_CONV_CONV: {
-            H5T_vlen_t *src_vl; /* Source VL type info */
-            H5T_vlen_t *dst_vl; /* Destination VL type info */
-            H5VL_container_t *src_container;      /* Container ptr for source type */
-            H5VL_container_t *dst_container;      /* Container ptr for destination type */
+            H5T_vlen_t *      src_vl;        /* Source VL type info */
+            H5T_vlen_t *      dst_vl;        /* Destination VL type info */
+            H5VL_container_t *src_container; /* Container ptr for source type */
+            H5VL_container_t *dst_container; /* Container ptr for destination type */
 
             /*
              * Conversion.
@@ -3390,7 +3390,8 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, si
                                     } /* end if */
 
                                     /* Read in background VL sequence */
-                                    if ((*(dst_vl->cls->read))(dst_container, b, tmp_buf, bg_seq_len * dst_base_size) < 0)
+                                    if ((*(dst_vl->cls->read))(dst_container, b, tmp_buf,
+                                                               bg_seq_len * dst_base_size) < 0)
                                         HGOTO_ERROR(H5E_DATATYPE, H5E_READERROR, FAIL, "can't read VL data")
                                 } /* end if */
 
@@ -3407,7 +3408,8 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, si
                         } /* end if */
 
                         /* Write sequence to destination location */
-                        if ((*(dst_vl->cls->write))(dst_container, &vl_alloc_info, d, conv_buf, b, seq_len, dst_base_size) < 0)
+                        if ((*(dst_vl->cls->write))(dst_container, &vl_alloc_info, d, conv_buf, b, seq_len,
+                                                    dst_base_size) < 0)
                             HGOTO_ERROR(H5E_DATATYPE, H5E_WRITEERROR, FAIL, "can't write VL data")
 
                         if (!noop_conv) {
@@ -3424,10 +3426,11 @@ H5T__conv_vlen(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, si
                                 for (u = seq_len; u < bg_seq_len; u++, tmp += dst_base_size)
                                     /* Delete sequence in destination location */
                                     if ((*(dst_vl->cls->del))(dst_container, tmp) < 0)
-                                        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL, "unable to remove heap object")
-                            }     /* end if */
-                        }         /* end if */
-                    }             /* end else */
+                                        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREMOVE, FAIL,
+                                                    "unable to remove heap object")
+                            } /* end if */
+                        }     /* end if */
+                    }         /* end else */
 
                     /* Advance pointers */
                     s += s_stride;
@@ -3674,10 +3677,10 @@ H5T__conv_ref(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, siz
             break;
 
         case H5T_CONV_CONV: {
-            H5T_atomic_ref_t *src_ref; /* Source reference type info */
-            H5T_atomic_ref_t *dst_ref; /* Destination reference type info */
-            H5VL_container_t *src_container;      /* Container ptr for source type */
-            H5VL_container_t *dst_container;      /* Container ptr for destination type */
+            H5T_atomic_ref_t *src_ref;       /* Source reference type info */
+            H5T_atomic_ref_t *dst_ref;       /* Destination reference type info */
+            H5VL_container_t *src_container; /* Container ptr for source type */
+            H5VL_container_t *dst_container; /* Container ptr for destination type */
 
             /*
              * Conversion.
@@ -3778,21 +3781,24 @@ H5T__conv_ref(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, siz
                     if (is_nil) {
                         /* Write "nil" reference to destination location */
                         if ((*(dst_ref->cls->setnull))(dst_container, d, b) < 0)
-                            HGOTO_ERROR(H5E_DATATYPE, H5E_WRITEERROR, FAIL, "can't set reference data to 'nil'")
+                            HGOTO_ERROR(H5E_DATATYPE, H5E_WRITEERROR, FAIL,
+                                        "can't set reference data to 'nil'")
                     } /* end else-if */
                     else {
                         size_t  buf_size;
                         hbool_t dst_copy = FALSE;
 
                         /* Get size of references */
-                        if (0 == (buf_size = src_ref->cls->getsize(src_container, s, src->shared->size, dst_container, &dst_copy)))
+                        if (0 == (buf_size = src_ref->cls->getsize(src_container, s, src->shared->size,
+                                                                   dst_container, &dst_copy)))
                             HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "unable to obtain size of reference")
 
                         /* Check if conversion buffer is large enough, resize if necessary. */
                         if (conv_buf_size < buf_size) {
                             conv_buf_size = buf_size;
                             if (NULL == (conv_buf = H5FL_BLK_REALLOC(ref_seq, conv_buf, conv_buf_size)))
-                                HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, FAIL, "memory allocation failed for type conversion")
+                                HGOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, FAIL,
+                                            "memory allocation failed for type conversion")
                             HDmemset(conv_buf, 0, conv_buf_size);
                         } /* end if */
 
@@ -3800,7 +3806,8 @@ H5T__conv_ref(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, siz
                             H5MM_memcpy(conv_buf, s, buf_size);
                         else {
                             /* Read reference */
-                            if (src_ref->cls->read(src_container, s, src->shared->size, dst_container, conv_buf, buf_size) < 0)
+                            if (src_ref->cls->read(src_container, s, src->shared->size, dst_container,
+                                                   conv_buf, buf_size) < 0)
                                 HGOTO_ERROR(H5E_DATATYPE, H5E_READERROR, FAIL, "can't read reference data")
                         } /* end else */
 
@@ -3808,7 +3815,8 @@ H5T__conv_ref(hid_t src_id, hid_t dst_id, H5T_cdata_t *cdata, size_t nelmts, siz
                             H5MM_memcpy(d, conv_buf, buf_size);
                         else {
                             /* Write reference to destination location */
-                            if (dst_ref->cls->write(src_container, conv_buf, buf_size, src_ref->rtype, dst_container, d, dst->shared->size, b) < 0)
+                            if (dst_ref->cls->write(src_container, conv_buf, buf_size, src_ref->rtype,
+                                                    dst_container, d, dst->shared->size, b) < 0)
                                 HGOTO_ERROR(H5E_DATATYPE, H5E_WRITEERROR, FAIL, "can't write reference data")
                         } /* end else */
                     }     /* end else */

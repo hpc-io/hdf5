@@ -72,7 +72,7 @@ typedef struct {
 /********************/
 /* Local Prototypes */
 /********************/
-static int    H5VL__get_connector_cb(void *obj, hid_t id, void *_op_data);
+static int H5VL__get_connector_cb(void *obj, hid_t id, void *_op_data);
 
 /*********************/
 /* Package Variables */
@@ -345,9 +345,9 @@ done:
 hid_t
 H5VL__register_connector(const H5VL_class_t *cls, hid_t vipl_id)
 {
-    H5VL_connector_t *connector = NULL;  /* Pointer to connector */
-    H5VL_class_t *      new_cls     = NULL;
-    hid_t               ret_value = H5I_INVALID_HID;
+    H5VL_connector_t *connector = NULL; /* Pointer to connector */
+    H5VL_class_t *    new_cls   = NULL;
+    hid_t             ret_value = H5I_INVALID_HID;
 
     FUNC_ENTER_PACKAGE
 
@@ -360,10 +360,11 @@ H5VL__register_connector(const H5VL_class_t *cls, hid_t vipl_id)
 
     /* Create connector object */
     if (NULL == (connector = H5FL_MALLOC(H5VL_connector_t)))
-        HGOTO_ERROR(H5E_VOL, H5E_CANTALLOC, H5I_INVALID_HID, "memory allocation failed for VOL connector struct")
+        HGOTO_ERROR(H5E_VOL, H5E_CANTALLOC, H5I_INVALID_HID,
+                    "memory allocation failed for VOL connector struct")
 
     /* Initialize connector */
-    connector->rc = 1;
+    connector->rc  = 1;
     connector->cls = new_cls;
 
     /* Create the new class ID */
@@ -479,7 +480,8 @@ H5VL__register_connector_by_class(const H5VL_class_t *cls, hid_t vipl_id)
     /* Increment the ref count on the existing VOL connector ID, if it's already registered */
     if (op_data.found_id != H5I_INVALID_HID) {
         if (H5I_inc_ref(op_data.found_id, TRUE) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID, "unable to increment ref count on VOL connector")
+            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID,
+                        "unable to increment ref count on VOL connector")
         ret_value = op_data.found_id;
     } /* end if */
     else {
@@ -529,7 +531,8 @@ H5VL__register_connector_by_name(const char *name, hid_t vipl_id)
     /* If connector alread registered, increment ref count on ID and return ID */
     if (op_data.found_id != H5I_INVALID_HID) {
         if (H5I_inc_ref(op_data.found_id, TRUE) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID, "unable to increment ref count on VOL connector")
+            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID,
+                        "unable to increment ref count on VOL connector")
         ret_value = op_data.found_id;
     } /* end if */
     else {
@@ -588,7 +591,8 @@ H5VL__register_connector_by_value(H5VL_class_value_t value, hid_t vipl_id)
     /* If connector alread registered, increment ref count on ID and return ID */
     if (op_data.found_id != H5I_INVALID_HID) {
         if (H5I_inc_ref(op_data.found_id, TRUE) < 0)
-            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID, "unable to increment ref count on VOL connector")
+            HGOTO_ERROR(H5E_VOL, H5E_CANTINC, H5I_INVALID_HID,
+                        "unable to increment ref count on VOL connector")
         ret_value = op_data.found_id;
     } /* end if */
     else {
@@ -1020,8 +1024,8 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5VL_cmp_connector_info(const H5VL_connector_t *connector, int *cmp_value,
-    const void *info1, const void *info2)
+H5VL_cmp_connector_info(const H5VL_connector_t *connector, int *cmp_value, const void *info1,
+                        const void *info2)
 {
     herr_t ret_value = SUCCEED; /* Return value */
 

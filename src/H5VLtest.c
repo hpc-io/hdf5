@@ -111,15 +111,15 @@ done:
 hid_t
 H5VL__register_using_vol_id(H5VL_obj_type_t obj_type, void *obj, hid_t connector_id)
 {
-    H5VL_container_t *container = NULL; /* Temporary VOL container for object */
-    H5VL_connector_t *connector;        /* VOL connector */
-    H5VL_connector_prop_t conn_prop;    /* VOL connector property */
-    hid_t   ret_value = H5I_INVALID_HID; /* Return value */
+    H5VL_container_t *    container = NULL;            /* Temporary VOL container for object */
+    H5VL_connector_t *    connector;                   /* VOL connector */
+    H5VL_connector_prop_t conn_prop;                   /* VOL connector property */
+    hid_t                 ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
     /* Initialize the connector property */
-    conn_prop.connector_id = connector_id;
+    conn_prop.connector_id   = connector_id;
     conn_prop.connector_info = NULL;
 
     /* Get the connector */
@@ -149,4 +149,3 @@ H5VL__register_using_vol_id(H5VL_obj_type_t obj_type, void *obj, hid_t connector
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL__register_using_vol_id() */
-

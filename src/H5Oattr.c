@@ -29,7 +29,8 @@ static void *H5O__attr_decode(H5F_t *f, H5O_t *open_oh, unsigned mesg_flags, uns
 static void *H5O__attr_copy(const void *_mesg, void *_dest);
 static size_t H5O__attr_size(const H5F_t *f, const void *_mesg);
 static herr_t H5O__attr_free(void *mesg);
-static herr_t H5O__attr_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *udata);
+static herr_t H5O__attr_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info,
+                                      void *udata);
 static void * H5O__attr_copy_file(H5F_t *file_src, const H5O_msg_class_t *mesg_type, void *native_src,
                                   H5F_t *file_dst, hbool_t *recompute_size, H5O_copy_t *cpy_info, void *udata);
 static herr_t H5O__attr_post_copy_file(const H5O_loc_t *src_oloc, const void *mesg_src, H5O_loc_t *dst_oloc,
@@ -609,7 +610,8 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__attr_pre_copy_file(const void *native_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void H5_ATTR_UNUSED *udata)
+H5O__attr_pre_copy_file(const void *native_src, hbool_t *deleted, const H5O_copy_t *cpy_info,
+                        void H5_ATTR_UNUSED *udata)
 {
     const H5A_t *attr_src  = (const H5A_t *)native_src; /* Source attribute */
     herr_t       ret_value = SUCCEED;                   /* Return value */
@@ -651,8 +653,8 @@ done:
  *-------------------------------------------------------------------------
  */
 static void *
-H5O__attr_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const H5O_msg_class_t H5_ATTR_UNUSED *mesg_type, void *native_src,
-                    H5F_t *file_dst, hbool_t *recompute_size, H5O_copy_t *cpy_info,
+H5O__attr_copy_file(H5F_t H5_ATTR_UNUSED *file_src, const H5O_msg_class_t H5_ATTR_UNUSED *mesg_type,
+                    void *native_src, H5F_t *file_dst, hbool_t *recompute_size, H5O_copy_t *cpy_info,
                     void H5_ATTR_UNUSED *udata)
 {
     void *ret_value = NULL; /* Return value */
@@ -702,7 +704,8 @@ H5O__attr_post_copy_file(const H5O_loc_t *src_oloc, const void *mesg_src, H5O_lo
 
     FUNC_ENTER_STATIC
 
-    if (H5A__attr_post_copy_file(src_oloc, (const H5A_t *)mesg_src, dst_oloc, (H5A_t *)mesg_dst, cpy_info) < 0)
+    if (H5A__attr_post_copy_file(src_oloc, (const H5A_t *)mesg_src, dst_oloc, (H5A_t *)mesg_dst, cpy_info) <
+        0)
         HGOTO_ERROR(H5E_ATTR, H5E_CANTCOPY, FAIL, "can't copy attribute")
 
 done:

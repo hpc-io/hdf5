@@ -41,7 +41,8 @@ static size_t H5O__fill_new_size(const H5F_t *f, const void *_mesg);
 static void * H5O__fill_copy(const void *_mesg, void *_dest);
 static herr_t H5O__fill_reset(void *_mesg);
 static herr_t H5O__fill_free(void *_mesg);
-static herr_t H5O__fill_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *udata);
+static herr_t H5O__fill_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info,
+                                      void *udata);
 static herr_t H5O__fill_debug(H5F_t *f, const void *_mesg, FILE *stream, int indent, int fwidth);
 
 /* Set up & include shared message "interface" info */
@@ -836,7 +837,8 @@ H5O__fill_free(void *fill)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__fill_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void H5_ATTR_UNUSED *udata)
+H5O__fill_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info,
+                        void H5_ATTR_UNUSED *udata)
 {
     const H5O_fill_t *fill_src  = (const H5O_fill_t *)mesg_src; /* Source fill value */
     herr_t            ret_value = SUCCEED;                      /* Return value */

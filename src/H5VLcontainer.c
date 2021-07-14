@@ -44,7 +44,6 @@
 /* Local Typedefs */
 /******************/
 
-
 /********************/
 /* Package Typedefs */
 /********************/
@@ -82,7 +81,7 @@ H5VL_container_t *
 H5VL_create_container(void *object, H5VL_connector_t *connector, H5VL_connector_prop_t *conn_prop)
 {
     H5VL_container_t *new_container = NULL; /* Pointer to new container object */
-    H5VL_container_t *ret_value = NULL; /* Return value */
+    H5VL_container_t *ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -111,8 +110,8 @@ H5VL_create_container(void *object, H5VL_connector_t *connector, H5VL_connector_
 
 done:
     /* Clean up on error */
-    if(NULL == ret_value)
-        if(new_container)
+    if (NULL == ret_value)
+        if (new_container)
             new_container = H5FL_FREE(H5VL_container_t, new_container);
 
     FUNC_LEAVE_NOAPI(ret_value)
@@ -133,7 +132,7 @@ done:
 size_t
 H5VL_container_inc_rc(H5VL_container_t *container)
 {
-    size_t ret_value = 0;       /* Return value */
+    size_t ret_value = 0; /* Return value */
 
     FUNC_ENTER_NOAPI(0)
 
@@ -203,8 +202,8 @@ done:
 herr_t
 H5VL_container_get(H5VL_container_t *container, H5VL_file_get_args_t *args)
 {
-    H5VL_object_t tmp_vol_obj;                  /* Temporary VOL object for re-opening the file */
-    herr_t ret_value = SUCCEED; /* Return value */
+    H5VL_object_t tmp_vol_obj;         /* Temporary VOL object for re-opening the file */
+    herr_t        ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -213,8 +212,8 @@ H5VL_container_get(H5VL_container_t *container, H5VL_file_get_args_t *args)
     HDassert(args);
 
     /* Set up temporary file VOL object */
-    tmp_vol_obj.obj_type = H5VL_OBJ_FILE;
-    tmp_vol_obj.object = NULL;
+    tmp_vol_obj.obj_type  = H5VL_OBJ_FILE;
+    tmp_vol_obj.object    = NULL;
     tmp_vol_obj.container = container;
 
     /* Call the corresponding internal VOL routine */
@@ -235,11 +234,10 @@ done:
  *-------------------------------------------------------------------------
  */
 herr_t
-H5VL_container_specific(H5VL_container_t *container, H5VL_file_specific_args_t *args,
-    void **request)
+H5VL_container_specific(H5VL_container_t *container, H5VL_file_specific_args_t *args, void **request)
 {
-    H5VL_object_t tmp_vol_obj;                  /* Temporary VOL object for re-opening the file */
-    herr_t ret_value = SUCCEED; /* Return value */
+    H5VL_object_t tmp_vol_obj;         /* Temporary VOL object for re-opening the file */
+    herr_t        ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -248,8 +246,8 @@ H5VL_container_specific(H5VL_container_t *container, H5VL_file_specific_args_t *
     HDassert(args);
 
     /* Set up temporary file VOL object */
-    tmp_vol_obj.obj_type = H5VL_OBJ_FILE;
-    tmp_vol_obj.object = NULL;
+    tmp_vol_obj.obj_type  = H5VL_OBJ_FILE;
+    tmp_vol_obj.object    = NULL;
     tmp_vol_obj.container = container;
 
     /* Call the corresponding internal VOL routine */
@@ -272,10 +270,10 @@ done:
 herr_t
 H5VL_container_is_native(const H5VL_container_t *container, H5VL_get_conn_lvl_t lvl, hbool_t *is_native)
 {
-    const H5VL_class_t *cls;                 /* VOL connector class structs for object */
-    const H5VL_connector_t *native_connector;          /* Native VOL connector class structs */
-    int                 cmp_value;           /* Comparison result */
-    herr_t              ret_value = SUCCEED; /* Return value */
+    const H5VL_class_t *    cls;                 /* VOL connector class structs for object */
+    const H5VL_connector_t *native_connector;    /* Native VOL connector class structs */
+    int                     cmp_value;           /* Comparison result */
+    herr_t                  ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -317,7 +315,7 @@ done:
 void *
 H5VL_container_object(const H5VL_container_t *container)
 {
-    void *ret_value = NULL;     /* Return value */
+    void *ret_value = NULL; /* Return value */
 
     FUNC_ENTER_NOAPI(NULL)
 
@@ -342,7 +340,7 @@ done:
  */
 herr_t
 H5VL_file_is_same_as_container(const H5VL_object_t *vol_obj, const H5VL_container_t *container,
-                                hbool_t *same_file)
+                               hbool_t *same_file)
 {
     const H5VL_class_t *cls1;                /* VOL connector class struct for first object */
     const H5VL_class_t *cls2;                /* VOL connector class struct for second object */
@@ -361,7 +359,8 @@ H5VL_file_is_same_as_container(const H5VL_object_t *vol_obj, const H5VL_containe
     if (H5VL_introspect_get_conn_cls(vol_obj, H5VL_GET_CONN_LVL_TERM, &cls1) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTGET, FAIL, "can't get VOL connector class")
     cls2 = NULL;
-    if (H5VL__introspect_get_conn_cls(container->object, container->connector->cls, H5VL_GET_CONN_LVL_TERM, &cls2) < 0)
+    if (H5VL__introspect_get_conn_cls(container->object, container->connector->cls, H5VL_GET_CONN_LVL_TERM,
+                                      &cls2) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTGET, FAIL, "can't get VOL connector class")
 
     /* Compare connector classes */
@@ -410,16 +409,16 @@ done:
 H5VL_container_t *
 H5VL__get_container_for_obj(void *obj, H5I_type_t obj_type, H5VL_container_t *orig_container)
 {
-    hbool_t is_native = FALSE;
-    H5VL_container_t *ret_value = NULL;         /* Return value */
+    hbool_t           is_native = FALSE;
+    H5VL_container_t *ret_value = NULL; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
     /* Check if current container is using the "native only" connector stack */
     if (H5VL_container_is_native(orig_container, H5VL_GET_CONN_LVL_CURR, &is_native) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTGET, NULL, "can't query about native VOL connector")
-    if(is_native) {
-        H5F_t *f;               /* File pointer for object */
+    if (is_native) {
+        H5F_t *f; /* File pointer for object */
 
         /* Retrieve the native file pointer */
         if (NULL == (f = H5O_fileof(obj, obj_type)))
@@ -427,8 +426,9 @@ H5VL__get_container_for_obj(void *obj, H5I_type_t obj_type, H5VL_container_t *or
 
         /* Check if the object is not in the same file as the container used to open it */
         if (f != orig_container->object) {
-            H5VL_connector_t *native_connector;     /* Native VOL connector class structs */
-            H5VL_connector_prop_t conn_prop = {H5VL_NATIVE, NULL};      /* Connector property for native VOL connector */
+            H5VL_connector_t *    native_connector; /* Native VOL connector class structs */
+            H5VL_connector_prop_t conn_prop = {H5VL_NATIVE,
+                                               NULL}; /* Connector property for native VOL connector */
 
             /* Retrieve the native connector */
             if (NULL == (native_connector = H5I_object_verify(H5VL_NATIVE, H5I_VOL)))
@@ -447,5 +447,3 @@ H5VL__get_container_for_obj(void *obj, H5I_type_t obj_type, H5VL_container_t *or
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* H5VL__get_container_for_obj() */
-
-

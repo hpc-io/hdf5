@@ -151,15 +151,17 @@ H5Lmove(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector, vol_obj2->container->connector) < 0)
+        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector,
+                               vol_obj2->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
+                        "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
 
     /* Move the link */
-    if (H5VL_link_move((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
-                       H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+    if (H5VL_link_move((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id,
+                       lapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTMOVE, FAIL, "unable to move link")
 
 done:
@@ -241,15 +243,17 @@ H5Lcopy(hid_t src_loc_id, const char *src_name, hid_t dst_loc_id, const char *ds
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector, vol_obj2->container->connector) < 0)
+        if (H5VL_cmp_connector(&same_connector, vol_obj1->container->connector,
+                               vol_obj2->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
+                        "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
 
     /* Copy the link */
-    if (H5VL_link_copy((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id, lapl_id,
-                       H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+    if (H5VL_link_copy((vol_obj1 ? vol_obj1 : vol_obj2), &loc_params1, vol_obj2, &loc_params2, lcpl_id,
+                       lapl_id, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTMOVE, FAIL, "unable to copy link")
 
 done:
@@ -309,7 +313,8 @@ H5L__create_soft_api_common(const char *link_target, hid_t link_loc_id, const ch
     vol_cb_args.args.soft.target = link_target;
 
     /* Create the link */
-    if (H5VL_link_create(&vol_cb_args, *vol_obj_ptr, &loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
+    if (H5VL_link_create(&vol_cb_args, *vol_obj_ptr, &loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT,
+                         token_ptr) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTCREATE, FAIL, "unable to create soft link")
 
 done:
@@ -445,8 +450,9 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
         HGOTO_ERROR(H5E_LINK, H5E_CANTSET, FAIL, "can't set access property list info")
 
     /* Set up new location struct */
-    link_loc_params.type                         = H5VL_OBJECT_BY_NAME;
-    link_loc_params.obj_type                     = (H5L_SAME_LOC != link_loc_id) ? H5I_get_type(link_loc_id) : H5I_get_type(cur_loc_id);
+    link_loc_params.type = H5VL_OBJECT_BY_NAME;
+    link_loc_params.obj_type =
+        (H5L_SAME_LOC != link_loc_id) ? H5I_get_type(link_loc_id) : H5I_get_type(cur_loc_id);
     link_loc_params.loc_data.loc_by_name.name    = link_name;
     link_loc_params.loc_data.loc_by_name.lapl_id = lapl_id;
 
@@ -464,10 +470,12 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
         int same_connector = 0;
 
         /* Check if both objects are associated with the same VOL connector */
-        if (H5VL_cmp_connector(&same_connector, curr_vol_obj->container->connector, link_vol_obj->container->connector) < 0)
+        if (H5VL_cmp_connector(&same_connector, curr_vol_obj->container->connector,
+                               link_vol_obj->container->connector) < 0)
             HGOTO_ERROR(H5E_FILE, H5E_CANTCOMPARE, FAIL, "can't compare connector classes")
         if (same_connector)
-            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "Objects are accessed through different VOL connectors and can't be linked")
+            HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL,
+                        "Objects are accessed through different VOL connectors and can't be linked")
     } /* end if */
 
     /* Construct temporary VOL object */
@@ -477,11 +485,13 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
         HDmemcpy((*tmp_vol_obj_ptr_ptr), curr_vol_obj, sizeof(*curr_vol_obj));
 
     /* Set up VOL callback arguments */
-    vol_cb_args.op_type                        = H5VL_LINK_CREATE_HARD;
-    if(NULL == curr_vol_obj)
-        vol_cb_args.args.hard.curr_obj             = NULL;
+    vol_cb_args.op_type = H5VL_LINK_CREATE_HARD;
+    if (NULL == curr_vol_obj)
+        vol_cb_args.args.hard.curr_obj = NULL;
     else
-        vol_cb_args.args.hard.curr_obj             = (curr_vol_obj->obj_type == H5VL_OBJ_FILE) ? curr_vol_obj->container->object : curr_vol_obj->object;
+        vol_cb_args.args.hard.curr_obj = (curr_vol_obj->obj_type == H5VL_OBJ_FILE)
+                                             ? curr_vol_obj->container->object
+                                             : curr_vol_obj->object;
     vol_cb_args.args.hard.curr_loc_params.type = H5VL_OBJECT_BY_NAME;
     vol_cb_args.args.hard.curr_loc_params.obj_type =
         (H5L_SAME_LOC != cur_loc_id ? H5I_get_type(cur_loc_id) : H5I_BADID);
@@ -489,7 +499,8 @@ H5L__create_hard_api_common(hid_t cur_loc_id, const char *cur_name, hid_t link_l
     vol_cb_args.args.hard.curr_loc_params.loc_data.loc_by_name.lapl_id = lapl_id;
 
     /* Create the link */
-    if (H5VL_link_create(&vol_cb_args, *tmp_vol_obj_ptr_ptr, &link_loc_params, lcpl_id, lapl_id, H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
+    if (H5VL_link_create(&vol_cb_args, *tmp_vol_obj_ptr_ptr, &link_loc_params, lcpl_id, lapl_id,
+                         H5P_DATASET_XFER_DEFAULT, token_ptr) < 0)
         HGOTO_ERROR(H5E_LINK, H5E_CANTCREATE, FAIL, "unable to create hard link")
 
 done:

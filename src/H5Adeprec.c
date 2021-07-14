@@ -106,8 +106,8 @@
 hid_t
 H5Acreate1(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t acpl_id)
 {
-    H5VL_object_t *   attr_obj= NULL; /* attr object from VOL connector */
-    H5VL_object_t *   vol_obj = NULL; /* Object of loc_id */
+    H5VL_object_t *   attr_obj = NULL; /* attr object from VOL connector */
+    H5VL_object_t *   vol_obj  = NULL; /* Object of loc_id */
     H5VL_loc_params_t loc_params;
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -137,9 +137,9 @@ H5Acreate1(hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t 
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "invalid location identifier")
 
     /* Create the attribute */
-    if (NULL ==
-        (attr_obj = H5VL_attr_create(vol_obj, &loc_params, name, type_id, space_id, acpl_id,
-                                 H5P_ATTRIBUTE_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (attr_obj = H5VL_attr_create(vol_obj, &loc_params, name, type_id, space_id, acpl_id,
+                                             H5P_ATTRIBUTE_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT,
+                                             H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_ATTR, H5E_CANTINIT, H5I_INVALID_HID, "unable to create attribute")
 
     /* Register an ID for the new attribute */
@@ -180,8 +180,8 @@ done:
 hid_t
 H5Aopen_name(hid_t loc_id, const char *name)
 {
-    H5VL_object_t *attr_obj  = NULL;            /* Attribute created */
-    H5VL_object_t *   vol_obj = NULL; /* Object of loc_id */
+    H5VL_object_t *   attr_obj = NULL; /* Attribute created */
+    H5VL_object_t *   vol_obj  = NULL; /* Object of loc_id */
     H5VL_loc_params_t loc_params;
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -204,7 +204,7 @@ H5Aopen_name(hid_t loc_id, const char *name)
 
     /* Open the attribute */
     if (NULL == (attr_obj = H5VL_attr_open(vol_obj, &loc_params, name, H5P_ATTRIBUTE_ACCESS_DEFAULT,
-                                       H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+                                           H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_ATTR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open attribute")
 
     /* Register an ID for the attribute */
@@ -245,8 +245,8 @@ done:
 hid_t
 H5Aopen_idx(hid_t loc_id, unsigned idx)
 {
-    H5VL_object_t *attr_obj  = NULL;            /* Attribute opened */
-    H5VL_object_t *   vol_obj = NULL; /* Object of loc_id */
+    H5VL_object_t *   attr_obj = NULL; /* Attribute opened */
+    H5VL_object_t *   vol_obj  = NULL; /* Object of loc_id */
     H5VL_loc_params_t loc_params;
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -272,7 +272,7 @@ H5Aopen_idx(hid_t loc_id, unsigned idx)
 
     /* Open the attribute */
     if (NULL == (attr_obj = H5VL_attr_open(vol_obj, &loc_params, NULL, H5P_ATTRIBUTE_ACCESS_DEFAULT,
-                                       H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+                                           H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_ATTR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open attribute")
 
     /* Register an ID for the attribute */

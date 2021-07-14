@@ -243,7 +243,7 @@ done:
 static herr_t
 H5M__close_cb(H5VL_object_t *map_vol_obj, void **request)
 {
-    herr_t               ret_value = SUCCEED; /* Return value */
+    herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_STATIC
 

@@ -81,8 +81,8 @@ H5FL_DEFINE_STATIC(H5VL_class_t);
 H5VL_class_t *
 H5VL__new_cls(const H5VL_class_t *cls, hid_t vipl_id)
 {
-    H5VL_class_t *new_cls     = NULL;   /* Newly created VOL class */
-    H5VL_class_t *ret_value = NULL;     /* Return value */
+    H5VL_class_t *new_cls   = NULL; /* Newly created VOL class */
+    H5VL_class_t *ret_value = NULL; /* Return value */
 
     FUNC_ENTER_PACKAGE
 
@@ -110,7 +110,7 @@ done:
                 H5MM_xfree_const(new_cls->name);
             H5FL_FREE(H5VL_class_t, new_cls);
         } /* end if */
-    } /* end if */
+    }     /* end if */
 
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL__new_cls() */
@@ -197,4 +197,3 @@ H5VL_check_plugin_load(const H5VL_class_t *cls, const H5PL_key_t *key, hbool_t *
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5VL_check_plugin_load() */
-

@@ -135,9 +135,9 @@ done:
 static H5F_t *
 H5F__efc_open_real(const char *name, unsigned flags, hid_t fapl_id)
 {
-    H5F_t *        file     = NULL;  /* Pointer to opened file */
-    hbool_t        is_native;        /* Whether the file VOL object is using the native VOL connector */
-    H5F_t *        ret_value = NULL; /* Return value */
+    H5F_t * file = NULL;      /* Pointer to opened file */
+    hbool_t is_native;        /* Whether the file VOL object is using the native VOL connector */
+    H5F_t * ret_value = NULL; /* Return value */
 
     FUNC_ENTER_STATIC
 

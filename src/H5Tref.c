@@ -70,20 +70,23 @@ struct H5Tref_dsetreg {
 /* Local Prototypes */
 /********************/
 
-static herr_t H5T__ref_mem_isnull(const H5VL_container_t *src_container, const void *src_buf, hbool_t *isnull);
+static herr_t H5T__ref_mem_isnull(const H5VL_container_t *src_container, const void *src_buf,
+                                  hbool_t *isnull);
 static herr_t H5T__ref_mem_setnull(const H5VL_container_t *dst_container, void *dst_buf, void *bg_buf);
-static size_t H5T__ref_mem_getsize(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                   const H5VL_container_t *dst_container, hbool_t *dst_copy);
+static size_t H5T__ref_mem_getsize(const H5VL_container_t *src_container, const void *src_buf,
+                                   size_t src_size, const H5VL_container_t *dst_container, hbool_t *dst_copy);
 static herr_t H5T__ref_mem_read(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
                                 const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size);
 static herr_t H5T__ref_mem_write(H5VL_container_t *src_container, const void *src_buf, size_t src_size,
                                  H5R_type_t src_type, const H5VL_container_t *dst_container, void *dst_buf,
                                  size_t dst_size, void *bg_buf);
 
-static herr_t H5T__ref_disk_isnull(const H5VL_container_t *src_container, const void *src_buf, hbool_t *isnull);
+static herr_t H5T__ref_disk_isnull(const H5VL_container_t *src_container, const void *src_buf,
+                                   hbool_t *isnull);
 static herr_t H5T__ref_disk_setnull(const H5VL_container_t *dst_container, void *dst_buf, void *bg_buf);
-static size_t H5T__ref_disk_getsize(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                    const H5VL_container_t *dst_container, hbool_t *dst_copy);
+static size_t H5T__ref_disk_getsize(const H5VL_container_t *src_container, const void *src_buf,
+                                    size_t src_size, const H5VL_container_t *dst_container,
+                                    hbool_t *dst_copy);
 static herr_t H5T__ref_disk_read(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
                                  const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size);
 static herr_t H5T__ref_disk_write(H5VL_container_t *src_container, const void *src_buf, size_t src_size,
@@ -93,17 +96,21 @@ static herr_t H5T__ref_disk_write(H5VL_container_t *src_container, const void *s
 /* For compatibility */
 static herr_t H5T__ref_obj_disk_isnull(const H5VL_container_t *src_container, const void *src_buf,
                                        hbool_t *isnull);
-static size_t H5T__ref_obj_disk_getsize(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                        const H5VL_container_t *dst_container, hbool_t *dst_copy);
-static herr_t H5T__ref_obj_disk_read(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                     const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size);
+static size_t H5T__ref_obj_disk_getsize(const H5VL_container_t *src_container, const void *src_buf,
+                                        size_t src_size, const H5VL_container_t *dst_container,
+                                        hbool_t *dst_copy);
+static herr_t H5T__ref_obj_disk_read(const H5VL_container_t *src_container, const void *src_buf,
+                                     size_t src_size, const H5VL_container_t *dst_container, void *dst_buf,
+                                     size_t dst_size);
 
 static herr_t H5T__ref_dsetreg_disk_isnull(const H5VL_container_t *src_container, const void *src_buf,
                                            hbool_t *isnull);
-static size_t H5T__ref_dsetreg_disk_getsize(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                            const H5VL_container_t *dst_container, hbool_t *dst_copy);
-static herr_t H5T__ref_dsetreg_disk_read(const H5VL_container_t *src_container, const void *src_buf, size_t src_size,
-                                         const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size);
+static size_t H5T__ref_dsetreg_disk_getsize(const H5VL_container_t *src_container, const void *src_buf,
+                                            size_t src_size, const H5VL_container_t *dst_container,
+                                            hbool_t *dst_copy);
+static herr_t H5T__ref_dsetreg_disk_read(const H5VL_container_t *src_container, const void *src_buf,
+                                         size_t src_size, const H5VL_container_t *dst_container,
+                                         void *dst_buf, size_t dst_size);
 
 /*******************/
 /* Local Variables */
@@ -205,7 +212,7 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
 
             /* Disk based reference datatype */
             case H5T_LOC_DISK: {
-                const H5VL_container_t *container;    /* Container that reference is in*/
+                const H5VL_container_t *container; /* Container that reference is in*/
 
                 /* Mark this type as being stored on disk */
                 dt->shared->u.atomic.u.r.loc = H5T_LOC_DISK;
@@ -223,7 +230,8 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
 
                         /* Check if container is using native VOL connector */
                         if (H5VL_container_is_native(container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-                            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+                            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                                        "can't query if container uses native VOL connector")
 
                         /* Must use native VOL connector for this operation */
                         HDassert(is_native);
@@ -232,7 +240,8 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
 
                     /* Retrieve file from VOL container */
                     if (NULL == (f = (H5F_t *)H5VL_container_object(container)))
-                        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't retrieve native file pointer from VOL container")
+                        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                                    "can't retrieve native file pointer from VOL container")
 
                     /* Size on disk, memory size is different */
                     dt->shared->size          = H5T_REF_OBJ_DISK_SIZE(f);
@@ -250,7 +259,8 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
 
                         /* Check if container is using native VOL connector */
                         if (H5VL_container_is_native(container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-                            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+                            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                                        "can't query if container uses native VOL connector")
 
                         /* Must use native VOL connector for this operation */
                         HDassert(is_native);
@@ -259,7 +269,8 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
 
                     /* Retrieve file from VOL container */
                     if (NULL == (f = (H5F_t *)H5VL_container_object(container)))
-                        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't retrieve native file pointer from VOL container")
+                        HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                                    "can't retrieve native file pointer from VOL container")
 
                     /* Size on disk, memory size is different */
                     dt->shared->size          = H5T_REF_DSETREG_DISK_SIZE(f);
@@ -290,7 +301,9 @@ H5T__ref_set_loc(H5T_t *dt, H5T_loc_t loc)
                         HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't get encode size")
 
                     /* Size on disk, memory size is different */
-                    dt->shared->size = MAX(H5_SIZEOF_UINT32_T + H5R_ENCODE_HEADER_SIZE + cont_info.blob_id_size, ref_encode_size);
+                    dt->shared->size =
+                        MAX(H5_SIZEOF_UINT32_T + H5R_ENCODE_HEADER_SIZE + cont_info.blob_id_size,
+                            ref_encode_size);
                     dt->shared->u.atomic.prec = 8 * dt->shared->size;
 
                     /* Set up the function pointers to access the information on
@@ -386,8 +399,9 @@ H5T__ref_mem_getsize(const H5VL_container_t H5_ATTR_UNUSED *src_container, const
                      size_t H5_ATTR_UNUSED ref_size, const H5VL_container_t *dst_container, hbool_t *dst_copy)
 {
     H5VL_object_t *       vol_obj = NULL; /* VOL object for src ref's location */
-    const H5R_ref_priv_t *ref = (const H5R_ref_priv_t *)buf;
-    char *                file_name_buf_dyn = NULL; /* Pointer to dynamically allocated buffer for file name, if static buffer is too small */
+    const H5R_ref_priv_t *ref     = (const H5R_ref_priv_t *)buf;
+    char *                file_name_buf_dyn =
+        NULL; /* Pointer to dynamically allocated buffer for file name, if static buffer is too small */
     unsigned flags     = 0; /* References flags */
     size_t   ret_value = 0; /* Return value */
 
@@ -425,14 +439,16 @@ H5T__ref_mem_getsize(const H5VL_container_t H5_ATTR_UNUSED *src_container, const
 
             /* Check if using native VOL connector */
             if (H5VL_container_is_native(dst_container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-                HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0, "can't query if container uses native VOL connector")
+                HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0,
+                            "can't query if container uses native VOL connector")
 
             /* Set the file's libver bounds if using the native VOL connector */
             if (is_native) {
                 H5F_t *dst_f; /* Native file struct */
 
                 if (NULL == (dst_f = (H5F_t *)H5VL_container_object(dst_container)))
-                    HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0, "can't retrieve native file pointer from VOL container")
+                    HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0,
+                                "can't retrieve native file pointer from VOL container")
                 H5CX_set_libver_bounds(dst_f);
             } /* end if */
             else
@@ -499,14 +515,16 @@ done:
  */
 static herr_t
 H5T__ref_mem_read(const H5VL_container_t H5_ATTR_UNUSED *src_container, const void *src_buf,
-                  size_t H5_ATTR_UNUSED src_size, const H5VL_container_t *dst_container, void *dst_buf, size_t dst_size)
+                  size_t H5_ATTR_UNUSED src_size, const H5VL_container_t *dst_container, void *dst_buf,
+                  size_t dst_size)
 {
     H5VL_object_t *       vol_obj; /* VOL object for src ref's location */
     const H5R_ref_priv_t *src_ref     = (const H5R_ref_priv_t *)src_buf;
     hbool_t               files_equal = TRUE; /* Whether src & dst references are in same file */
     char *                file_name   = NULL; /* Actual file name */
     char                  file_name_buf_static[256] = {'\0'}; /* File name */
-    char *                file_name_buf_dyn = NULL; /* Pointer to dynamically allocated buffer for file name, if static buffer is too small */
+    char *                file_name_buf_dyn =
+        NULL; /* Pointer to dynamically allocated buffer for file name, if static buffer is too small */
     unsigned flags     = 0;       /* References flags */
     herr_t   ret_value = SUCCEED; /* Return value */
 
@@ -541,14 +559,16 @@ H5T__ref_mem_read(const H5VL_container_t H5_ATTR_UNUSED *src_container, const vo
 
         /* Check if using native VOL connector */
         if (H5VL_container_is_native(dst_container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Set the file's libver bounds if using the native VOL connector */
         if (is_native) {
             H5F_t *dst_f;
 
             if (NULL == (dst_f = (H5F_t *)H5VL_container_object(dst_container)))
-                HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't retrieve native file pointer from VOL container")
+                HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                            "can't retrieve native file pointer from VOL container")
             H5CX_set_libver_bounds(dst_f);
         } /* end if */
         else
@@ -612,7 +632,8 @@ done:
  */
 static herr_t
 H5T__ref_mem_write(H5VL_container_t *src_container, const void *src_buf, size_t src_size, H5R_type_t src_type,
-                   const H5VL_container_t H5_ATTR_UNUSED *dst_container, void *dst_buf, size_t dst_size, void H5_ATTR_UNUSED *bg_buf)
+                   const H5VL_container_t H5_ATTR_UNUSED *dst_container, void *dst_buf, size_t dst_size,
+                   void H5_ATTR_UNUSED *bg_buf)
 {
     H5F_t *         src_f   = NULL;
     hid_t           file_id = H5I_INVALID_HID;
@@ -642,7 +663,8 @@ H5T__ref_mem_write(H5VL_container_t *src_container, const void *src_buf, size_t 
 
         /* Check if using native VOL connector */
         if (H5VL_container_is_native(src_container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Must use native VOL connector for this operation */
         HDassert(is_native);
@@ -881,7 +903,8 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5T__ref_disk_read(const H5VL_container_t *src_container, const void *src_buf, size_t H5_ATTR_NDEBUG_UNUSED src_size,
+H5T__ref_disk_read(const H5VL_container_t *src_container, const void *src_buf,
+                   size_t H5_ATTR_NDEBUG_UNUSED src_size,
                    const H5VL_container_t H5_ATTR_UNUSED *dst_container, void *dst_buf, size_t dst_size)
 {
     const uint8_t *p         = (const uint8_t *)src_buf;
@@ -1012,7 +1035,8 @@ H5T__ref_obj_disk_isnull(const H5VL_container_t *container, const void *buf, hbo
 
         /* Check if container is using native VOL connector */
         if (H5VL_container_is_native(container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Must use native VOL connector for this operation */
         HDassert(is_native);
@@ -1044,7 +1068,8 @@ done:
  */
 static size_t
 H5T__ref_obj_disk_getsize(const H5VL_container_t *src_container, const void H5_ATTR_UNUSED *src_buf,
-                          size_t H5_ATTR_UNUSED src_size, const H5VL_container_t H5_ATTR_UNUSED *dst_container,
+                          size_t H5_ATTR_UNUSED  src_size,
+                          const H5VL_container_t H5_ATTR_UNUSED *dst_container,
                           hbool_t H5_ATTR_UNUSED *dst_copy)
 {
     H5F_t *src_f;
@@ -1111,7 +1136,8 @@ H5T__ref_obj_disk_read(const H5VL_container_t *src_container, const void *src_bu
 
         /* Check if container is using native VOL connector */
         if (H5VL_container_is_native(src_container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Must use native VOL connector for this operation */
         HDassert(is_native);
@@ -1165,7 +1191,8 @@ H5T__ref_dsetreg_disk_isnull(const H5VL_container_t *container, const void *src_
 
         /* Check if container is using native VOL connector */
         if (H5VL_container_is_native(container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Must use native VOL connector for this operation */
         HDassert(is_native);
@@ -1196,8 +1223,9 @@ done:
  *-------------------------------------------------------------------------
  */
 static size_t
-H5T__ref_dsetreg_disk_getsize(const H5VL_container_t H5_ATTR_UNUSED *src_container, const void H5_ATTR_UNUSED *src_buf,
-                              size_t H5_ATTR_UNUSED src_size, const H5VL_container_t H5_ATTR_UNUSED *dst_container,
+H5T__ref_dsetreg_disk_getsize(const H5VL_container_t H5_ATTR_UNUSED *src_container,
+                              const void H5_ATTR_UNUSED *src_buf, size_t H5_ATTR_UNUSED src_size,
+                              const H5VL_container_t H5_ATTR_UNUSED *dst_container,
                               hbool_t H5_ATTR_UNUSED *dst_copy)
 {
     size_t ret_value = sizeof(struct H5Tref_dsetreg);
@@ -1225,7 +1253,8 @@ H5T__ref_dsetreg_disk_getsize(const H5VL_container_t H5_ATTR_UNUSED *src_contain
 
         /* Retrieve file from VOL container */
         if (NULL == (src_f = (H5F_t *)H5VL_container_object(src_container)))
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0, "can't retrieve native file pointer from VOL container")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, 0,
+                        "can't retrieve native file pointer from VOL container")
 
         HDassert(src_size == H5T_REF_DSETREG_DISK_SIZE(src_f));
     }
@@ -1269,7 +1298,8 @@ H5T__ref_dsetreg_disk_read(const H5VL_container_t *src_container, const void *sr
 
         /* Check if container is using native VOL connector */
         if (H5VL_container_is_native(src_container, H5VL_GET_CONN_LVL_TERM, &is_native) < 0)
-            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL, "can't query if container uses native VOL connector")
+            HGOTO_ERROR(H5E_REFERENCE, H5E_CANTGET, FAIL,
+                        "can't query if container uses native VOL connector")
 
         /* Must use native VOL connector for this operation */
         HDassert(is_native);

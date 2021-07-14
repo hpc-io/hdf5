@@ -33,9 +33,9 @@
 #include "H5FLprivate.h" /* Free lists                           */
 #include "H5Iprivate.h"  /* IDs                                  */
 #ifdef H5_HAVE_MAP_API
-#include "H5Mprivate.h"  /* Maps                                 */
-#endif /*  H5_HAVE_MAP_API */
-#include "H5VLpkg.h"     /* Virtual Object Layer                 */
+#include "H5Mprivate.h" /* Maps                                 */
+#endif                  /*  H5_HAVE_MAP_API */
+#include "H5VLpkg.h"    /* Virtual Object Layer                 */
 
 /****************/
 /* Local Macros */
@@ -52,8 +52,8 @@
 /********************/
 /* Local Prototypes */
 /********************/
-static void * H5VL__wrap_obj(void *obj, H5I_type_t obj_type);
-static void * H5VL__object(hid_t id, H5I_type_t obj_type);
+static void *H5VL__wrap_obj(void *obj, H5I_type_t obj_type);
+static void *H5VL__object(hid_t id, H5I_type_t obj_type);
 
 /*********************/
 /* Package Variables */
@@ -72,40 +72,40 @@ H5FL_DEFINE_STATIC(H5VL_object_t);
 
 /* Mapping of VOL object types to ID types */
 const H5I_type_t H5VL_obj_to_id_g[] = {
-    H5I_BADID,          /* Invalid type: not defined */
-    H5I_FILE,           /* H5VL_OBJ_FILE */
-    H5I_GROUP,          /* H5VL_OBJ_GROUP */
-    H5I_DATATYPE,       /* H5VL_OBJ_DATATYPE */
-    H5I_DATASET,        /* H5VL_OBJ_DATASET */
+    H5I_BADID,    /* Invalid type: not defined */
+    H5I_FILE,     /* H5VL_OBJ_FILE */
+    H5I_GROUP,    /* H5VL_OBJ_GROUP */
+    H5I_DATATYPE, /* H5VL_OBJ_DATATYPE */
+    H5I_DATASET,  /* H5VL_OBJ_DATASET */
 #ifdef H5_HAVE_MAP_API
-    H5I_MAP,            /* H5VL_OBJ_MAP */
-#endif /*  H5_HAVE_MAP_API */
-    H5I_ATTR            /* H5VL_OBJ_ATTR */
+    H5I_MAP, /* H5VL_OBJ_MAP */
+#endif       /*  H5_HAVE_MAP_API */
+    H5I_ATTR /* H5VL_OBJ_ATTR */
 };
 
 /* Mapping of ID types VOL object types */
 const H5VL_obj_type_t H5VL_id_to_obj_g[] = {
-    0,                  /* Invalid type: not defined */
-    H5VL_OBJ_FILE,      /* H5I_FILE */
-    H5VL_OBJ_GROUP,     /* H5I_GROUP */
-    H5VL_OBJ_DATATYPE,  /* H5I_DATATYPE */
-    0,                  /* Invalid type: H5I_DATASPACE */
-    H5VL_OBJ_DATASET,   /* H5I_DATASET */
+    0,                 /* Invalid type: not defined */
+    H5VL_OBJ_FILE,     /* H5I_FILE */
+    H5VL_OBJ_GROUP,    /* H5I_GROUP */
+    H5VL_OBJ_DATATYPE, /* H5I_DATATYPE */
+    0,                 /* Invalid type: H5I_DATASPACE */
+    H5VL_OBJ_DATASET,  /* H5I_DATASET */
 #ifdef H5_HAVE_MAP_API
-    H5VL_OBJ_MAP,       /* H5I_MAP */
-#else /*  H5_HAVE_MAP_API */
-    0,                  /* Invalid type: H5I_MAP */
-#endif /*  H5_HAVE_MAP_API */
-    H5VL_OBJ_ATTR,      /* H5I_ATTR */
-    0,                  /* Invalid type: H5I_VFL */
-    0,                  /* Invalid type: H5I_VOL */
-    0,                  /* Invalid type: H5I_GENPROP_CLS */
-    0,                  /* Invalid type: H5I_GENPROP_LST */
-    0,                  /* Invalid type: H5I_ERROR_CLASS */
-    0,                  /* Invalid type: H5I_ERROR_MSG */
-    0,                  /* Invalid type: H5I_ERROR_STACK */
-    0,                  /* Invalid type: H5I_SPACE_SEL_ITER */
-    0                   /* Invalid type: H5I_EVENTSET */
+    H5VL_OBJ_MAP,  /* H5I_MAP */
+#else              /*  H5_HAVE_MAP_API */
+    0, /* Invalid type: H5I_MAP */
+#endif             /*  H5_HAVE_MAP_API */
+    H5VL_OBJ_ATTR, /* H5I_ATTR */
+    0,             /* Invalid type: H5I_VFL */
+    0,             /* Invalid type: H5I_VOL */
+    0,             /* Invalid type: H5I_GENPROP_CLS */
+    0,             /* Invalid type: H5I_GENPROP_LST */
+    0,             /* Invalid type: H5I_ERROR_CLASS */
+    0,             /* Invalid type: H5I_ERROR_MSG */
+    0,             /* Invalid type: H5I_ERROR_STACK */
+    0,             /* Invalid type: H5I_SPACE_SEL_ITER */
+    0              /* Invalid type: H5I_EVENTSET */
 };
 
 /*-------------------------------------------------------------------------
@@ -126,7 +126,7 @@ static void *
 H5VL__wrap_obj(void *obj, H5I_type_t obj_type)
 {
     H5VL_container_ctx_t *container_ctx = NULL; /* Container context */
-    void *           ret_value    = NULL; /* Return value */
+    void *                ret_value     = NULL; /* Return value */
 
     FUNC_ENTER_STATIC
 
@@ -140,7 +140,8 @@ H5VL__wrap_obj(void *obj, H5I_type_t obj_type)
     /* If there is a VOL object wrapping context, wrap the object */
     if (container_ctx && container_ctx->obj_wrap_ctx) {
         /* Wrap object, using the VOL callback */
-        if (NULL == (ret_value = H5VL__wrap_object(container_ctx->container->connector, container_ctx->obj_wrap_ctx, obj, obj_type)))
+        if (NULL == (ret_value = H5VL__wrap_object(container_ctx->container->connector,
+                                                   container_ctx->obj_wrap_ctx, obj, obj_type)))
             HGOTO_ERROR(H5E_VOL, H5E_CANTGET, NULL, "can't wrap object")
     } /* end if */
     else
@@ -166,8 +167,8 @@ done:
 H5VL_object_t *
 H5VL__new_vol_obj(H5VL_obj_type_t type, void *object, H5VL_container_t *container)
 {
-    H5VL_object_t *vol_obj  = NULL;  /* Pointer to new VOL object                    */
-    H5VL_object_t *ret_value    = NULL;  /* Return value                                 */
+    H5VL_object_t *vol_obj   = NULL; /* Pointer to new VOL object                    */
+    H5VL_object_t *ret_value = NULL; /* Return value                                 */
 
     FUNC_ENTER_PACKAGE
 
@@ -254,9 +255,9 @@ herr_t
 H5VL_register_using_existing_id(H5I_type_t type, void *object, H5VL_container_t *container, hbool_t app_ref,
                                 hid_t existing_id)
 {
-    H5VL_object_t *new_vol_obj = NULL;    /* Pointer to new VOL object                    */
-    void *wrapped_object = NULL;          /* Pointer to wrapped object */
-    herr_t         ret_value   = SUCCEED; /* Return value                                 */
+    H5VL_object_t *new_vol_obj    = NULL;    /* Pointer to new VOL object                    */
+    void *         wrapped_object = NULL;    /* Pointer to wrapped object */
+    herr_t         ret_value      = SUCCEED; /* Return value                                 */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -368,10 +369,10 @@ done:
 herr_t
 H5VL_object_is_native(const H5VL_object_t *obj, H5VL_get_conn_lvl_t lvl, hbool_t *is_native)
 {
-    const H5VL_class_t *cls;                 /* VOL connector class structs for object */
-    const H5VL_connector_t *native_connector;          /* Native VOL connector class structs */
-    int                 cmp_value;           /* Comparison result */
-    herr_t              ret_value = SUCCEED; /* Return value */
+    const H5VL_class_t *    cls;                 /* VOL connector class structs for object */
+    const H5VL_connector_t *native_connector;    /* Native VOL connector class structs */
+    int                     cmp_value;           /* Comparison result */
+    herr_t                  ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -456,7 +457,7 @@ done:
 void *
 H5VL_object_data(const H5VL_object_t *vol_obj)
 {
-    void *obj;                  /* Object to operate on */
+    void *obj; /* Object to operate on */
     void *ret_value = NULL;
 
     FUNC_ENTER_NOAPI_NOINIT_NOERR
@@ -634,9 +635,9 @@ done:
 hid_t
 H5VL_wrap_register(H5I_type_t type, void *obj, hbool_t app_ref)
 {
-    H5VL_container_ctx_t *container_ctx = NULL;         /* Container context */
-    void *           wrapped_obj;                     /* Newly wrapped object */
-    hid_t            ret_value = H5I_INVALID_HID; /* Return value */
+    H5VL_container_ctx_t *container_ctx = NULL;        /* Container context */
+    void *                wrapped_obj;                 /* Newly wrapped object */
+    hid_t                 ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_NOAPI(H5I_INVALID_HID)
 
@@ -647,7 +648,8 @@ H5VL_wrap_register(H5I_type_t type, void *obj, hbool_t app_ref)
     if (H5CX_get_primary_container_ctx((void **)&container_ctx) < 0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTGET, H5I_INVALID_HID, "can't get VOL container context")
     if (NULL == container_ctx || NULL == container_ctx->container)
-        HGOTO_ERROR(H5E_VOL, H5E_BADVALUE, H5I_INVALID_HID, "VOL container context or its container is NULL???")
+        HGOTO_ERROR(H5E_VOL, H5E_BADVALUE, H5I_INVALID_HID,
+                    "VOL container context or its container is NULL???")
 
     /* If the datatype is already VOL-managed, the datatype's vol_obj
      * field will get clobbered later, so disallow this.
@@ -662,7 +664,8 @@ H5VL_wrap_register(H5I_type_t type, void *obj, hbool_t app_ref)
         HGOTO_ERROR(H5E_VOL, H5E_CANTCREATE, H5I_INVALID_HID, "can't wrap library object")
 
     /* Get an ID for the object */
-    if ((ret_value = H5VL_register(H5VL_id_to_obj_g[type], wrapped_obj, container_ctx->container, app_ref)) < 0)
+    if ((ret_value = H5VL_register(H5VL_id_to_obj_g[type], wrapped_obj, container_ctx->container, app_ref)) <
+        0)
         HGOTO_ERROR(H5E_VOL, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to get an ID for the object")
 
 done:
@@ -681,7 +684,7 @@ done:
 herr_t
 H5VL_object_close(H5VL_object_t *vol_obj)
 {
-    herr_t ret_value = SUCCEED;         /* Return value */
+    herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -734,4 +737,3 @@ H5VL_object_close(H5VL_object_t *vol_obj)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* H5VL_object_close() */
-

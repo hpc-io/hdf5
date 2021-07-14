@@ -27,18 +27,18 @@
 /* Headers */
 /***********/
 
-#include "H5private.h"   /* Generic Functions                    */
-#include "H5Aprivate.h"  /* Attributes                           */
-#include "H5Dprivate.h"  /* Datasets                             */
-#include "H5Eprivate.h"  /* Error handling                       */
-#include "H5Fprivate.h"  /* Files                                */
-#include "H5Gprivate.h"  /* Groups                               */
-#include "H5Iprivate.h"  /* IDs                                  */
+#include "H5private.h"  /* Generic Functions                    */
+#include "H5Aprivate.h" /* Attributes                           */
+#include "H5Dprivate.h" /* Datasets                             */
+#include "H5Eprivate.h" /* Error handling                       */
+#include "H5Fprivate.h" /* Files                                */
+#include "H5Gprivate.h" /* Groups                               */
+#include "H5Iprivate.h" /* IDs                                  */
 #ifdef H5_HAVE_MAP_API
-#include "H5Mprivate.h"  /* Maps                                 */
-#endif /*  H5_HAVE_MAP_API */
-#include "H5Tprivate.h"  /* Datatypes                            */
-#include "H5VLpkg.h"     /* Virtual Object Layer                 */
+#include "H5Mprivate.h" /* Maps                                 */
+#endif                  /*  H5_HAVE_MAP_API */
+#include "H5Tprivate.h" /* Datatypes                            */
+#include "H5VLpkg.h"    /* Virtual Object Layer                 */
 
 /****************/
 /* Local Macros */
@@ -73,9 +73,9 @@ hbool_t H5_PKG_INIT_VAR = FALSE;
 
 /* VOL ID class */
 static const H5I_class_t H5I_VOL_CLS[1] = {{
-    H5I_VOL,                   /* ID class value */
-    0,                         /* Class flags */
-    0,                         /* # of reserved IDs for class */
+    H5I_VOL,                     /* ID class value */
+    0,                           /* Class flags */
+    0,                           /* # of reserved IDs for class */
     (H5I_free_t)H5VL__conn_close /* Callback routine for closing objects of this class */
 }};
 
@@ -242,12 +242,12 @@ H5VL_term_package(void)
 herr_t
 H5VL_fapl_is_native(hid_t fapl_id, hbool_t *is_native)
 {
-    H5P_genplist_t *      fapl_plist;     /* Property list pointer                    */
-    H5VL_connector_prop_t connector_prop; /* Property for VOL connector ID & info     */
-    H5VL_connector_t *        connector;            /* VOL class structure for callback info    */
-    const H5VL_connector_t *native_connector;     /* Native VOL connector class structs */
-    int                   cmp_value;      /* Comparison result */
-    herr_t                ret_value = SUCCEED;
+    H5P_genplist_t *        fapl_plist;       /* Property list pointer                    */
+    H5VL_connector_prop_t   connector_prop;   /* Property for VOL connector ID & info     */
+    H5VL_connector_t *      connector;        /* VOL class structure for callback info    */
+    const H5VL_connector_t *native_connector; /* Native VOL connector class structs */
+    int                     cmp_value;        /* Comparison result */
+    herr_t                  ret_value = SUCCEED;
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -356,7 +356,7 @@ done:
 herr_t
 H5VL_id_to_obj_type(H5I_type_t id_type, H5VL_obj_type_t *vol_obj_type)
 {
-    herr_t ret_value = SUCCEED;         /* Return value */
+    herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -385,8 +385,8 @@ done:
 herr_t
 H5VL__update_fapl_vol(hid_t fapl_id, const H5VL_container_t *container)
 {
-    H5P_genplist_t *fapl_plist;       /* Property list pointer */
-    herr_t ret_value = SUCCEED;         /* Return value */
+    H5P_genplist_t *fapl_plist;          /* Property list pointer */
+    herr_t          ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_NOAPI(FAIL)
 
@@ -401,4 +401,3 @@ H5VL__update_fapl_vol(hid_t fapl_id, const H5VL_container_t *container)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* H5VL__update_fapl_vol() */
-

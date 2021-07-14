@@ -252,9 +252,9 @@
     {                                                                                                        \
         H5T_INIT_TYPE_ALLOC_COMMON(H5T_REFERENCE)                                                            \
         H5T_INIT_TYPE_NUM_COMMON(H5T_ORDER_NONE)                                                             \
-        dt->shared->force_conv            = TRUE;                                                            \
-        dt->shared->u.atomic.u.r.loc      = H5T_LOC_BADLOC;                                                  \
-        dt->shared->u.atomic.u.r.cls      = NULL;                                                            \
+        dt->shared->force_conv       = TRUE;                                                                 \
+        dt->shared->u.atomic.u.r.loc = H5T_LOC_BADLOC;                                                       \
+        dt->shared->u.atomic.u.r.cls = NULL;                                                                 \
     }
 
 #define H5T_INIT_TYPE_OBJREF_CORE                                                                            \
@@ -5960,7 +5960,8 @@ H5T_set_loc(H5T_t *dt, H5T_loc_t loc)
                 /* Recurse if it's VL, compound, enum or array (ignore references here so that we can encode
                  * them as part of the same blob)*/
                 /* (If the force_conv flag is _not_ set, the type cannot change in size, so don't recurse) */
-                if (dt->shared->parent->shared->force_conv && H5T_IS_COMPLEX(dt->shared->parent->shared->type)) {
+                if (dt->shared->parent->shared->force_conv &&
+                    H5T_IS_COMPLEX(dt->shared->parent->shared->type)) {
                     if ((changed = H5T_set_loc(dt->shared->parent, loc)) < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "Unable to set VL location");
                     if (changed > 0)
@@ -6304,4 +6305,3 @@ H5T_patch_file(H5T_t *dt, H5F_t *f)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T_patch_file() */
-

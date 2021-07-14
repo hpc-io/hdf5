@@ -99,8 +99,8 @@ herr_t
 H5Tcommit1(hid_t loc_id, const char *name, hid_t type_id)
 {
     H5VL_object_t *   type_obj = NULL; /* VOL object that holds the datatype object and the VOL info */
-    H5T_t *           dt      = NULL; /* High level datatype object that wraps the VOL object */
-    H5VL_object_t *   vol_obj = NULL; /* Object of loc_id */
+    H5T_t *           dt       = NULL; /* High level datatype object that wraps the VOL object */
+    H5VL_object_t *   vol_obj  = NULL; /* Object of loc_id */
     H5VL_loc_params_t loc_params;
     herr_t            ret_value = SUCCEED; /* Return value */
 
@@ -127,7 +127,9 @@ H5Tcommit1(hid_t loc_id, const char *name, hid_t type_id)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "invalid object identifier")
 
     /* Commit the datatype */
-    if (NULL == (type_obj = H5VL_datatype_commit(vol_obj, &loc_params, name, type_id, H5P_LINK_CREATE_DEFAULT, H5P_DATATYPE_CREATE_DEFAULT, H5P_DATATYPE_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (type_obj = H5VL_datatype_commit(vol_obj, &loc_params, name, type_id, H5P_LINK_CREATE_DEFAULT,
+                                                 H5P_DATATYPE_CREATE_DEFAULT, H5P_DATATYPE_ACCESS_DEFAULT,
+                                                 H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTINIT, FAIL, "unable to commit datatype")
 
     /* Set the committed type object to the VOL connector pointer in the H5T_t struct */
@@ -156,8 +158,8 @@ done:
 hid_t
 H5Topen1(hid_t loc_id, const char *name)
 {
-    H5VL_object_t * type_obj     = NULL; /* VOL object that holds the datatype object and the VOL info */
-    H5VL_object_t *   vol_obj = NULL; /* Object of loc_id */
+    H5VL_object_t *   type_obj = NULL; /* VOL object that holds the datatype object and the VOL info */
+    H5VL_object_t *   vol_obj  = NULL; /* Object of loc_id */
     H5VL_loc_params_t loc_params;
     hid_t             ret_value = H5I_INVALID_HID; /* Return value */
 
@@ -176,12 +178,14 @@ H5Topen1(hid_t loc_id, const char *name)
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "invalid location identifier")
 
     /* Open the datatype */
-    if (NULL == (type_obj = H5VL_datatype_open(vol_obj, &loc_params, name, H5P_DATATYPE_ACCESS_DEFAULT, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (type_obj = H5VL_datatype_open(vol_obj, &loc_params, name, H5P_DATATYPE_ACCESS_DEFAULT,
+                                               H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open named datatype")
 
     /* Register an ID for the named datatype */
     if ((ret_value = H5I_register(H5I_DATATYPE, type_obj, TRUE)) < 0)
-        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, H5I_INVALID_HID, "unable to register ID for named datatype")
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTREGISTER, H5I_INVALID_HID,
+                    "unable to register ID for named datatype")
 
 done:
     /* Cleanup on error */

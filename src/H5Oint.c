@@ -3155,4 +3155,3 @@ H5O_fileof(void *obj, H5I_type_t type)
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5O_fileof() */
-

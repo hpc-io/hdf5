@@ -35,7 +35,8 @@ static herr_t H5O__dtype_reset(void *_mesg);
 static herr_t H5O__dtype_free(void *_mesg);
 static herr_t H5O__dtype_set_share(void *_mesg, const H5O_shared_t *sh);
 static htri_t H5O__dtype_can_share(const void *_mesg);
-static herr_t H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info, void *_udata);
+static herr_t H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t *deleted, const H5O_copy_t *cpy_info,
+                                       void *_udata);
 static void * H5O__dtype_copy_file(H5F_t *file_src, const H5O_msg_class_t *mesg_type, void *native_src,
                                    H5F_t *file_dst, hbool_t *recompute_size, H5O_copy_t *cpy_info,
                                    void *udata);
@@ -1525,7 +1526,8 @@ done:
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info, void *_udata)
+H5O__dtype_pre_copy_file(const void *mesg_src, hbool_t H5_ATTR_UNUSED *deleted, const H5O_copy_t *cpy_info,
+                         void *_udata)
 {
     const H5T_t *       dt_src    = (const H5T_t *)mesg_src;      /* Source datatype */
     H5D_copy_file_ud_t *udata     = (H5D_copy_file_ud_t *)_udata; /* Dataset copying user data */

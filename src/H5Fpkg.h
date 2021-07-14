@@ -367,15 +367,15 @@ struct H5F_shared_t {
  * to shared H5F_shared_t structs.
  */
 struct H5F_t {
-    char *         open_name;   /* Name used to open file                                       */
-    char *         actual_name; /* Actual name of the file, after resolving symlinks, etc.      */
-    H5F_shared_t * shared;      /* The shared file info                                         */
-    unsigned       nopen_objs;  /* Number of open object headers                                */
-    H5FO_t *       obj_count;   /* # of time each object is opened through top file structure   */
-    hbool_t        id_exists;   /* Whether an ID for this struct exists                         */
-    hbool_t        closing;     /* File is in the process of being closed                       */
-    struct H5F_t * parent;      /* Parent file that this file is mounted to                     */
-    unsigned       nmounts;     /* Number of children mounted to this file                      */
+    char *        open_name;   /* Name used to open file                                       */
+    char *        actual_name; /* Actual name of the file, after resolving symlinks, etc.      */
+    H5F_shared_t *shared;      /* The shared file info                                         */
+    unsigned      nopen_objs;  /* Number of open object headers                                */
+    H5FO_t *      obj_count;   /* # of time each object is opened through top file structure   */
+    hbool_t       id_exists;   /* Whether an ID for this struct exists                         */
+    hbool_t       closing;     /* File is in the process of being closed                       */
+    struct H5F_t *parent;      /* Parent file that this file is mounted to                     */
+    unsigned      nmounts;     /* Number of children mounted to this file                      */
 };
 
 /*****************************/

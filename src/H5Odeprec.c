@@ -347,7 +347,7 @@ H5Oopen_by_addr(hid_t loc_id, haddr_t addr)
     H5VL_object_t *   vol_obj;                  /* Object of loc_id */
     H5I_type_t        vol_obj_type = H5I_BADID; /* Object type of loc_id */
     H5I_type_t        opened_type;              /* Opened object type */
-    H5VL_object_t * opened_vol_obj    = NULL;   /* VOL object opened */
+    H5VL_object_t *   opened_vol_obj = NULL;    /* VOL object opened */
     H5VL_loc_params_t loc_params;               /* Location parameters */
     H5O_token_t       obj_token = {0};          /* Object token */
     hbool_t           is_native_vol_obj;
@@ -366,21 +366,25 @@ H5Oopen_by_addr(hid_t loc_id, haddr_t addr)
 
     /* Check if the VOL object is a native VOL connector object */
     if (H5VL_object_is_native(vol_obj, H5VL_GET_CONN_LVL_TERM, &is_native_vol_obj) < 0)
-        HGOTO_ERROR(H5E_OHDR, H5E_CANTGET, H5I_INVALID_HID, "can't determine if VOL object is native connector object")
+        HGOTO_ERROR(H5E_OHDR, H5E_CANTGET, H5I_INVALID_HID,
+                    "can't determine if VOL object is native connector object")
     if (is_native_vol_obj) {
         /* This is a native-specific routine that requires serialization of the token */
         if (H5VLnative_addr_to_token(loc_id, addr, &obj_token) < 0)
-            HGOTO_ERROR(H5E_OHDR, H5E_CANTSERIALIZE, H5I_INVALID_HID, "can't serialize address into object token")
+            HGOTO_ERROR(H5E_OHDR, H5E_CANTSERIALIZE, H5I_INVALID_HID,
+                        "can't serialize address into object token")
     } /* end if */
     else
-        HGOTO_ERROR(H5E_OHDR, H5E_BADVALUE, H5I_INVALID_HID, "H5Oopen_by_addr is only meant to be used with the native VOL connector")
+        HGOTO_ERROR(H5E_OHDR, H5E_BADVALUE, H5I_INVALID_HID,
+                    "H5Oopen_by_addr is only meant to be used with the native VOL connector")
 
     loc_params.type                        = H5VL_OBJECT_BY_TOKEN;
     loc_params.loc_data.loc_by_token.token = &obj_token;
     loc_params.obj_type                    = vol_obj_type;
 
     /* Open the object */
-    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
+    if (NULL == (opened_vol_obj = H5VL_object_open(vol_obj, &loc_params, &opened_type,
+                                                   H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL)))
         HGOTO_ERROR(H5E_OHDR, H5E_CANTOPENOBJ, H5I_INVALID_HID, "unable to open object")
 
     /* Register an ID for the object */
