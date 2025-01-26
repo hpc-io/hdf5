@@ -5,7 +5,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -14,7 +14,7 @@
 
 srcdir=@srcdir@
 
-# Determine backward compatibility options eneabled
+# Check if backward compatibility options are enabled
 DEPRECATED_SYMBOLS="@DEPRECATED_SYMBOLS@"
 
 CMP='cmp -s'
@@ -70,7 +70,7 @@ TEST() {
    fi
 
    # Extract file name, line number, version and thread IDs because they may be different
-   sed -e 's/thread [0-9]*/thread (IDs)/' -e 's/: .*\.c /: (file name) /' \
+   sed -e 's/ thread [0-9]*//' -e 's/: .*\.c /: (file name) /' \
 	-e 's/line [0-9]*/line (number)/' \
         -e 's/v[1-9]*\.[0-9]*\./version (number)\./' \
 	-e 's/[1-9]*\.[0-9]*\.[0-9]*[^)]*/version (number)/' \

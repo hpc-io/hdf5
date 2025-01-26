@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -152,9 +152,6 @@ static const H5C_log_class_t H5C_json_log_class_g = {"json",
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -166,22 +163,22 @@ H5C__json_write_log_message(H5C_log_json_udata_t *json_udata)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->outfile);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->outfile);
+    assert(json_udata->message);
 
     /* Write the log message and flush */
-    n_chars = HDstrlen(json_udata->message);
-    if ((int)n_chars != HDfprintf(json_udata->outfile, "%s", json_udata->message))
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "error writing log message")
-    HDmemset((void *)(json_udata->message), 0, (size_t)(n_chars * sizeof(char)));
+    n_chars = strlen(json_udata->message);
+    if ((int)n_chars != fprintf(json_udata->outfile, "%s", json_udata->message))
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "error writing log message");
+    memset((void *)(json_udata->message), 0, (size_t)(n_chars * sizeof(char)));
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* H5C__json_write_log_message() */
 
 /*-------------------------------------------------------------------------
- * Function:    H5C_log_json_set_up
+ * Function:    H5C__log_json_set_up
  *
  * Purpose:     Setup for metadata cache logging.
  *
@@ -199,36 +196,33 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 herr_t
-H5C_log_json_set_up(H5C_log_info_t *log_info, const char log_location[], int mpi_rank)
+H5C__log_json_set_up(H5C_log_info_t *log_info, const char log_location[], int mpi_rank)
 {
     H5C_log_json_udata_t *json_udata = NULL;
     char                 *file_name  = NULL;
     size_t                n_chars;
     herr_t                ret_value = SUCCEED; /* Return value */
 
-    FUNC_ENTER_NOAPI(FAIL)
+    FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(log_info);
-    HDassert(log_location);
+    assert(log_info);
+    assert(log_location);
 
     /* Set up the class struct */
     log_info->cls = &H5C_json_log_class_g;
 
     /* Allocate memory for the JSON-specific data */
     if (NULL == (log_info->udata = H5MM_calloc(sizeof(H5C_log_json_udata_t))))
-        HGOTO_ERROR(H5E_CACHE, H5E_CANTALLOC, FAIL, "memory allocation failed")
+        HGOTO_ERROR(H5E_CACHE, H5E_CANTALLOC, FAIL, "memory allocation failed");
     json_udata = (H5C_log_json_udata_t *)(log_info->udata);
 
     /* Allocate memory for the message buffer */
     if (NULL == (json_udata->message = (char *)H5MM_calloc(H5C_MAX_JSON_LOG_MSG_SIZE * sizeof(char))))
-        HGOTO_ERROR(H5E_CACHE, H5E_CANTALLOC, FAIL, "memory allocation failed")
+        HGOTO_ERROR(H5E_CACHE, H5E_CANTALLOC, FAIL, "memory allocation failed");
 
     /* Possibly fix up the log file name.
      * The extra 39 characters are for adding the rank to the file name
@@ -237,21 +231,21 @@ H5C_log_json_set_up(H5C_log_info_t *log_info, const char log_location[], int mpi
      *
      * allocation size = "RANK_" + <rank # length> + dot + <path length> + \0
      */
-    n_chars = 5 + 39 + 1 + HDstrlen(log_location) + 1;
+    n_chars = 5 + 39 + 1 + strlen(log_location) + 1;
     if (NULL == (file_name = (char *)H5MM_calloc(n_chars * sizeof(char))))
         HGOTO_ERROR(H5E_CACHE, H5E_CANTALLOC, FAIL,
-                    "can't allocate memory for mdc log file name manipulation")
+                    "can't allocate memory for mdc log file name manipulation");
 
     /* Add the rank to the log file name when MPI is in use */
     if (-1 == mpi_rank)
-        HDsnprintf(file_name, n_chars, "%s", log_location);
+        snprintf(file_name, n_chars, "%s", log_location);
     else
-        HDsnprintf(file_name, n_chars, "RANK_%d.%s", mpi_rank, log_location);
+        snprintf(file_name, n_chars, "RANK_%d.%s", mpi_rank, log_location);
 
     /* Open log file and set it to be unbuffered */
-    if (NULL == (json_udata->outfile = HDfopen(file_name, "w")))
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "can't create mdc log file")
-    HDsetbuf(json_udata->outfile, NULL);
+    if (NULL == (json_udata->outfile = fopen(file_name, "w")))
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "can't create mdc log file");
+    setbuf(json_udata->outfile, NULL);
 
 done:
     if (file_name)
@@ -271,7 +265,7 @@ done:
     }
 
     FUNC_LEAVE_NOAPI(ret_value)
-} /* H5C_log_json_set_up() */
+} /* H5C__log_json_set_up() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5C__json_tear_down_logging
@@ -279,9 +273,6 @@ done:
  * Purpose:     Tear-down for metadata cache logging.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -294,7 +285,7 @@ H5C__json_tear_down_logging(H5C_log_info_t *log_info)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(log_info);
+    assert(log_info);
 
     /* Alias */
     json_udata = (H5C_log_json_udata_t *)(log_info->udata);
@@ -303,8 +294,8 @@ H5C__json_tear_down_logging(H5C_log_info_t *log_info)
     H5MM_xfree(json_udata->message);
 
     /* Close log file */
-    if (EOF == HDfclose(json_udata->outfile))
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "problem closing mdc log file")
+    if (EOF == fclose(json_udata->outfile))
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "problem closing mdc log file");
     json_udata->outfile = NULL;
 
     /* Fre the udata */
@@ -325,9 +316,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -339,11 +327,11 @@ H5C__json_write_start_log_msg(void *udata)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string (opens the JSON array) */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\n\
 \"HDF5 metadata cache log messages\" : [\n\
 {\
@@ -351,11 +339,11 @@ H5C__json_write_start_log_msg(void *udata)
 \"action\":\"logging start\"\
 },\n\
 ",
-               (long long)HDtime(NULL));
+             (long long)time(NULL));
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -368,9 +356,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -382,22 +367,22 @@ H5C__json_write_stop_log_msg(void *udata)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string (closes the JSON array) */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"logging stop\"\
 }\n\
 ]}\n\
 ",
-               (long long)HDtime(NULL));
+             (long long)time(NULL));
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -410,9 +395,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -424,22 +406,22 @@ H5C__json_write_create_cache_log_msg(void *udata, herr_t fxn_ret_value)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"create\",\
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (int)fxn_ret_value);
+             (long long)time(NULL), (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -452,9 +434,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -466,21 +445,21 @@ H5C__json_write_destroy_cache_log_msg(void *udata)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"destroy\"\
 },\n\
 ",
-               (long long)HDtime(NULL));
+             (long long)time(NULL));
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -493,9 +472,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -507,22 +483,22 @@ H5C__json_write_evict_cache_log_msg(void *udata, herr_t fxn_ret_value)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"evict\",\
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (int)fxn_ret_value);
+             (long long)time(NULL), (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -535,9 +511,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -549,11 +522,11 @@ H5C__json_write_expunge_entry_log_msg(void *udata, haddr_t address, int type_id,
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"expunge\",\
@@ -562,11 +535,11 @@ H5C__json_write_expunge_entry_log_msg(void *udata, haddr_t address, int type_id,
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)address, (int)type_id, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)address, (int)type_id, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -579,9 +552,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -593,22 +563,22 @@ H5C__json_write_flush_cache_log_msg(void *udata, herr_t fxn_ret_value)
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"flush\",\
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (int)fxn_ret_value);
+             (long long)time(NULL), (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -620,9 +590,6 @@ done:
  * Purpose:     Write a log message for insertion of cache entries.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -636,11 +603,11 @@ H5C__json_write_insert_entry_log_msg(void *udata, haddr_t address, int type_id, 
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"insert\",\
@@ -651,12 +618,11 @@ H5C__json_write_insert_entry_log_msg(void *udata, haddr_t address, int type_id, 
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)address, type_id, flags, (int)size,
-               (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)address, type_id, flags, (int)size, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -669,9 +635,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -683,12 +646,12 @@ H5C__json_write_mark_entry_dirty_log_msg(void *udata, const H5C_cache_entry_t *e
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"dirty\",\
@@ -696,11 +659,11 @@ H5C__json_write_mark_entry_dirty_log_msg(void *udata, const H5C_cache_entry_t *e
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -713,9 +676,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -727,12 +687,12 @@ H5C__json_write_mark_entry_clean_log_msg(void *udata, const H5C_cache_entry_t *e
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"clean\",\
@@ -740,11 +700,11 @@ H5C__json_write_mark_entry_clean_log_msg(void *udata, const H5C_cache_entry_t *e
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -756,9 +716,6 @@ done:
  * Purpose:     Write a log message for marking cache entries as unserialized.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -772,12 +729,12 @@ H5C__json_write_mark_unserialized_entry_log_msg(void *udata, const H5C_cache_ent
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"unserialized\",\
@@ -785,11 +742,11 @@ H5C__json_write_mark_unserialized_entry_log_msg(void *udata, const H5C_cache_ent
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -801,9 +758,6 @@ done:
  * Purpose:     Write a log message for marking cache entries as serialize.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -817,12 +771,12 @@ H5C__json_write_mark_serialized_entry_log_msg(void *udata, const H5C_cache_entry
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"serialized\",\
@@ -830,11 +784,11 @@ H5C__json_write_mark_serialized_entry_log_msg(void *udata, const H5C_cache_entry
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -846,9 +800,6 @@ done:
  * Purpose:     Write a log message for moving a cache entry.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -862,11 +813,11 @@ H5C__json_write_move_entry_log_msg(void *udata, haddr_t old_addr, haddr_t new_ad
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"move\",\
@@ -876,12 +827,12 @@ H5C__json_write_move_entry_log_msg(void *udata, haddr_t old_addr, haddr_t new_ad
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)old_addr, (unsigned long)new_addr, type_id,
-               (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)old_addr, (unsigned long)new_addr, type_id,
+             (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -894,9 +845,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -908,12 +856,12 @@ H5C__json_write_pin_entry_log_msg(void *udata, const H5C_cache_entry_t *entry, h
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"pin\",\
@@ -921,11 +869,11 @@ H5C__json_write_pin_entry_log_msg(void *udata, const H5C_cache_entry_t *entry, h
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -939,9 +887,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -954,13 +899,13 @@ H5C__json_write_create_fd_log_msg(void *udata, const H5C_cache_entry_t *parent,
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(parent);
-    HDassert(child);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(parent);
+    assert(child);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"create_fd\",\
@@ -969,12 +914,12 @@ H5C__json_write_create_fd_log_msg(void *udata, const H5C_cache_entry_t *parent,
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)parent->addr, (unsigned long)child->addr,
-               (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)parent->addr, (unsigned long)child->addr,
+             (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -986,9 +931,6 @@ done:
  * Purpose:     Write a log message for protecting a cache entry.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -1003,17 +945,17 @@ H5C__json_write_protect_entry_log_msg(void *udata, const H5C_cache_entry_t *entr
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     if (H5C__READ_ONLY_FLAG == flags)
-        HDstrcpy(rw_s, "READ");
+        strcpy(rw_s, "READ");
     else
-        HDstrcpy(rw_s, "WRITE");
+        strcpy(rw_s, "WRITE");
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"protect\",\
@@ -1024,12 +966,12 @@ H5C__json_write_protect_entry_log_msg(void *udata, const H5C_cache_entry_t *entr
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, type_id, rw_s, (int)entry->size,
-               (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, type_id, rw_s, (int)entry->size,
+             (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1041,9 +983,6 @@ done:
  * Purpose:     Write a log message for resizing a cache entry.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -1057,12 +996,12 @@ H5C__json_write_resize_entry_log_msg(void *udata, const H5C_cache_entry_t *entry
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"resize\",\
@@ -1071,11 +1010,11 @@ H5C__json_write_resize_entry_log_msg(void *udata, const H5C_cache_entry_t *entry
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)new_size, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)new_size, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1088,9 +1027,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -1102,12 +1038,12 @@ H5C__json_write_unpin_entry_log_msg(void *udata, const H5C_cache_entry_t *entry,
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"unpin\",\
@@ -1115,11 +1051,11 @@ H5C__json_write_unpin_entry_log_msg(void *udata, const H5C_cache_entry_t *entry,
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1133,9 +1069,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -1148,13 +1081,13 @@ H5C__json_write_destroy_fd_log_msg(void *udata, const H5C_cache_entry_t *parent,
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(parent);
-    HDassert(child);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(parent);
+    assert(child);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"destroy_fd\",\
@@ -1163,12 +1096,12 @@ H5C__json_write_destroy_fd_log_msg(void *udata, const H5C_cache_entry_t *parent,
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)parent->addr, (unsigned long)child->addr,
-               (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)parent->addr, (unsigned long)child->addr,
+             (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1180,9 +1113,6 @@ done:
  * Purpose:     Write a log message for unprotecting a cache entry.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -1196,11 +1126,11 @@ H5C__json_write_unprotect_entry_log_msg(void *udata, haddr_t address, int type_i
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
+    assert(json_udata);
+    assert(json_udata->message);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"unprotect\",\
@@ -1210,11 +1140,11 @@ H5C__json_write_unprotect_entry_log_msg(void *udata, haddr_t address, int type_i
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)address, type_id, flags, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)address, type_id, flags, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1226,9 +1156,6 @@ done:
  * Purpose:     Write a log message for setting the cache configuration.
  *
  * Return:      SUCCEED/FAIL
- *
- * Programmer:  Dana Robinson
- *              Fall 2018
  *
  *-------------------------------------------------------------------------
  */
@@ -1242,23 +1169,23 @@ H5C__json_write_set_cache_config_log_msg(void *udata, const H5AC_cache_config_t 
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(config);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(config);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"set_config\",\
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (int)fxn_ret_value);
+             (long long)time(NULL), (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1271,9 +1198,6 @@ done:
  *
  * Return:      SUCCEED/FAIL
  *
- * Programmer:  Dana Robinson
- *              Fall 2018
- *
  *-------------------------------------------------------------------------
  */
 static herr_t
@@ -1285,12 +1209,12 @@ H5C__json_write_remove_entry_log_msg(void *udata, const H5C_cache_entry_t *entry
     FUNC_ENTER_PACKAGE
 
     /* Sanity checks */
-    HDassert(json_udata);
-    HDassert(json_udata->message);
-    HDassert(entry);
+    assert(json_udata);
+    assert(json_udata->message);
+    assert(entry);
 
     /* Create the log message string */
-    HDsnprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
+    snprintf(json_udata->message, H5C_MAX_JSON_LOG_MSG_SIZE, "\
 {\
 \"timestamp\":%lld,\
 \"action\":\"remove\",\
@@ -1298,11 +1222,11 @@ H5C__json_write_remove_entry_log_msg(void *udata, const H5C_cache_entry_t *entry
 \"returned\":%d\
 },\n\
 ",
-               (long long)HDtime(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
+             (long long)time(NULL), (unsigned long)entry->addr, (int)fxn_ret_value);
 
     /* Write the log message to the file */
     if (H5C__json_write_log_message(json_udata) < 0)
-        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message")
+        HGOTO_ERROR(H5E_CACHE, H5E_LOGGING, FAIL, "unable to emit log message");
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)

@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #ifdef __cplusplus
 extern "C" {
@@ -447,8 +441,13 @@ Java_hdf_hdf5lib_H5_H5Tget_1fields_1int(JNIEnv *env, jclass clss, jlong type_id,
 {
     jboolean isCopy;
     jsize    arrLen;
-    jint    *P      = NULL;
-    herr_t   status = FAIL;
+    size_t   spos;
+    size_t   epos;
+    size_t   esize;
+    size_t   mpos;
+    size_t   msize;
+    jint    *pinned_arr = NULL;
+    herr_t   status     = FAIL;
 
     UNUSED(clss);
 
@@ -462,15 +461,20 @@ Java_hdf_hdf5lib_H5_H5Tget_1fields_1int(JNIEnv *env, jclass clss, jlong type_id,
     if (arrLen < 5)
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Tget_fields_int: fields input array < order 5");
 
-    PIN_INT_ARRAY(ENVONLY, fields, P, &isCopy, "H5Tget_fields_int: fields not pinned");
+    PIN_INT_ARRAY(ENVONLY, fields, pinned_arr, &isCopy, "H5Tget_fields_int: fields not pinned");
 
-    if ((status = H5Tget_fields((hid_t)type_id, (size_t *)&(P[0]), (size_t *)&(P[1]), (size_t *)&(P[2]),
-                                (size_t *)&(P[3]), (size_t *)&(P[4]))) < 0)
+    if ((status = H5Tget_fields((hid_t)type_id, &spos, &epos, &esize, &mpos, &msize)) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
+    pinned_arr[0] = (jint)spos;
+    pinned_arr[1] = (jint)epos;
+    pinned_arr[2] = (jint)esize;
+    pinned_arr[3] = (jint)mpos;
+    pinned_arr[4] = (jint)msize;
+
 done:
-    if (P)
-        UNPIN_INT_ARRAY(ENVONLY, fields, P, (status < 0) ? JNI_ABORT : 0);
+    if (pinned_arr)
+        UNPIN_INT_ARRAY(ENVONLY, fields, pinned_arr, (status < 0) ? JNI_ABORT : 0);
 
     return (jint)status;
 } /* end Java_hdf_hdf5lib_H5_H5Tget_1fields_1int */
@@ -1189,7 +1193,7 @@ Java_hdf_hdf5lib_H5_H5Tenum_1nameof_1int(JNIEnv *env, jclass clss, jlong type_id
     if (size <= 0)
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Tenum_nameof_int: name size < 0");
 
-    if (NULL == (nameP = (char *)HDmalloc(sizeof(char) * (size_t)size)))
+    if (NULL == (nameP = (char *)malloc(sizeof(char) * (size_t)size)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Tenum_nameof_int: failed to allocate name buffer");
 
     PIN_INT_ARRAY(ENVONLY, value, intP, &isCopy, "H5Tenum_nameof_int: value not pinned");
@@ -1208,7 +1212,7 @@ done:
     if (intP)
         UNPIN_INT_ARRAY(ENVONLY, value, intP, JNI_ABORT);
     if (nameP)
-        HDfree(nameP);
+        free(nameP);
 
     return (jint)status;
 } /* end Java_hdf_hdf5lib_H5_H5Tenum_1nameof_1int */
@@ -1234,7 +1238,7 @@ Java_hdf_hdf5lib_H5_H5Tenum_1nameof(JNIEnv *env, jclass clss, jlong type_id, jby
     if (NULL == value)
         H5_NULL_ARGUMENT_ERROR(ENVONLY, "H5Tenum_nameof: value is NULL");
 
-    if (NULL == (nameP = (char *)HDmalloc(sizeof(char) * (size_t)size)))
+    if (NULL == (nameP = (char *)malloc(sizeof(char) * (size_t)size)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Tenum_nameof: failed to allocate name buffer");
 
     PIN_BYTE_ARRAY(ENVONLY, value, byteP, &isCopy, "H5Tenum_nameof: value not pinned");
@@ -1250,7 +1254,7 @@ done:
     if (byteP)
         UNPIN_BYTE_ARRAY(ENVONLY, value, byteP, JNI_ABORT);
     if (nameP)
-        HDfree(nameP);
+        free(nameP);
 
     return str;
 } /* end Java_hdf_hdf5lib_H5_H5Tenum_1nameof */
@@ -1432,7 +1436,7 @@ Java_hdf_hdf5lib_H5_H5Tget_1array_1dims(JNIEnv *env, jclass clss, jlong type_id,
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Tget_array_dims: dims array length < 0");
     }
 
-    if (NULL == (cdims = (hsize_t *)HDmalloc((size_t)dlen * sizeof(hsize_t))))
+    if (NULL == (cdims = (hsize_t *)malloc((size_t)dlen * sizeof(hsize_t))))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Tget_array_dims: failed to allocate dimension buffer");
 
     if ((ndims = H5Tget_array_dims2((hid_t)type_id, cdims)) < 0)
@@ -1444,7 +1448,7 @@ Java_hdf_hdf5lib_H5_H5Tget_1array_1dims(JNIEnv *env, jclass clss, jlong type_id,
 
 done:
     if (cdims)
-        HDfree(cdims);
+        free(cdims);
     if (dimsP)
         UNPIN_INT_ARRAY(ENVONLY, dims, dimsP, (ndims < 0) ? JNI_ABORT : 0);
 
@@ -1572,7 +1576,7 @@ Java_hdf_hdf5lib_H5__1H5Tarray_1create2(JNIEnv *env, jclass clss, jlong base_id,
     if (dlen != rank)
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Tarray_create: dimension array length != array rank");
 
-    if (NULL == (cdims = (hsize_t *)HDmalloc((size_t)dlen * sizeof(hsize_t))))
+    if (NULL == (cdims = (hsize_t *)malloc((size_t)dlen * sizeof(hsize_t))))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Tarray_create: failed to allocate dimension buffer");
 
     for (i = 0; i < (size_t)dlen; i++) {
@@ -1584,7 +1588,7 @@ Java_hdf_hdf5lib_H5__1H5Tarray_1create2(JNIEnv *env, jclass clss, jlong base_id,
 
 done:
     if (cdims)
-        HDfree(cdims);
+        free(cdims);
     if (dimsP)
         UNPIN_LONG_ARRAY(ENVONLY, dims, dimsP, (retVal < 0) ? JNI_ABORT : 0);
 
@@ -1618,7 +1622,7 @@ Java_hdf_hdf5lib_H5_H5Tget_1array_1dims2(JNIEnv *env, jclass clss, jlong type_id
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Tarray_get_dims2: dims array length < 0");
     }
 
-    if (NULL == (cdims = (hsize_t *)HDmalloc((size_t)dlen * sizeof(hsize_t))))
+    if (NULL == (cdims = (hsize_t *)malloc((size_t)dlen * sizeof(hsize_t))))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Tarray_get_dims2: failed to allocate dimension buffer");
 
     if ((ndims = H5Tget_array_dims2((hid_t)type_id, (hsize_t *)cdims)) < 0)
@@ -1630,12 +1634,31 @@ Java_hdf_hdf5lib_H5_H5Tget_1array_1dims2(JNIEnv *env, jclass clss, jlong type_id
 
 done:
     if (cdims)
-        HDfree(cdims);
+        free(cdims);
     if (dimsP)
         UNPIN_LONG_ARRAY(ENVONLY, dims, dimsP, (ndims < 0) ? JNI_ABORT : 0);
 
     return (jint)ndims;
 } /* end Java_hdf_hdf5lib_H5_H5Tget_1array_1dims2 */
+
+/*
+ * Class:     hdf_hdf5lib_H5
+ * Method:    _H5Tcomplex_create
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL
+Java_hdf_hdf5lib_H5__1H5Tcomplex_1create(JNIEnv *env, jclass clss, jlong base_id)
+{
+    hid_t retVal = H5I_INVALID_HID;
+
+    UNUSED(clss);
+
+    if ((retVal = H5Tcomplex_create((hid_t)base_id)) < 0)
+        H5_LIBRARY_ERROR(ENVONLY);
+
+done:
+    return (jlong)retVal;
+} /* end Java_hdf_hdf5lib_H5__1H5Tcomplex_1create */
 
 /*
  * Class:     hdf_hdf5lib_H5

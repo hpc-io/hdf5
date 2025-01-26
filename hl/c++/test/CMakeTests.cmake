@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -44,6 +44,9 @@ else ()
   )
 endif ()
 set_tests_properties (HL_CPP_ptableTest PROPERTIES DEPENDS HL_CPP_ptableTest-clear-objects)
+if ("HL_CPP_ptableTest" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+  set_tests_properties (HL_CPP_ptableTest PROPERTIES DISABLED true)
+endif ()
 add_test (
     NAME HL_CPP_ptableTest-clean-objects
     COMMAND    ${CMAKE_COMMAND}
@@ -53,3 +56,4 @@ set_tests_properties (HL_CPP_ptableTest-clean-objects PROPERTIES
     DEPENDS HL_CPP_ptableTest
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 )
+

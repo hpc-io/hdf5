@@ -4,19 +4,16 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
- * Programmer:	Quincey Koziol
- *		Saturday, September 12, 2015
- *
- * Purpose:	This file contains declarations which define macros for the
- *		H5Z package.  Including this header means that the source file
- *		is part of the H5Z package.
+ * Purpose: This file contains declarations which define macros for the
+ *          H5Z package.  Including this header means that the source file
+ *          is part of the H5Z package.
  */
 #ifndef H5Zmodule_H
 #define H5Zmodule_H
@@ -25,10 +22,11 @@
  *      reporting macros.
  */
 #define H5Z_MODULE
-#define H5_MY_PKG     H5Z
-#define H5_MY_PKG_ERR H5E_PLINE
+#define H5_MY_PKG      H5Z
+#define H5_MY_PKG_ERR  H5E_PLINE
+#define H5_MY_PKG_INIT YES
 
-/** \page H5Z_UG The HDF5 Filters
+/** \page H5Z_UG HDF5 Filters
  * @todo Under Construction
  */
 
@@ -74,6 +72,7 @@
  * shuffling algorithm) and error checking (Fletcher32 checksum). For further
  * flexibility, the library allows a user application to extend the pipeline
  * through the creation and registration of customized filters.
+ * See \ref sec_filter_plugins
  *
  * The flexibility of the filter pipeline implementation enables the definition
  * of additional filters by a user application. A filter
@@ -86,26 +85,35 @@
  * the difficulty of implementing random access for partial I/O. Compact dataset
  * filters are not supported because they would not produce significant results.
  *
- * Filter identifiers for the filters distributed with the HDF5
- * Library are as follows:
- * <table>
- *   <tr><td>#H5Z_FILTER_DEFLATE</td><td>The gzip compression, or
- *           deflation, filter</td></tr>
- *   <tr><td>#H5Z_FILTER_SZIP</td><td>The SZIP compression
- *           filter</td></tr>
- *   <tr><td>#H5Z_FILTER_NBIT</td><td>The N-bit compression
- *           filter</td></tr>
- *   <tr><td>#H5Z_FILTER_SCALEOFFSET</td><td>The scale-offset
- *           compression filter</td></tr>
- *   <tr><td>#H5Z_FILTER_SHUFFLE</td><td>The shuffle algorithm
- *           filter</td></tr>
- *   <tr><td>#H5Z_FILTER_FLETCHER32</td><td>The Fletcher32 checksum,
- *           or error checking, filter</td></tr>
- * </table>
+ * HDF5 allows chunked data to pass through user-defined filters
+ * on the way to or from disk.  The filters operate on chunks of an
+ * #H5D_CHUNKED dataset can be arranged in a pipeline
+ * so output of one filter becomes the input of the next filter.
+ *
+ * Each filter has a two-byte identification number (type
+ * #H5Z_filter_t) allocated by The HDF Group and can also be
+ * passed application-defined integer resources to control its
+ * behavior.  Each filter also has an optional ASCII comment
+ * string.
+ *
+ * \snippet{doc} H5Zpublic.h FiltersIdTable
+ *
+ * Filter identifiers for the filters distributed with the HDF5 Library are as follows:
+//! [PreDefFilters]
+<table>
+<tr><td>#H5Z_FILTER_DEFLATE</td><td>The gzip compression, or deflation, filter</td></tr>
+<tr><td>#H5Z_FILTER_SZIP</td><td>The SZIP compressionfilter</td></tr>
+<tr><td>#H5Z_FILTER_NBIT</td><td>The N-bit compression filter</td></tr>
+<tr><td>#H5Z_FILTER_SCALEOFFSET</td><td>The scale-offset compression filter</td></tr>
+<tr><td>#H5Z_FILTER_SHUFFLE</td><td>The shuffle algorithm filter</td></tr>
+<tr><td>#H5Z_FILTER_FLETCHER32</td><td>The Fletcher32 checksum, or error checking, filter</td></tr>
+</table>
+//! [PreDefFilters]
+ *
  * Custom filters that have been registered with the library will have
  * additional unique identifiers.
  *
- * See \ref_dld_filters for more information on how an HDF5 application can
+ * See \ref sec_filter_plugins for more information on how an HDF5 application can
  * apply a filter that is not registered with the HDF5 library.
  *
  * \defgroup H5ZPRE Predefined Filters
@@ -117,6 +125,8 @@
  * \defgroup SHUFFLE Shuffle Filter
  * \ingroup H5ZPRE
  * \defgroup SZIP Szip Filter
+ * \ingroup H5ZPRE
+ * \defgroup NBIT N-bit Filter
  * \ingroup H5ZPRE
  *
  */

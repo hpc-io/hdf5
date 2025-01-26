@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -249,7 +249,7 @@ public class TestH5OcopyOld {
 
         try {
             // create new file
-            H5fid2 = H5.H5Fcreate("copy.h5", HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
+            H5fid2 = H5.H5Fcreate("copy_old.h5", HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
                                   HDF5Constants.H5P_DEFAULT);
             assertTrue("testH5OcopyRefsDatasettodiffFile.H5Fcreate: ", H5fid2 >= 0);
             H5.H5Fflush(H5fid2, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -288,7 +288,7 @@ public class TestH5OcopyOld {
             catch (Exception ex) {
             }
         }
-        _deleteFile("copy.h5");
+        _deleteFile("copy_old.h5");
     }
 
     @Test

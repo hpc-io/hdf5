@@ -44,7 +44,7 @@ and the parallel file system.
 For help with installing, questions can be posted to the HDF Forum or sent to the HDF Helpdesk:
 
    HDF Forum:     https://forum.hdfgroup.org/
-   HDF Helpdesk:  https://portal.hdfgroup.org/display/support/The+HDF+Help+Desk
+   HDF Helpdesk:  https://help.hdfgroup.org/
 
 In your mail, please include the output of "uname -a". If you have run the
 "configure" command, attach the output of the command and the content of
@@ -90,7 +90,7 @@ nodes.  They would probably work for other Cray systems but have
 not been verified.
 
 Obtain the HDF5 source code:
-    https://portal.hdfgroup.org/display/support/Downloads
+    https://support.hdfgroup.org/downloads/index.html
 
 The entire build process should be done on a MOM node in an interactive allocation and on a file system accessible by all compute nodes.
 Request an interactive allocation with qsub:
@@ -202,7 +202,7 @@ Reference
 1. POSIX Compliant. A good explanation is by Donald Lewin,
     After a write() to a regular file has successfully returned, any
     successful read() from each byte position on the file that was modified
-    by that write() will return the date that was written by the write(). A
+    by that write() will return the data that was written by the write(). A
     subsequent write() to the same byte will overwrite the file data. If a
     read() of a file data can be proven by any means [e.g., MPI_Barrier()]
     to occur after a write() of that data, it must reflect that write(),
@@ -358,11 +358,9 @@ main(int ac, char **av)
 
      PROGRAM MPIOEXAMPLE
 
-     ! USE MPI
+     USE mpi
 
      IMPLICIT NONE
-
-     INCLUDE 'mpif.h'
         
      CHARACTER(LEN=80), PARAMETER :: filename = "filef.h5" ! File name
      INTEGER     ::   ierror  ! Error flag

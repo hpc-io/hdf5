@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -22,15 +22,16 @@
  *      reporting macros.
  */
 #define H5M_MODULE
-#define H5_MY_PKG     H5M
-#define H5_MY_PKG_ERR H5E_MAP
+#define H5_MY_PKG      H5M
+#define H5_MY_PKG_ERR  H5E_MAP
+#define H5_MY_PKG_INIT YES
 
 /**
- * \page H5M_UG The HDF5 VOL Data Mapping
+ * \page H5M_UG HDF5 VOL Data Mapping
  * \Bold{The HDF5 Data Mapping can only be used with the HDF5 VOL connectors that
  * implement map objects.} The native HDF5 library does not support this feature.
  *
- * \section sec_map The HDF5 Map Object
+ * \section sec_map HDF5 Map Object
  *
  * \todo Describe the map life cycle.
  *

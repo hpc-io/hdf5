@@ -4,29 +4,36 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
- * Programmer:  Robb Matzke
- *              Monday, August  4, 1999
- *
- * Purpose:	The public header file for the family driver.
+ * Purpose:	The public header file for the family virtual file driver (VFD)
  */
 #ifndef H5FDfamily_H
 #define H5FDfamily_H
 
-#define H5FD_FAMILY       (H5FDperform_init(H5FD_family_init))
+/* Public header files */
+#include "H5FDpublic.h" /* File drivers             */
+
+/** ID for the family VFD */
+#define H5FD_FAMILY (H5OPEN H5FD_FAMILY_id_g)
+
+/** Identifier for the family VFD */
 #define H5FD_FAMILY_VALUE H5_VFD_FAMILY
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-H5_DLL hid_t H5FD_family_init(void);
+/** @private
+ *
+ * \brief ID for the family VFD
+ */
+H5_DLLVAR hid_t H5FD_FAMILY_id_g;
 
 /**
  * \ingroup FAPL

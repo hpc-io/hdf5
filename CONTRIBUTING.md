@@ -7,7 +7,7 @@ process enjoyable and straightforward.
 This document describes guiding principles for the HDF5 code contributors and does not pretend to address any possible
 contribution. If in doubt, please do not hesitate to ask us for guidance.
 ***Note that no contribution may be accepted unless the donor agrees with the HDF Group software license terms
-found in the COPYING file in every branch's top source directory.***
+found in the LICENSE file in every branch's top source directory.***
 
 
 > We will assume that you are familiar with `git` and `GitHub`.  If not, you may go through the GitHub tutorial found at
@@ -16,12 +16,12 @@ around 10 minutes.
 
 ## Table of Contents
 
-* [Workflow](#workflow)
-* [Acceptance criteria for a pull request](#criteria)
-* [Release Note](#releasenote)
-* [Check List](#checklist)
+* <a href="#workflow">Workflow</a>
+* <a href="#criteria">Acceptance criteria for a pull request</a>
+* <a href="#releasenote">Release Note</a>
+* <a href="#checklist">Check List</a>
 
-# Workflow <A NAME="workflow"></A>
+<h2 id="workflow">Workflow</h2>
 
 The process for contributing code to HDF5 is as follows:
 
@@ -41,7 +41,7 @@ Once a pull request is correctly formatted and passes **ALL** CI tests, it will 
 community members who can approve pull requests. The HDF Group developers will work with you to ensure that the pull request satisfies the acceptance
 criteria described in the next section.
 
-# Acceptance criteria for a pull request <A NAME="criteria"></A>
+<h2 id="workflow">Workflow</h2>
 
 We appreciate every contribution we receive, but we may not accept them all.  Those that we *do* satisfy the following criteria:
 
@@ -84,7 +84,7 @@ application developers and not system administrators. Users who may find the REL
 application developers, library developers, and system administrators.
 
 
-# Release Note <A NAME="releasenote"></A>
+<h2 id="releasenote">Release Note</h2>
 
 * **Entry Syntax**
 The release note entry syntax is shown below.
@@ -94,7 +94,6 @@ The release note entry syntax is shown below.
 
       Problem/Solution
 
-      Signature
 ```
 
 * **Entry Elements** - The elements of the entry - title, problem, solution, and signature - are described in more detail in the table
@@ -112,12 +111,8 @@ You might also consider the following as you describe the solution:
         * What is the functional impact?
         * Is there a workaround – a way for users design their software so as not to encounter the issue? If so, what is the workaround?
         * For a performance fix, how has the performance improved? Links to published documentation would be good.
-    * **Signature** - Each entry must be signed with the initials of the author, the date in YYYY/MM/DD format, and the JIRA ticket number. The
-following is an example entry written by developer Xavier Zolo on April 16, 2014 about JIRA ticket HDFFV-5555: (XYZ - 2014/04/16, HDFFV-5555). The
-signature is enclosed in parentheses. JIRA or Github numbers should not be used in the description of the problem or the solution. They are like
-abbreviations that customers and external users will not be able to interpret.
 
-# Checklist <A NAME="checklist"></A>
+<h2 id="checklist">Checklist</h2>
 
 Please make sure that you check the items applicable to your pull request:
 
@@ -127,11 +122,10 @@ Please make sure that you check the items applicable to your pull request:
   * [ ] If changes were done to Autotools build, were they added to CMake and vice versa?
   * [ ] Is the pull request applicable to any other branches? If yes, which ones? Please document it in the GitHub issue.
   * [ ] Is the new code sufficiently documented for future maintenance?
-  * [ ] Does the new feature require a change to an existing API? See "API Compatibility Macros" document (https://portal.hdfgroup.org/display/HDF5/API+Compatibility+Macros)
+  * [ ] Does the new feature require a change to an existing API? See "API Compatibility Macros" document (https://hdfgroup.github.io/hdf5/develop/api-compat-macros.html)
 * Documentation
   * [ ] Was the change described in the release_docs/RELEASE.txt file?
-  * [ ] Was MANIFEST updated if new files had been added to the source?
-  * [ ] Was the new function documented in the corresponding public header file using [Doxygen](https://docs.hdfgroup.org/hdf5/develop/_r_m_t.html)?
+  * [ ] Was the new function documented in the corresponding public header file using [Doxygen](https://hdfgroup.github.io/hdf5/develop/_r_m_t.html)?
   * [ ] Was new functionality documented for the HDF5 community (the level of documentation depends on the feature; ask us what would be appropriate)
 * Testing
   * [ ] Does the pull request have tests?

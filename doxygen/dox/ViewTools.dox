@@ -48,15 +48,15 @@ Navigate back: \ref index "Main" / \ref GettingStarted
 
 \section secViewToolsCommandObtain Obtain Tools and Files (Optional)
 Pre-built binaries for Linux and Windows are distributed within the respective HDF5 binary release
-packages, which can be obtained from the <a href="https://portal.hdfgroup.org/display/support/Download+HDF5">Download HDF5</a> page.
+packages, which can be obtained from the <a href="https://\DWNURL/index.html">Download HDF5</a> page.
 
 HDF5 files can be obtained from various places such as \ref HDF5Examples and <a href="http://www.hdfeos.org/">HDF-EOS and Tools and
 Information Center</a>. Specifically, the following examples are used in this tutorial topic:
 \li HDF5 Files created from compiling the \ref LBExamples
-\li HDF5 Files on the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a> page
-\li NPP JPSS files, <a href="https://support.hdfgroup.org/ftp/HDF5/examples/files/tutorial/SVM01_npp_d20130524_t1255132_e1256374_b08146_c20130524192048864992_noaa_ops.h5.gz">SVM01_npp.. (gzipped)</a>
-and <a href="https://support.hdfgroup.org/ftp/HDF5/examples/files/tutorial/SVM09_npp_d20120229_t0849107_e0854511_b01759_c20120229145452682127_noaa_ops.h5.gz">SVM09_npp.. (gzipped)</a>
-\li HDF-EOS <a href="https://support.hdfgroup.org/ftp/HDF5/examples/files/tutorial/OMI-Aura.he5">OMI-Aura file</a>
+\li HDF5 Files on the \ref ExAPI page
+\li NPP JPSS files, <a href="https://\AEXURL/files/tutorial/SVM01_npp_d20130524_t1255132_e1256374_b08146_c20130524192048864992_noaa_ops.h5.gz">SVM01_npp.. (gzipped)</a>
+and <a href="https://\AEXURL/files/tutorial/SVM09_npp_d20120229_t0849107_e0854511_b01759_c20120229145452682127_noaa_ops.h5.gz">SVM09_npp.. (gzipped)</a>
+\li HDF-EOS <a href="https://\AEXURL/files/tutorial/OMI-Aura.he5">OMI-Aura file</a>
 
 \section secViewToolsCommandTutor Tutorial Topics
 A variety of command-line tools are included in the HDF5 binary distribution. There are tools to view,
@@ -196,44 +196,29 @@ The following h5dump options can be helpful in viewing the content and structure
 <th>Comment</th>
 </tr>
 <tr>
-<td>-n, --contents
-</td>
-<td>Displays a list of the objects in a file
-</td>
-<td>See @ref subsubsecViewToolsViewContent_h5dumpEx1
-</td>
+<td>-n, --contents</td>
+<td>Displays a list of the objects in a file</td>
+<td>See @ref subsubsecViewToolsViewContent_h5dumpEx1</td>
 </tr>
 <tr>
-<td>-n 1, --contents=1
-</td>
-<td>Displays a list of the objects and attributes in a file
-</td>
-<td>See @ref subsubsecViewToolsViewAttr_h5dumpEx6
-</td>
+<td>-n 1, --contents=1</td>
+<td>Displays a list of the objects and attributes in a file</td>
+<td>See @ref subsubsecViewToolsViewAttr_h5dumpEx6</td>
 </tr>
 <tr>
-<td>-H, --header
-</td>
-<td>Displays header information only (no data)
-</td>
-<td>See @ref subsubsecViewToolsViewContent_h5dumpEx2
-</td>
+<td>-H, --header</td>
+<td>Displays header information only (no data)</td>
+<td>See @ref subsubsecViewToolsViewContent_h5dumpEx2</td>
 </tr>
 <tr>
-<td>-A 0, --onlyattr=0
-</td>
-<td>Suppresses the display of attributes
-</td>
-<td>See @ref subsubsecViewToolsViewContent_h5dumpEx2
-</td>
+<td>-A 0, --onlyattr=0</td>
+<td>Suppresses the display of attributes</td>
+<td>See @ref subsubsecViewToolsViewContent_h5dumpEx2</td>
 </tr>
 <tr>
-<td>-N P, --any_path=P
-</td>
-<td>Displays any object or attribute that matches path P
-</td>
-<td>See @ref subsubsecViewToolsViewAttr_h5dumpEx6
-</td>
+<td>-N P, --any_path=P</td>
+<td>Displays any object or attribute that matches path P</td>
+<td>See @ref subsubsecViewToolsViewAttr_h5dumpEx6</td>
 </tr>
 </table>
 
@@ -318,6 +303,8 @@ GROUP "/" {
 }
 \endcode
 
+\see H5TOOL_DP_UG for more information.
+
 \subsection subsecViewToolsViewContent_h5ls h5ls
 The h5ls tool by default just displays the objects in the root group. It will not display
 items in groups beneath the root group unless specified. Useful h5ls options for viewing
@@ -369,6 +356,8 @@ The output is shown below:
 /HDFEOS\ INFORMATION     Group
 /HDFEOS\ INFORMATION/StructMetadata.0 Dataset {SCALAR}
 \endcode
+
+\see H5TOOL_LS_UG for more information.
 
 \section secViewToolsViewDset Datasets and Dataset Properties
 Both h5dump and h5ls can be used to view specific datasets.
@@ -465,7 +454,7 @@ example <code style="background-color:whitesmoke;">h5_crtgrpar.c</code>. To disp
 \endcode
 
 \subsubsection subsubsecViewToolsViewDset_h5dumpEx5 Example 5
-The <code style="background-color:whitesmoke;">-p</code> option is used to examine the the dataset filters, storage layout, and fill value properties of a dataset.
+The <code style="background-color:whitesmoke;">-p</code> option is used to examine the dataset filters, storage layout, and fill value properties of a dataset.
 
 This option can be useful for checking how well compression works, or even for analyzing performance
 and dataset size issues related to chunking. (The smaller the chunk size, the more chunks that HDF5
@@ -497,7 +486,7 @@ In the file shown below the dataset <code style="background-color:whitesmoke;">/
 \endcode
 
 You can obtain the <code style="background-color:whitesmoke;">h5ex_d_gzip.c</code> program that created this file, as well as the file created,
-from the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a> page.
+from the \ref ExAPI page.
 
 \subsection subsecViewToolsViewDset_h5ls h5ls
 Specific datasets can be specified with <code style="background-color:whitesmoke;">h5ls</code> by simply adding the dataset path and dataset after the
@@ -925,7 +914,7 @@ The output of the above command is shown below:
 
 \subsection subsecViewToolsViewDtypes_h5dump h5dump
 The following datatypes are discussed, using the output of <code style="background-color:whitesmoke;">h5dump</code> with HDF5 files from the
-<a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a> page:
+\ref ExAPI page:
 <ul>
 <li>@ref subsubsecViewToolsViewDtypes_array</li>
 <li>@ref subsubsecViewToolsViewDtypes_objref</li>
@@ -997,9 +986,166 @@ In other words, it is an array of four elements, in which each element is a 3 by
 
 This dataset is much more complex. Also note that subsetting cannot be done on Array datatypes.
 
-See this <a href="https://portal.hdfgroup.org/display/knowledge/H5T_ARRAY+Datatype">FAQ</a> for more information on the Array datatype.
+See this <a href="https://\DOXURL/_l_b_datatypes.html">section</a> for more information on the Array datatype.
+
+\subsubsection subsubsecViewToolsViewDtypes_newref New References
+References were reworked in HDF5 1.12.0. The new reference datatype is #H5T_STD_REF. The old reference datatypes are deprecated.
+see @ref sec_reference.
 
 \subsubsection subsubsecViewToolsViewDtypes_objref Object Reference
+An Object Reference is a reference to an entire object (attribute, dataset, group, or named datatype).
+A dataset with an Object Reference datatype consists of one or more Object References.
+An Object Reference dataset can be used as an index to an HDF5 file.
+
+The <code style="background-color:whitesmoke;">/DS1</code> dataset in the following file (<code style="background-color:whitesmoke;">h5ex_t_objref.h5</code>) is an Object Reference dataset.
+It contains two references, one to group <code style="background-color:whitesmoke;">/G1</code> and the other to dataset <code style="background-color:whitesmoke;">/DS2</code>:
+\code
+$ h5dump h5ex_t_objref.h5
+HDF5 "h5ex_t_objref.h5" {
+GROUP "/" {
+   DATASET "DS1" {
+      DATATYPE  H5T_REFERENCE { H5T_STD_REF }
+      DATASPACE  SIMPLE { ( 2 ) / ( 2 ) }
+      DATA {
+         GROUP "h5ex_t_objref.h5/G1"
+         DATASET "h5ex_t_objref.h5/DS2"
+            DATA {
+            }
+      }
+   }
+   DATASET "DS2" {
+      DATATYPE  H5T_STD_I32LE
+      DATASPACE  NULL
+      DATA {
+      }
+   }
+   GROUP "G1" {
+   }
+}
+}
+\endcode
+
+\subsubsection subsubsecViewToolsViewDtypes_regref Region Reference
+A Region Reference is a reference to a selection within a dataset. A selection can be either
+individual elements or a hyperslab. In <code style="background-color:whitesmoke;">h5dump</code> you will see the name of the dataset along with
+the elements or slab that is selected. A dataset with a Region Reference datatype consists of
+one or more Region References.
+
+An example of a Region Reference dataset (<code style="background-color:whitesmoke;">h5ex_t_regref.h5</code>) can be found on the
+\ref ExAPI page,
+under Datatypes. If you examine this dataset with <code style="background-color:whitesmoke;">h5dump</code> you will see that <code style="background-color:whitesmoke;">/DS1</code> is a
+Region Reference dataset as indicated by its datatype, highlighted in bold below:
+\code
+$ h5dump  h5ex_t_regref.h5
+HDF5 "h5ex_t_regref.h5" {
+GROUP "/" {
+   DATASET "DS1" {
+      DATATYPE  H5T_REFERENCE { H5T_STD_REF }
+      DATASPACE  SIMPLE { ( 2 ) / ( 2 ) }
+      DATA {
+         DATASET "h5ex_t_regref.h5/DS2"{
+            REGION_TYPE POINT  (0,1), (2,11), (1,0), (2,4)
+            DATATYPE  H5T_STD_I8LE
+            DATASPACE  SIMPLE { ( 3, 16 ) / ( 3, 16 ) }
+         }
+         DATASET "h5ex_t_regref.h5/DS2"  {
+            REGION_TYPE BLOCK  (0,0)-(0,2), (0,11)-(0,13), (2,0)-(2,2),
+             (2,11)-(2,13)
+            DATATYPE  H5T_STD_I8LE
+            DATASPACE  SIMPLE { ( 3, 16 ) / ( 3, 16 ) }
+         }
+      }
+   }
+   DATASET "DS2" {
+      DATATYPE  H5T_STD_I8LE
+      DATASPACE  SIMPLE { ( 3, 16 ) / ( 3, 16 ) }
+      DATA {
+      (0,0): 84, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119,
+      (0,14): 110, 0,
+      (1,0): 102, 111, 120, 32, 106, 117, 109, 112, 115, 32, 111, 118, 101,
+      (1,13): 114, 32, 0,
+      (2,0): 116, 104, 101, 32, 53, 32, 108, 97, 122, 121, 32, 100, 111, 103,
+      (2,14): 115, 0
+      }
+   }
+}
+}
+\endcode
+
+It contains two Region References:
+\li A selection of four individual elements in dataset <code style="background-color:whitesmoke;">/DS2 : (0,1), (2,11), (1,0), (2,4)</code>
+See the #H5Sselect_elements API in the \ref UG for information on selecting individual elements.
+\li A selection of these blocks in dataset <code style="background-color:whitesmoke;">/DS2 : (0,0)-(0,2), (0,11)-(0,13), (2,0)-(2,2), (2,11)-(2,13)</code>
+See the #H5Sselect_hyperslab API in the \ref UG for how to do hyperslab selection.
+
+If you look at the code that creates the dataset (<code style="background-color:whitesmoke;">h5ex_t_regref.c</code>) you will see that the
+first reference is created with these calls:
+\code
+  status = H5Sselect_elements (space, H5S_SELECT_SET, 4, coords[0]);
+  status = H5Rcreate_region(file, DATASET2, space, H5P_DEFAULT, &wdata[0]);
+\endcode
+
+where the buffer containing the coordinates to select is:
+\code
+   coords[4][2] = { {0,  1},
+                    {2, 11},
+                    {1,  0},
+                    {2,  4} },
+\endcode
+
+The second reference is created by calling,
+\code
+  status = H5Sselect_hyperslab (space, H5S_SELECT_SET, start, stride, count, block);
+  status = H5Rcreate_region(file, DATASET2, space, H5P_DEFAULT, &wdata[1]);
+\endcode
+where start, stride, count, and block have these values:
+\code
+     start[2] =  {0, 0},
+     stride[2] = {2, 11},
+     count[2] =  {2, 2},
+     block[2] =  {1, 3};
+\endcode
+
+These start, stride, count, and block values will select the elements shown in bold in the dataset:
+\code
+84 104 101 32 113 117 105  99 107  32  98 114 111 119 110 0
+102 111 120 32 106 117 109 112 115  32 111 118 101 114  32 0
+116 104 101 32  53  32 108  97 122 121  32 100 111 103 115 0
+\endcode
+
+If you use <code style="background-color:whitesmoke;">h5dump</code> to select a subset of dataset
+<code style="background-color:whitesmoke;">/DS2</code> with these start, stride, count, and block values, you will see that the same elements are selected:
+\code
+$ h5dump -d "/DS2" -s "0,0" -S "2,11" -c "2,2" -k "1,3" h5ex_t_regref.h5
+HDF5 "h5ex_t_regref.h5" {
+DATASET "/DS2" {
+   DATATYPE  H5T_STD_I8LE
+   DATASPACE  SIMPLE { ( 3, 16 ) / ( 3, 16 ) }
+   SUBSET {
+      START ( 0, 0 );
+      STRIDE ( 2, 11 );
+      COUNT ( 2, 2 );
+      BLOCK ( 1, 3 );
+      DATA {
+      (0,0): 84, 104, 101, 114, 111, 119,
+      (2,0): 116, 104, 101, 100, 111, 103
+      }
+   }
+}
+}
+\endcode
+
+NOTE that you must release the references created in the code with the #H5Rdestroy API.
+\code
+    status = H5Rdestroy(&wdata[0]);
+    status = H5Rdestroy(&wdata[1]);
+\endcode
+
+For more information on selections, see the tutorial topic on
+@ref LBDsetSubRW. Also see the
+\ref secViewToolsViewSub tutorial topic on using <code style="background-color:whitesmoke;">h5dump</code> to view a subset.
+
+\subsubsection subsubsecViewToolsViewDtypes_depr_objref Deprecated Object Reference
 An Object Reference is a reference to an entire object (dataset, group, or named datatype).
 A dataset with an Object Reference datatype consists of one or more Object References.
 An Object Reference dataset can be used as an index to an HDF5 file.
@@ -1029,14 +1175,14 @@ GROUP "/" {
 }
 \endcode
 
-\subsubsection subsubsecViewToolsViewDtypes_regref Region Reference
+\subsubsection subsubsecViewToolsViewDtypes_depr_regref Deprecated Region Reference
 A Region Reference is a reference to a selection within a dataset. A selection can be either
 individual elements or a hyperslab. In <code style="background-color:whitesmoke;">h5dump</code> you will see the name of the dataset along with
 the elements or slab that is selected. A dataset with a Region Reference datatype consists of
 one or more Region References.
 
 An example of a Region Reference dataset (<code style="background-color:whitesmoke;">h5ex_t_regref.h5</code>) can be found on the
-<a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a> page,
+\ref ExAPI page,
 under Datatypes. If you examine this dataset with <code style="background-color:whitesmoke;">h5dump</code> you will see that <code style="background-color:whitesmoke;">/DS1</code> is a
 Region Reference dataset as indicated by its datatype, highlighted in bold below:
 \code
@@ -1072,7 +1218,6 @@ It contains two Region References:
 See the #H5Sselect_elements API in the \ref UG for information on selecting individual elements.
 \li A selection of these blocks in dataset <code style="background-color:whitesmoke;">/DS2 : (0,0)-(0,2), (0,11)-(0,13), (2,0)-(2,2), (2,11)-(2,13)</code>
 See the #H5Sselect_hyperslab API in the \ref UG for how to do hyperslab selection.
- 
 
 If you look at the code that creates the dataset (<code style="background-color:whitesmoke;">h5ex_t_regref.c</code>) you will see that the
 first reference is created with these calls:

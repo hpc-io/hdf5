@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,7 +62,7 @@ Java_hdf_hdf5lib_H5_H5Iget_1name_1long(JNIEnv *env, jclass clss, jlong obj_id, j
     if (buf_size < 0)
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "H5Iget_name_long: buf_size < 0");
 
-    if (NULL == (aName = (char *)HDmalloc(sizeof(char) * (size_t)buf_size + 1)))
+    if (NULL == (aName = (char *)malloc(sizeof(char) * (size_t)buf_size + 1)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Iget_name_long: malloc failed");
 
     if ((size = H5Iget_name((hid_t)obj_id, aName, (size_t)buf_size + 1)) < 0)
@@ -83,7 +77,7 @@ Java_hdf_hdf5lib_H5_H5Iget_1name_1long(JNIEnv *env, jclass clss, jlong obj_id, j
 
 done:
     if (aName)
-        HDfree(aName);
+        free(aName);
 
     return (jlong)size;
 } /* end Java_hdf_hdf5lib_H5_H5Iget_1name */
@@ -106,7 +100,7 @@ Java_hdf_hdf5lib_H5_H5Iget_1name(JNIEnv *env, jclass clss, jlong obj_id)
     if ((buf_size = H5Iget_name((hid_t)obj_id, NULL, 0)) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
-    if (NULL == (aName = (char *)HDmalloc(sizeof(char) * (size_t)buf_size + 1)))
+    if (NULL == (aName = (char *)malloc(sizeof(char) * (size_t)buf_size + 1)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Iget_name: malloc failed");
 
     if (H5Iget_name((hid_t)obj_id, aName, (size_t)buf_size + 1) < 0)
@@ -118,7 +112,7 @@ Java_hdf_hdf5lib_H5_H5Iget_1name(JNIEnv *env, jclass clss, jlong obj_id)
 
 done:
     if (aName)
-        HDfree(aName);
+        free(aName);
 
     return str;
 } /* end Java_hdf_hdf5lib_H5_H5Iget_1name */
@@ -327,7 +321,7 @@ Java_hdf_hdf5lib_H5_H5Iclear_1type(JNIEnv *env, jclass clss, jint type, jboolean
 {
     UNUSED(clss);
 
-    if (H5Iclear_type((H5I_type_t)type, (hbool_t)force) < 0)
+    if (H5Iclear_type((H5I_type_t)type, (bool)force) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
 done:

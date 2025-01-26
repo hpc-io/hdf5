@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,11 +71,11 @@ done:
 JNIEXPORT void JNICALL
 Java_hdf_hdf5lib_H5_H5Pset_1obj_1track_1times(JNIEnv *env, jclass clss, jlong objplid, jboolean track_times)
 {
-    hbool_t track = FALSE;
+    bool track = false;
 
     UNUSED(clss);
 
-    track = (JNI_TRUE == track_times) ? 1 : 0;
+    track = (JNI_TRUE == track_times) ? true : false;
 
     if (H5Pset_obj_track_times((hid_t)objplid, track) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
@@ -98,7 +92,7 @@ done:
 JNIEXPORT jboolean JNICALL
 Java_hdf_hdf5lib_H5_H5Pget_1obj_1track_1times(JNIEnv *env, jclass clss, jlong objplid)
 {
-    hbool_t  track_times = FALSE;
+    bool     track_times = false;
     jboolean retVal      = JNI_FALSE;
 
     UNUSED(clss);
@@ -106,7 +100,7 @@ Java_hdf_hdf5lib_H5_H5Pget_1obj_1track_1times(JNIEnv *env, jclass clss, jlong ob
     if (H5Pget_obj_track_times((hid_t)objplid, &track_times) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
-    retVal = (track_times == TRUE) ? JNI_TRUE : JNI_FALSE;
+    retVal = (track_times == true) ? JNI_TRUE : JNI_FALSE;
 
 done:
     return retVal;

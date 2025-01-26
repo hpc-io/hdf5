@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -83,6 +83,9 @@ macro (ADD_VFD_TEST vfdname resultcode)
           DEPENDS H5REPACK_VFD-${vfdname}-h5repacktest-clear-objects
           TIMEOUT ${CTEST_SHORT_TIMEOUT}
       )
+      if ("H5REPACK_VFD-${vfdname}-h5repacktest" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5REPACK_VFD-${vfdname}-h5repacktest PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5REPACK_VFD-${vfdname}-h5repacktest-clean-objects
           COMMAND ${CMAKE_COMMAND} -E remove

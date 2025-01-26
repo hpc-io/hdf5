@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -65,12 +65,11 @@ TEST_PROG= testhdf5 \
            accum hyperslab istore bittests dt_arith page_buffer \
            dtypes dsets chunk_info cmpd_dset mdset cmpd_dtransform filter_fail extend direct_chunk \
            external efc objcopy objcopy_ref links unlink twriteorder big mtime \
-           fillval mount \
+           fillval mount select_io_dset\
            flush1 flush2 app_ref enum set_extent ttsafe enc_dec_plist \
            enc_dec_plist_cross_platform getname vfd ros3 s3comms hdfs ntypes \
            dangle dtransform reserved cross_read freespace mf vds file_image \
-           unregister cache_logging cork swmr thread_id vol timer event_set \
-		   onion
+           unregister cache_logging cork swmr vol timer event_set onion
 
 # List programs to be built when testing here
 #
@@ -157,12 +156,14 @@ endif
 
 libh5test_la_SOURCES=h5test.c testframe.c cache_common.c swmr_common.c external_common.c
 
-# Use libhd5test.la to compile all of the tests
+# Use libh5test.la to compile all of the tests
 LDADD=libh5test.la $(LIBHDF5)
 
 # List the source files for tests that have more than one
-ttsafe_SOURCES=ttsafe.c ttsafe_dcreate.c ttsafe_error.c ttsafe_cancel.c       \
-               ttsafe_acreate.c ttsafe_attr_vlen.c
+ttsafe_SOURCES=ttsafe.c ttsafe_acreate.c ttsafe_atomic.c ttsafe_attr_vlen.c \
+    ttsafe_cancel.c ttsafe_dcreate.c ttsafe_develop.c ttsafe_error.c \
+    ttsafe_rwlock.c ttsafe_rec_rwlock.c ttsafe_semaphore.c \
+    ttsafe_thread_id.c ttsafe_thread_pool.c ttsafe_error_stacks.c
 cache_image_SOURCES=cache_image.c genall5.c
 mirror_vfd_SOURCES=mirror_vfd.c genall5.c
 
@@ -192,7 +193,7 @@ CHECK_CLEANFILES+=accum.h5 cmpd_dset.h5 mdset.h5 compact_dataset.h5 dataset.h5 d
     storage_size.h5 dls_01_strings.h5 power2up.h5 version_bounds.h5 \
     alloc_0sized.h5 h5s_block.h5 h5s_plist.h5 \
     extend.h5 istore.h5 extlinks*.h5 frspace.h5 links*.h5 \
-    sys_file1 tfile[1-7].h5 th5s[1-4].h5 lheap.h5 fheap.h5 ohdr.h5 \
+    sys_file1 tfile[1-8].h5 th5s[1-4].h5 lheap.h5 fheap.h5 ohdr.h5 \
     stab.h5 extern_[1-5].h5 extern_[1-4][rw].raw gheap[0-4].h5 \
     ohdr_min_a.h5 ohdr_min_b.h5 min_dset_ohdr_testfile.h5 \
     dt_arith[1-2] links.h5 links[0-6]*.h5 extlinks[0-15].h5 \
@@ -226,7 +227,10 @@ CHECK_CLEANFILES+=accum.h5 cmpd_dset.h5 mdset.h5 compact_dataset.h5 dataset.h5 d
     test_swmr*.h5 cache_logging.h5 cache_logging.out vds_swmr.h5 vds_swmr_src_*.h5 \
     swmr[0-2].h5 swmr_writer.out swmr_writer.log.* swmr_reader.out.* swmr_reader.log.* \
     tbogus.h5.copy cache_image_test.h5 direct_chunk.h5 native_vol_test.h5 \
-    splitter*.h5 splitter.log mirror_rw mirror_ro event_set_[0-9].h5
+    splitter*.h5 splitter.log mirror_rw mirror_ro event_set_[0-9].h5 \
+    cmpd_dtransform.h5 single_latest.h5 source_file.h5 stdio_file.h5 \
+    tfile_is_accessible.h5 tfile_is_accessible_non_hdf5.h5 tverbounds_dtype.h5 \
+    virtual_file1.h5 tfile_double_open.h5 tfile_incr_filesize.h5 flushrefresh_test
 
 # Sources for testhdf5 executable
 testhdf5_SOURCES=testhdf5.c tarray.c tattr.c tchecksum.c tconfig.c tfile.c \

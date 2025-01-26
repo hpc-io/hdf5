@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -18,9 +18,9 @@ import hdf.hdf5lib.structs.H5L_info_t;
  * Information class for link callback for H5Lvisit/H5Lvisit_by_name.
  *
  */
-public interface H5L_iterate_t extends Callbacks {
+public interface H5L_iterate_t extends H5Callbacks {
     /**
-     * @ingroup JCALL
+     * @ingroup JCALLBK
      *
      *  application callback for each group
      *

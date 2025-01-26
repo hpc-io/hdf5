@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #ifdef __cplusplus
 extern "C" {
@@ -128,7 +122,7 @@ Java_hdf_hdf5lib_H5_H5Pget_1elink_1prefix(JNIEnv *env, jclass clss, jlong lapl_i
     if ((prefix_size = H5Pget_elink_prefix((hid_t)lapl_id, (char *)NULL, size)) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
-    if (NULL == (pre = (char *)HDmalloc(sizeof(char) * (size_t)prefix_size + 1)))
+    if (NULL == (pre = (char *)malloc(sizeof(char) * (size_t)prefix_size + 1)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5Pget_elink_prefix: memory allocation failed");
 
     if (H5Pget_elink_prefix((hid_t)lapl_id, (char *)pre, (size_t)prefix_size + 1) < 0)
@@ -146,7 +140,7 @@ Java_hdf_hdf5lib_H5_H5Pget_1elink_1prefix(JNIEnv *env, jclass clss, jlong lapl_i
 
 done:
     if (pre)
-        HDfree(pre);
+        free(pre);
 
     return (jlong)prefix_size;
 } /* end Java_hdf_hdf5lib_H5_H5Pget_1elink_1prefix */

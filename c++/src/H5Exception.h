@@ -5,7 +5,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -74,7 +74,7 @@ class H5_DLLCPP Exception {
     Exception(const Exception &orig);
 
     // virtual Destructor
-    virtual ~Exception() throw();
+    virtual ~Exception() = default;
 
   protected:
     // Default value for detail_message
@@ -89,84 +89,84 @@ class H5_DLLCPP FileIException : public Exception {
   public:
     FileIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     FileIException();
-    virtual ~FileIException() throw() override;
+    virtual ~FileIException() override = default;
 };
 
 class H5_DLLCPP GroupIException : public Exception {
   public:
     GroupIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     GroupIException();
-    virtual ~GroupIException() throw() override;
+    virtual ~GroupIException() override = default;
 };
 
 class H5_DLLCPP DataSpaceIException : public Exception {
   public:
     DataSpaceIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     DataSpaceIException();
-    virtual ~DataSpaceIException() throw() override;
+    virtual ~DataSpaceIException() override = default;
 };
 
 class H5_DLLCPP DataTypeIException : public Exception {
   public:
     DataTypeIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     DataTypeIException();
-    virtual ~DataTypeIException() throw() override;
+    virtual ~DataTypeIException() override = default;
 };
 
 class H5_DLLCPP ObjHeaderIException : public Exception {
   public:
     ObjHeaderIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     ObjHeaderIException();
-    virtual ~ObjHeaderIException() throw() override;
+    virtual ~ObjHeaderIException() override = default;
 };
 
 class H5_DLLCPP PropListIException : public Exception {
   public:
     PropListIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     PropListIException();
-    virtual ~PropListIException() throw() override;
+    virtual ~PropListIException() override = default;
 };
 
 class H5_DLLCPP DataSetIException : public Exception {
   public:
     DataSetIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     DataSetIException();
-    virtual ~DataSetIException() throw() override;
+    virtual ~DataSetIException() override = default;
 };
 
 class H5_DLLCPP AttributeIException : public Exception {
   public:
     AttributeIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     AttributeIException();
-    virtual ~AttributeIException() throw() override;
+    virtual ~AttributeIException() override = default;
 };
 
 class H5_DLLCPP ReferenceException : public Exception {
   public:
     ReferenceException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     ReferenceException();
-    virtual ~ReferenceException() throw() override;
+    virtual ~ReferenceException() override = default;
 };
 
 class H5_DLLCPP LibraryIException : public Exception {
   public:
     LibraryIException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     LibraryIException();
-    virtual ~LibraryIException() throw() override;
+    virtual ~LibraryIException() override = default;
 };
 
 class H5_DLLCPP LocationException : public Exception {
   public:
     LocationException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     LocationException();
-    virtual ~LocationException() throw() override;
+    virtual ~LocationException() override = default;
 };
 
 class H5_DLLCPP IdComponentException : public Exception {
   public:
     IdComponentException(const H5std_string &func_name, const H5std_string &message = DEFAULT_MSG);
     IdComponentException();
-    virtual ~IdComponentException() throw() override;
+    virtual ~IdComponentException() override = default;
 
 }; // end of IdComponentException
 } // namespace H5

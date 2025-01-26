@@ -4,17 +4,12 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 /*
  *  This module contains the implementation of all the native methods
  *  used for number conversion.  This is represented by the Java
@@ -49,13 +44,11 @@ Java_hdf_hdf5lib_HDFNativeData_byteToInt___3B(JNIEnv *env, jclass clss, jbyteArr
 {
     jintArray rarray = NULL;
     jboolean  bb;
+    uint8_t  *p      = NULL;
     jbyte    *barr   = NULL;
     jint     *iarray = NULL;
-    jint     *iap    = NULL;
-    char     *bp     = NULL;
-    int       blen;
-    int       ii;
-    int       len;
+    jsize     ilen;
+    jsize     blen;
 
     UNUSED(clss);
 
@@ -69,20 +62,21 @@ Java_hdf_hdf5lib_HDFNativeData_byteToInt___3B(JNIEnv *env, jclass clss, jbyteArr
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToInt: bdata length < 0");
     }
 
-    len = blen / (int)sizeof(jint);
+    ilen = blen / (jsize)sizeof(jint);
 
-    if (NULL == (rarray = ENVPTR->NewIntArray(ENVONLY, len)))
+    if (NULL == (rarray = ENVPTR->NewIntArray(ENVONLY, ilen)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_INT_ARRAY(ENVONLY, rarray, iarray, &bb, "byteToInt: int array not pinned");
 
-    bp  = (char *)barr;
-    iap = iarray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jint *)bp;
-        iap++;
-        bp += sizeof(jint);
-    } /* end for */
+    p = (uint8_t *)barr;
+    for (size_t i = 0; i < (size_t)ilen; i++) {
+        jint val;
+
+        memcpy(&val, p, sizeof(jint));
+        iarray[i] = val;
+        p += sizeof(jint);
+    }
 
 done:
     if (iarray)
@@ -93,57 +87,6 @@ done:
     return rarray;
 } /* end Java_hdf_hdf5lib_HDFNativeData_byteToInt___3B */
 
-/* returns float [] */
-JNIEXPORT jfloatArray JNICALL
-Java_hdf_hdf5lib_HDFNativeData_byteToFloat___3B(JNIEnv *env, jclass clss,
-                                                jbyteArray bdata) /* IN: array of bytes */
-{
-    jfloatArray rarray = NULL;
-    jboolean    bb;
-    jfloat     *farray = NULL;
-    jfloat     *iap    = NULL;
-    jbyte      *barr   = NULL;
-    char       *bp     = NULL;
-    int         blen;
-    int         ii;
-    int         len;
-
-    UNUSED(clss);
-
-    if (NULL == bdata)
-        H5_NULL_ARGUMENT_ERROR(ENVONLY, "byteToFloat: byte array is NULL");
-
-    PIN_BYTE_ARRAY(ENVONLY, bdata, barr, &bb, "byteToFloat: byte array not pinned");
-
-    if ((blen = ENVPTR->GetArrayLength(ENVONLY, bdata)) < 0) {
-        CHECK_JNI_EXCEPTION(ENVONLY, JNI_TRUE);
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: bdata length < 0");
-    }
-
-    len = blen / (int)sizeof(jfloat);
-
-    if (NULL == (rarray = ENVPTR->NewFloatArray(ENVONLY, len)))
-        CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
-
-    PIN_FLOAT_ARRAY(ENVONLY, rarray, farray, &bb, "byteToFloat: float array not pinned");
-
-    bp  = (char *)barr;
-    iap = farray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jfloat *)bp;
-        iap++;
-        bp += sizeof(jfloat);
-    } /* end for */
-
-done:
-    if (farray)
-        UNPIN_FLOAT_ARRAY(ENVONLY, rarray, farray, rarray ? 0 : JNI_ABORT);
-    if (barr)
-        UNPIN_BYTE_ARRAY(ENVONLY, bdata, barr, JNI_ABORT);
-
-    return rarray;
-} /* end Java_hdf_hdf5lib_HDFNativeData_byteToFloat___3B */
-
 /* returns short [] */
 JNIEXPORT jshortArray JNICALL
 Java_hdf_hdf5lib_HDFNativeData_byteToShort___3B(JNIEnv *env, jclass clss,
@@ -151,13 +94,11 @@ Java_hdf_hdf5lib_HDFNativeData_byteToShort___3B(JNIEnv *env, jclass clss,
 {
     jshortArray rarray = NULL;
     jboolean    bb;
+    uint8_t    *p      = NULL;
     jshort     *sarray = NULL;
-    jshort     *iap    = NULL;
     jbyte      *barr   = NULL;
-    char       *bp     = NULL;
-    int         blen;
-    int         ii;
-    int         len;
+    jsize       slen;
+    jsize       blen;
 
     UNUSED(clss);
 
@@ -171,20 +112,21 @@ Java_hdf_hdf5lib_HDFNativeData_byteToShort___3B(JNIEnv *env, jclass clss,
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToShort: bdata length < 0");
     }
 
-    len = blen / (int)sizeof(jshort);
+    slen = blen / (jsize)sizeof(jshort);
 
-    if (NULL == (rarray = ENVPTR->NewShortArray(ENVONLY, len)))
+    if (NULL == (rarray = ENVPTR->NewShortArray(ENVONLY, slen)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_SHORT_ARRAY(ENVONLY, rarray, sarray, &bb, "byteToShort: short array not pinned");
 
-    bp  = (char *)barr;
-    iap = sarray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jshort *)bp;
-        iap++;
-        bp += sizeof(jshort);
-    } /* end for */
+    p = (uint8_t *)barr;
+    for (size_t i = 0; i < (size_t)slen; i++) {
+        jshort val;
+
+        memcpy(&val, p, sizeof(jshort));
+        sarray[i] = val;
+        p += sizeof(jshort);
+    }
 
 done:
     if (sarray)
@@ -202,13 +144,11 @@ Java_hdf_hdf5lib_HDFNativeData_byteToLong___3B(JNIEnv *env, jclass clss,
 {
     jlongArray rarray = NULL;
     jboolean   bb;
+    uint8_t   *p      = NULL;
     jlong     *larray = NULL;
-    jlong     *iap    = NULL;
     jbyte     *barr   = NULL;
-    char      *bp     = NULL;
-    int        blen;
-    int        ii;
-    int        len;
+    jsize      llen;
+    jsize      blen;
 
     UNUSED(clss);
 
@@ -222,20 +162,21 @@ Java_hdf_hdf5lib_HDFNativeData_byteToLong___3B(JNIEnv *env, jclass clss,
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToLong: bdata length < 0");
     }
 
-    len = blen / (int)sizeof(jlong);
+    llen = blen / (jsize)sizeof(jlong);
 
-    if (NULL == (rarray = ENVPTR->NewLongArray(ENVONLY, len)))
+    if (NULL == (rarray = ENVPTR->NewLongArray(ENVONLY, llen)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_LONG_ARRAY(ENVONLY, rarray, larray, &bb, "byteToLong: long array not pinned");
 
-    bp  = (char *)barr;
-    iap = larray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jlong *)bp;
-        iap++;
-        bp += sizeof(jlong);
-    } /* end for */
+    p = (uint8_t *)barr;
+    for (size_t i = 0; i < (size_t)llen; i++) {
+        jlong val;
+
+        memcpy(&val, p, sizeof(jlong));
+        larray[i] = val;
+        p += sizeof(jlong);
+    }
 
 done:
     if (larray)
@@ -246,6 +187,56 @@ done:
     return rarray;
 } /* end Java_hdf_hdf5lib_HDFNativeData_byteToLong___3B */
 
+/* returns float [] */
+JNIEXPORT jfloatArray JNICALL
+Java_hdf_hdf5lib_HDFNativeData_byteToFloat___3B(JNIEnv *env, jclass clss,
+                                                jbyteArray bdata) /* IN: array of bytes */
+{
+    jfloatArray rarray = NULL;
+    jboolean    bb;
+    uint8_t    *p      = NULL;
+    jfloat     *farray = NULL;
+    jbyte      *barr   = NULL;
+    jsize       flen;
+    jsize       blen;
+
+    UNUSED(clss);
+
+    if (NULL == bdata)
+        H5_NULL_ARGUMENT_ERROR(ENVONLY, "byteToFloat: byte array is NULL");
+
+    PIN_BYTE_ARRAY(ENVONLY, bdata, barr, &bb, "byteToFloat: byte array not pinned");
+
+    if ((blen = ENVPTR->GetArrayLength(ENVONLY, bdata)) < 0) {
+        CHECK_JNI_EXCEPTION(ENVONLY, JNI_TRUE);
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: bdata length < 0");
+    }
+
+    flen = blen / (jsize)sizeof(jfloat);
+
+    if (NULL == (rarray = ENVPTR->NewFloatArray(ENVONLY, flen)))
+        CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
+
+    PIN_FLOAT_ARRAY(ENVONLY, rarray, farray, &bb, "byteToFloat: float array not pinned");
+
+    p = (uint8_t *)barr;
+    for (size_t i = 0; i < (size_t)flen; i++) {
+        jfloat val;
+
+        memcpy(&val, p, sizeof(jfloat));
+        farray[i] = val;
+        p += sizeof(jfloat);
+    }
+
+done:
+    if (farray)
+        UNPIN_FLOAT_ARRAY(ENVONLY, rarray, farray, rarray ? 0 : JNI_ABORT);
+    if (barr)
+        UNPIN_BYTE_ARRAY(ENVONLY, bdata, barr, JNI_ABORT);
+
+    return rarray;
+} /* end Java_hdf_hdf5lib_HDFNativeData_byteToFloat___3B */
+
 /* returns double [] */
 JNIEXPORT jdoubleArray JNICALL
 Java_hdf_hdf5lib_HDFNativeData_byteToDouble___3B(JNIEnv *env, jclass clss,
@@ -253,13 +244,11 @@ Java_hdf_hdf5lib_HDFNativeData_byteToDouble___3B(JNIEnv *env, jclass clss,
 {
     jdoubleArray rarray = NULL;
     jboolean     bb;
+    uint8_t     *p      = NULL;
     jdouble     *darray = NULL;
-    jdouble     *iap    = NULL;
     jbyte       *barr   = NULL;
-    char        *bp     = NULL;
-    int          blen;
-    int          ii;
-    int          len;
+    jsize        dlen;
+    jsize        blen;
 
     UNUSED(clss);
 
@@ -273,20 +262,21 @@ Java_hdf_hdf5lib_HDFNativeData_byteToDouble___3B(JNIEnv *env, jclass clss,
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToDouble: bdata length < 0");
     }
 
-    len = blen / (int)sizeof(jdouble);
+    dlen = blen / (jsize)sizeof(jdouble);
 
-    if (NULL == (rarray = ENVPTR->NewDoubleArray(ENVONLY, len)))
+    if (NULL == (rarray = ENVPTR->NewDoubleArray(ENVONLY, dlen)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_DOUBLE_ARRAY(ENVONLY, rarray, darray, &bb, "byteToDouble: double array not pinned");
 
-    bp  = (char *)barr;
-    iap = darray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jdouble *)bp;
-        iap++;
-        bp += sizeof(jdouble);
-    } /* end for */
+    p = (uint8_t *)barr;
+    for (size_t i = 0; i < (size_t)dlen; i++) {
+        jdouble val;
+
+        memcpy(&val, p, sizeof(jdouble));
+        darray[i] = val;
+        p += sizeof(jdouble);
+    }
 
 done:
     if (darray)
@@ -304,12 +294,10 @@ Java_hdf_hdf5lib_HDFNativeData_byteToInt__II_3B(JNIEnv *env, jclass clss, jint s
 {
     jintArray rarray = NULL;
     jboolean  bb;
+    uint8_t  *p      = NULL;
     jint     *iarray = NULL;
-    jint     *iap    = NULL;
     jbyte    *barr   = NULL;
-    char     *bp     = NULL;
-    int       blen;
-    int       ii;
+    jsize     blen;
 
     UNUSED(clss);
 
@@ -323,22 +311,22 @@ Java_hdf_hdf5lib_HDFNativeData_byteToInt__II_3B(JNIEnv *env, jclass clss, jint s
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToInt: bdata length < 0");
     }
 
-    if ((start < 0) || ((int)(start + (len * (int)sizeof(jint))) > blen))
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToInt: start < 0 or len exceeded buffer length");
-
-    bp = (char *)barr + start;
+    if ((start < 0) || (len < 0) || ((int)(start + (len * (int)sizeof(jint))) > blen))
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToInt: start < 0, len < 0 or len exceeded buffer length");
 
     if (NULL == (rarray = ENVPTR->NewIntArray(ENVONLY, len)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_INT_ARRAY(ENVONLY, rarray, iarray, &bb, "byteToInt: int array not pinned");
 
-    iap = iarray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jint *)bp;
-        iap++;
-        bp += sizeof(jint);
-    } /* end for */
+    p = (uint8_t *)barr + start;
+    for (size_t i = 0; i < (size_t)len; i++) {
+        jint val;
+
+        memcpy(&val, p, sizeof(jint));
+        iarray[i] = val;
+        p += sizeof(jint);
+    }
 
 done:
     if (iarray)
@@ -356,12 +344,10 @@ Java_hdf_hdf5lib_HDFNativeData_byteToShort__II_3B(JNIEnv *env, jclass clss, jint
 {
     jshortArray rarray = NULL;
     jboolean    bb;
+    uint8_t    *p      = NULL;
     jshort     *sarray = NULL;
-    jshort     *iap    = NULL;
     jbyte      *barr   = NULL;
-    char       *bp     = NULL;
-    int         blen;
-    int         ii;
+    jsize       blen;
 
     UNUSED(clss);
 
@@ -375,22 +361,22 @@ Java_hdf_hdf5lib_HDFNativeData_byteToShort__II_3B(JNIEnv *env, jclass clss, jint
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToShort: bdata length < 0");
     }
 
-    if ((start < 0) || ((int)(start + (len * (int)sizeof(jshort))) > blen))
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToShort: start < 0 or len exceeded buffer length");
-
-    bp = (char *)barr + start;
+    if ((start < 0) || (len < 0) || ((int)(start + (len * (int)sizeof(jshort))) > blen))
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToShort: start < 0, len < 0 or len exceeded buffer length");
 
     if (NULL == (rarray = ENVPTR->NewShortArray(ENVONLY, len)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_SHORT_ARRAY(ENVONLY, rarray, sarray, &bb, "byteToShort: short array not pinned");
 
-    iap = sarray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jshort *)bp;
-        iap++;
-        bp += sizeof(jshort);
-    } /* end for */
+    p = (uint8_t *)barr + start;
+    for (size_t i = 0; i < (size_t)len; i++) {
+        jshort val;
+
+        memcpy(&val, p, sizeof(jshort));
+        sarray[i] = val;
+        p += sizeof(jshort);
+    }
 
 done:
     if (sarray)
@@ -401,58 +387,6 @@ done:
     return rarray;
 } /* end Java_hdf_hdf5lib_HDFNativeData_byteToShort__II_3B */
 
-/* returns float [] */
-JNIEXPORT jfloatArray JNICALL
-Java_hdf_hdf5lib_HDFNativeData_byteToFloat__II_3B(JNIEnv *env, jclass clss, jint start, jint len,
-                                                  jbyteArray bdata) /* IN: array of bytes */
-{
-    jfloatArray rarray = NULL;
-    jboolean    bb;
-    jfloat     *farray = NULL;
-    jfloat     *iap    = NULL;
-    jbyte      *barr   = NULL;
-    char       *bp     = NULL;
-    int         blen;
-    int         ii;
-
-    UNUSED(clss);
-
-    if (NULL == bdata)
-        H5_NULL_ARGUMENT_ERROR(ENVONLY, "byteToFloat: byte array is NULL");
-
-    PIN_BYTE_ARRAY(ENVONLY, bdata, barr, &bb, "byteToFloat: byte array not pinned");
-
-    if ((blen = ENVPTR->GetArrayLength(ENVONLY, bdata)) < 0) {
-        CHECK_JNI_EXCEPTION(ENVONLY, JNI_TRUE);
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: bdata length < 0");
-    }
-
-    if ((start < 0) || ((int)(start + (len * (int)sizeof(jfloat))) > blen))
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: start < 0 or len exceeded buffer length");
-
-    bp = (char *)barr + start;
-
-    if (NULL == (rarray = ENVPTR->NewFloatArray(ENVONLY, len)))
-        CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
-
-    PIN_FLOAT_ARRAY(ENVONLY, rarray, farray, &bb, "byteToFloat: float array not pinned");
-
-    iap = farray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jfloat *)bp;
-        iap++;
-        bp += sizeof(jfloat);
-    } /* end for */
-
-done:
-    if (farray)
-        UNPIN_FLOAT_ARRAY(ENVONLY, rarray, farray, rarray ? 0 : JNI_ABORT);
-    if (barr)
-        UNPIN_BYTE_ARRAY(ENVONLY, bdata, barr, JNI_ABORT);
-
-    return rarray;
-} /* end Java_hdf_hdf5lib_HDFNativeData_byteToFloat__II_3B */
-
 /* returns long [] */
 JNIEXPORT jlongArray JNICALL
 Java_hdf_hdf5lib_HDFNativeData_byteToLong__II_3B(JNIEnv *env, jclass clss, jint start, jint len,
@@ -460,12 +394,10 @@ Java_hdf_hdf5lib_HDFNativeData_byteToLong__II_3B(JNIEnv *env, jclass clss, jint 
 {
     jlongArray rarray = NULL;
     jboolean   bb;
+    uint8_t   *p      = NULL;
     jlong     *larray = NULL;
-    jlong     *iap    = NULL;
     jbyte     *barr   = NULL;
-    char      *bp     = NULL;
-    int        blen;
-    int        ii;
+    jsize      blen;
 
     UNUSED(clss);
 
@@ -479,22 +411,22 @@ Java_hdf_hdf5lib_HDFNativeData_byteToLong__II_3B(JNIEnv *env, jclass clss, jint 
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToLong: bdata length < 0");
     }
 
-    if ((start < 0) || ((int)(start + (len * (int)sizeof(jlong))) > blen))
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToLong: start < 0 or len exceeded buffer length");
-
-    bp = (char *)barr + start;
+    if ((start < 0) || (len < 0) || ((int)(start + (len * (int)sizeof(jlong))) > blen))
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToLong: start < 0, len < 0 or len exceeded buffer length");
 
     if (NULL == (rarray = ENVPTR->NewLongArray(ENVONLY, len)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_LONG_ARRAY(ENVONLY, rarray, larray, &bb, "byteToLong: long array not pinned");
 
-    iap = larray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jlong *)bp;
-        iap++;
-        bp += sizeof(jlong);
-    } /* end for */
+    p = (uint8_t *)barr + start;
+    for (size_t i = 0; i < (size_t)len; i++) {
+        jlong val;
+
+        memcpy(&val, p, sizeof(jlong));
+        larray[i] = val;
+        p += sizeof(jlong);
+    }
 
 done:
     if (larray)
@@ -505,6 +437,56 @@ done:
     return rarray;
 } /* end Java_hdf_hdf5lib_HDFNativeData_byteToLong__II_3B */
 
+/* returns float [] */
+JNIEXPORT jfloatArray JNICALL
+Java_hdf_hdf5lib_HDFNativeData_byteToFloat__II_3B(JNIEnv *env, jclass clss, jint start, jint len,
+                                                  jbyteArray bdata) /* IN: array of bytes */
+{
+    jfloatArray rarray = NULL;
+    jboolean    bb;
+    uint8_t    *p      = NULL;
+    jfloat     *farray = NULL;
+    jbyte      *barr   = NULL;
+    jsize       blen;
+
+    UNUSED(clss);
+
+    if (NULL == bdata)
+        H5_NULL_ARGUMENT_ERROR(ENVONLY, "byteToFloat: byte array is NULL");
+
+    PIN_BYTE_ARRAY(ENVONLY, bdata, barr, &bb, "byteToFloat: byte array not pinned");
+
+    if ((blen = ENVPTR->GetArrayLength(ENVONLY, bdata)) < 0) {
+        CHECK_JNI_EXCEPTION(ENVONLY, JNI_TRUE);
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: bdata length < 0");
+    }
+
+    if ((start < 0) || (len < 0) || ((int)(start + (len * (int)sizeof(jfloat))) > blen))
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToFloat: start < 0, len < 0 or len exceeded buffer length");
+
+    if (NULL == (rarray = ENVPTR->NewFloatArray(ENVONLY, len)))
+        CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
+
+    PIN_FLOAT_ARRAY(ENVONLY, rarray, farray, &bb, "byteToFloat: float array not pinned");
+
+    p = (uint8_t *)barr + start;
+    for (size_t i = 0; i < (size_t)len; i++) {
+        jfloat val;
+
+        memcpy(&val, p, sizeof(jfloat));
+        farray[i] = val;
+        p += sizeof(jfloat);
+    }
+
+done:
+    if (farray)
+        UNPIN_FLOAT_ARRAY(ENVONLY, rarray, farray, rarray ? 0 : JNI_ABORT);
+    if (barr)
+        UNPIN_BYTE_ARRAY(ENVONLY, bdata, barr, JNI_ABORT);
+
+    return rarray;
+} /* end Java_hdf_hdf5lib_HDFNativeData_byteToFloat__II_3B */
+
 /* returns double [] */
 JNIEXPORT jdoubleArray JNICALL
 Java_hdf_hdf5lib_HDFNativeData_byteToDouble__II_3B(JNIEnv *env, jclass clss, jint start, jint len,
@@ -512,12 +494,10 @@ Java_hdf_hdf5lib_HDFNativeData_byteToDouble__II_3B(JNIEnv *env, jclass clss, jin
 {
     jdoubleArray rarray = NULL;
     jboolean     bb;
+    uint8_t     *p      = NULL;
     jdouble     *darray = NULL;
-    jdouble     *iap    = NULL;
     jbyte       *barr   = NULL;
-    char        *bp     = NULL;
-    int          blen;
-    int          ii;
+    jsize        blen;
 
     UNUSED(clss);
 
@@ -531,22 +511,22 @@ Java_hdf_hdf5lib_HDFNativeData_byteToDouble__II_3B(JNIEnv *env, jclass clss, jin
         H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToDouble: bdata length < 0");
     }
 
-    if ((start < 0) || ((int)(start + (len * (int)sizeof(jdouble))) > blen))
-        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToDouble: start < 0 or len exceeded buffer length");
-
-    bp = (char *)barr + start;
+    if ((start < 0) || (len < 0) || ((int)(start + (len * (int)sizeof(jdouble))) > blen))
+        H5_BAD_ARGUMENT_ERROR(ENVONLY, "byteToDouble: start < 0, len < 0 or len exceeded buffer length");
 
     if (NULL == (rarray = ENVPTR->NewDoubleArray(ENVONLY, len)))
         CHECK_JNI_EXCEPTION(ENVONLY, JNI_FALSE);
 
     PIN_DOUBLE_ARRAY(ENVONLY, rarray, darray, &bb, "byteToDouble: double array not pinned");
 
-    iap = darray;
-    for (ii = 0; ii < len; ii++) {
-        *iap = *(jdouble *)bp;
-        iap++;
-        bp += sizeof(jdouble);
-    } /* end for */
+    p = (uint8_t *)barr + start;
+    for (size_t i = 0; i < (size_t)len; i++) {
+        jdouble val;
+
+        memcpy(&val, p, sizeof(jdouble));
+        darray[i] = val;
+        p += sizeof(jdouble);
+    }
 
 done:
     if (darray)

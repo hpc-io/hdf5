@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -27,15 +27,15 @@
 #define EDGE_V3_FILE   "h5fc_edge_v3.h5"
 #define ERR_LEVEL_FILE "h5fc_err_level.h5"
 
-const char *FILENAME[] = {"h5fc_ext1_i.h5",   /* 0 */
-                          "h5fc_ext1_s.h5",   /* 1 */
-                          "h5fc_ext1_f.h5",   /* 2 */
-                          "h5fc_ext2_is.h5",  /* 3 */
-                          "h5fc_ext2_if.h5",  /* 4 */
-                          "h5fc_ext2_sf.h5",  /* 5 */
-                          "h5fc_ext3_isf.h5", /* 6 */
-                          "h5fc_ext_none.h5", /* 7 */
-                          NULL};
+static const char *FILENAME[] = {"h5fc_ext1_i.h5",   /* 0 */
+                                 "h5fc_ext1_s.h5",   /* 1 */
+                                 "h5fc_ext1_f.h5",   /* 2 */
+                                 "h5fc_ext2_is.h5",  /* 3 */
+                                 "h5fc_ext2_if.h5",  /* 4 */
+                                 "h5fc_ext2_sf.h5",  /* 5 */
+                                 "h5fc_ext3_isf.h5", /* 6 */
+                                 "h5fc_ext_none.h5", /* 7 */
+                                 NULL};
 
 #define GROUP "GROUP"
 
@@ -136,7 +136,6 @@ gen_non(const char *fname)
      */
 
     /* Create dataspace */
-    max_dims[0] = 10;
     max_dims[0] = H5S_UNLIMITED;
     max_dims[1] = H5S_UNLIMITED;
     if ((sid = H5Screate_simple(2, dims2, max_dims)) < 0)
@@ -293,7 +292,7 @@ error:
         H5Fclose(fcpl);
         H5Fclose(fid);
     }
-    H5E_END_TRY;
+    H5E_END_TRY
 
 } /* gen_non() */
 
@@ -373,7 +372,7 @@ error:
         H5Fclose(fid);
         H5Pclose(fapl);
     }
-    H5E_END_TRY;
+    H5E_END_TRY
 
 } /* gen_edge() */
 
@@ -423,8 +422,8 @@ gen_err_level(const char *fname)
         goto error;
 
     /* Initialize data buffer */
-    buf = (unsigned char *)HDmalloc(NUM * sizeof(unsigned char *));
-    HDmemset(buf, 42, NUM * sizeof(unsigned char));
+    buf = (unsigned char *)malloc(NUM * sizeof(unsigned char *));
+    memset(buf, 42, NUM * sizeof(unsigned char));
 
     /* Create the test file */
     if ((fid = H5Fcreate(fname, H5F_ACC_TRUNC, fcpl, fapl)) < 0)
@@ -518,7 +517,7 @@ error:
         H5Pclose(fapl);
         H5Pclose(fcpl);
     }
-    H5E_END_TRY;
+    H5E_END_TRY
 
 } /* gen_err_level() */
 
@@ -572,7 +571,7 @@ gen_ext(const char *fname, unsigned new_format, unsigned what)
             H5Pset_shared_mesg_nindexes(fcpl, 4);
             break;
         case 2:
-            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_PAGE, FALSE, (hsize_t)1);
+            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_PAGE, false, (hsize_t)1);
             break;
         case 3:
             H5Pset_istore_k(fcpl, ISTORE_IK);
@@ -580,7 +579,7 @@ gen_ext(const char *fname, unsigned new_format, unsigned what)
             break;
         case 4:
             H5Pset_istore_k(fcpl, ISTORE_IK);
-            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_FSM_AGGR, TRUE, (hsize_t)1);
+            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_FSM_AGGR, true, (hsize_t)1);
             break;
         case 5:
             H5Pset_shared_mesg_nindexes(fcpl, 4);
@@ -589,7 +588,7 @@ gen_ext(const char *fname, unsigned new_format, unsigned what)
         case 6:
             H5Pset_istore_k(fcpl, ISTORE_IK);
             H5Pset_shared_mesg_nindexes(fcpl, 4);
-            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_NONE, FALSE, (hsize_t)1);
+            H5Pset_file_space_strategy(fcpl, H5F_FSPACE_STRATEGY_NONE, false, (hsize_t)1);
             break;
         default:
             break;
@@ -774,7 +773,7 @@ error:
         H5Pclose(fapl);
         H5Pclose(fcpl);
     }
-    H5E_END_TRY;
+    H5E_END_TRY
 
 } /* end gen_ext() */
 
@@ -793,14 +792,14 @@ main(void)
     gen_err_level(ERR_LEVEL_FILE);
 
     /* Generate old/new format file with/without messages in the superblock extension */
-    for (new_format = FALSE; new_format <= TRUE; new_format++) {
+    for (new_format = false; new_format <= true; new_format++) {
         for (i = 0; i < 8; i++) {
             char filename[50];
 
-            HDmemset(filename, 0, sizeof(filename));
+            memset(filename, 0, sizeof(filename));
             if (!new_format)
-                HDstrcat(filename, "old_");
-            HDstrcat(filename, FILENAME[i]);
+                strcat(filename, "old_");
+            strcat(filename, FILENAME[i]);
 
             gen_ext(filename, new_format, i);
         } /* end for */

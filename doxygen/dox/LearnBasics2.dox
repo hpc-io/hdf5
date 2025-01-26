@@ -63,6 +63,8 @@ GROUP "/" {
 \endcode
 
 <hr>
+Previous Chapter \ref LBAttrCreate - Next Chapter \ref LBGrpCreateNames
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBGrpCreateNames Creating Groups using Absolute and Relative Names
@@ -189,6 +191,8 @@ GROUP "/" {
 \endcode
 
 <hr>
+Previous Chapter \ref LBGrpCreate - Next Chapter \ref LBGrpDset
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBGrpDset Creating Datasets in Groups
@@ -298,6 +302,8 @@ DATASET "dset1" {
 \endcode
 
 <hr>
+Previous Chapter \ref LBGrpCreateNames - Next Chapter \ref LBDsetSubRW
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBDsetSubRW Reading From or Writing To a Subset of a Dataset
@@ -468,7 +474,7 @@ If the offset were 1x1 (instead of 1x2), then the selection can be made:
 </table>
 
 The selections above were tested with the
-<a href="https://support.hdfgroup.org/ftp/HDF5/examples/howto/subset/h5_subsetbk.c">h5_subsetbk.c</a>
+<a href="https://\AEXURL/howto/subset/h5_subsetbk.c">h5_subsetbk.c</a>
 example code. The memory dataspace was defined as one-dimensional.
 
 \subsection subsecLBDsetSubRWProgRem Remarks
@@ -477,6 +483,8 @@ example code. The memory dataspace was defined as one-dimensional.
 for these parameters, rather than passing in an array for each, and for Fortran 90 you can omit these parameters.
 
 <hr>
+Previous Chapter \ref LBGrpDset - Next Chapter \ref LBDatatypes
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBDatatypes Datatype Basics
@@ -626,6 +634,11 @@ into a long integer buffer.)
 <th span="3"><strong>Float</strong></th>
 </tr>
 <tr>
+<td>_Float16</td>
+<td>#H5T_NATIVE_FLOAT16</td>
+<td>#H5T_IEEE_F16BE or #H5T_IEEE_F16LE</td>
+</tr>
+<tr>
 <td>float</td>
 <td>#H5T_NATIVE_FLOAT</td>
 <td>#H5T_IEEE_F32BE or #H5T_IEEE_F32LE</td>
@@ -728,12 +741,12 @@ There are numerous datatype functions that allow a user to alter a pre-defined d
 Refer to the \ref H5T in the \ref RM. Example functions are #H5Tset_size and #H5Tset_precision.
 
 \section secLBDtypeSpec Specific Datatypes
-On the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a>
-page under <a href="https://confluence.hdfgroup.org/display/HDF5/Examples+by+API#ExamplesbyAPI-datatypes">Datatypes</a>
+On the \ref ExAPI
+page under \ref sec_exapi_dtypes
 you will find many example programs for creating and reading datasets with different datatypes.
 
 Below is additional information on some of the datatypes. See
-the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a>
+the \ref ExAPI
 page for examples of these datatypes.
 
 \subsection subsecLBDtypeSpec Array Datatype vs Array Dataspace
@@ -788,7 +801,7 @@ The function #H5Tarray_create creates a new array datatype object. Parameters sp
 \li the dimension permutation of the array, i.e., whether the elements of the array are listed in C or FORTRAN order.
 
 <h4>Working with existing array datatypes</h4>
-When working with existing arrays, one must first determine the the rank, or number of dimensions, of the array.
+When working with existing arrays, one must first determine the rank, or number of dimensions, of the array.
 
 The function #H5Tget_array_dims returns the rank of a specified array datatype.
 
@@ -845,11 +858,45 @@ H5Tinsert (complex_id, "imaginary", HOFFSET(tmp,im), H5T_NATIVE_DOUBLE);
 \endcode
 
 \subsection subsecLBDtypeSpecRef Reference
-There are two types of Reference datatypes in HDF5:
+There are three types of Reference datatypes in HDF5:
+\li \ref subsubsecLBDtypeSpecRefStd
 \li \ref subsubsecLBDtypeSpecRefObj
 \li \ref subsubsecLBDtypeSpecRefDset
 
-\subsubsection subsubsecLBDtypeSpecRefObj Reference to objects
+\subsubsection subsubsecLBDtypeSpecRefStd Standard Reference
+HDF5 references allow users to reference existing HDF5 objects as well as selections within datasets. The
+original API, now deprecated, was extended in order to add the ability to reference attributes as well as objects in
+external files.
+
+The newer API introduced a single opaque reference type, which not only has the advantage of hiding the internal
+representation of references, but it also allows for future extensions to be added more seamlessly. The newer API 
+introduces a single abstract #H5R_ref_t type as well as attribute references and external references 
+(i.e., references to objects in an external file).
+
+A file, group, dataset, named datatype, or attribute may be the target of an object reference. 
+The object reference is created by
+#H5Rcreate_object with the name of an object which may be a file, group, dataset, named datatype, or attribute
+and the reference type #H5R_OBJECT. The object does not have to be open to create a reference to it.
+
+An object reference may also refer to a region (selection) of a dataset. The reference is created
+with #H5Rcreate_region. The dataspace for the region can be retrieved with a call to #H5Ropen_region.
+
+An object reference may also refer to a attribute. The reference is created
+with #H5Rcreate_attr. #H5Ropen_attr can be used to open the attribute by returning an identifier 
+to the attribute just as if #H5Aopen has been called.
+
+An object reference can be accessed by a call to #H5Ropen_object. 
+
+When the reference is to a dataset or dataset region, the #H5Ropen_object call returns an 
+identifier to the dataset just as if #H5Dopen has been called.
+When the reference is to an attribute, the #H5Ropen_object call returns an 
+identifier to the attribute just as if #H5Aopen has been called.
+
+The reference buffer from the #H5Rcreate_object call must be released by
+using #H5Rdestroy to avoid resource leaks and possible HDF5 library shutdown issues. And any identifiers 
+returned by #H5Ropen_object must be closed with the appropriate close call.
+
+\subsubsection subsubsecLBDtypeSpecRefObj Reference to objects - Deprecated
 In HDF5, objects (i.e. groups, datasets, and named datatypes) are usually accessed by name.
 There is another way to access stored objects -- by reference.
 
@@ -877,7 +924,7 @@ The following steps are involved:
 <li>Close all objects when the task is complete.</li>
 </ol>
 
-\subsubsection subsubsecLBDtypeSpecRefDset Reference to a dataset region
+\subsubsection subsubsecLBDtypeSpecRefDset Reference to a dataset region - Deprecated
 A dataset region reference points to a dataset selection in another dataset.
 A reference to the dataset selection (region) is constant for the life of the dataset.
 
@@ -1154,6 +1201,8 @@ If nested VL datatypes were used to create the buffer, this routine frees them f
 releasing all the memory without creating memory leaks.
 
 <hr>
+Previous Chapter \ref LBDsetSubRW - Next Chapter \ref LBPropsList
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 */

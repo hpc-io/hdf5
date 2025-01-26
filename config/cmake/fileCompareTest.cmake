@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -66,7 +66,7 @@ else ()
     endif ()
   elseif (TEST_FUNCTION MATCHES "LTEQ")
     if (TEST_ONE_SIZE LESS_EQUAL TEST_TWO_SIZE)
-      message (VERBOSES "Passed: The size of ${TEST_FOLDER}/${TEST_ONEFILE} was less or equal ${TEST_FOLDER}/${TEST_TWOFILE}")
+      message (VERBOSE "Passed: The size of ${TEST_FOLDER}/${TEST_ONEFILE} was less or equal ${TEST_FOLDER}/${TEST_TWOFILE}")
     else ()
       message (FATAL_ERROR "The size of ${TEST_FOLDER}/${TEST_ONEFILE} was NOT less or equal ${TEST_FOLDER}/${TEST_TWOFILE}")
     endif ()

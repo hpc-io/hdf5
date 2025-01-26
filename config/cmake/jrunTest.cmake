@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -21,7 +21,7 @@ if (NOT TEST_PROGRAM)
   message (FATAL_ERROR "Require TEST_PROGRAM to be defined")
 endif ()
 if (NOT TEST_LIBRARY_DIRECTORY)
-  message (STATUS "Require TEST_LIBRARY_DIRECTORY to be defined")
+  message (VERBOSE "Require TEST_LIBRARY_DIRECTORY to be defined")
 endif ()
 if (NOT TEST_FOLDER)
   message (FATAL_ERROR "Require TEST_FOLDER to be defined")
@@ -30,7 +30,7 @@ if (NOT TEST_OUTPUT)
   message (FATAL_ERROR "Require TEST_OUTPUT to be defined")
 endif ()
 if (NOT TEST_CLASSPATH)
-  message (STATUS "Require TEST_CLASSPATH to be defined")
+  message (VERBOSE "Require TEST_CLASSPATH to be defined")
 endif ()
 
 if (EXISTS "${TEST_FOLDER}/${TEST_OUTPUT}")
@@ -56,6 +56,8 @@ endif ()
 
 if (WIN32)
   set (ENV{PATH} "$ENV{PATH}\\;${TEST_LIBRARY_DIRECTORY}")
+elseif (APPLE)
+  set (ENV{DYLD_LIBRARY_PATH} "$ENV{DYLD_LIBRARY_PATH}:${TEST_LIBRARY_DIRECTORY}")
 else ()
   set (ENV{LD_LIBRARY_PATH} "$ENV{LD_LIBRARY_PATH}:${TEST_LIBRARY_DIRECTORY}")
 endif ()

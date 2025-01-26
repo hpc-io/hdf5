@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #ifdef __cplusplus
 extern "C" {
@@ -216,7 +210,7 @@ Java_hdf_hdf5lib_H5_H5PLget(JNIEnv *env, jclass clss, jint idx)
     if ((buf_size = H5PLget((unsigned)idx, NULL, 0)) < 0)
         H5_LIBRARY_ERROR(ENVONLY);
 
-    if (NULL == (aName = (char *)HDmalloc(sizeof(char) * (size_t)buf_size + 1)))
+    if (NULL == (aName = (char *)malloc(sizeof(char) * (size_t)buf_size + 1)))
         H5_OUT_OF_MEMORY_ERROR(ENVONLY, "H5PLget: failed to allocate plugin name buffer");
 
     if ((H5PLget((unsigned)idx, aName, (size_t)buf_size + 1)) < 0)
@@ -228,7 +222,7 @@ Java_hdf_hdf5lib_H5_H5PLget(JNIEnv *env, jclass clss, jint idx)
 
 done:
     if (aName)
-        HDfree(aName);
+        free(aName);
 
     return str;
 } /* end Java_hdf_hdf5lib_H5_H5PLget */

@@ -5,7 +5,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -333,7 +333,7 @@ class H5_DLLCPP H5Location : public IdComponent {
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
     // Noop destructor.
-    virtual ~H5Location() override;
+    virtual ~H5Location() override = default;
 
 }; // end of H5Location
 } // namespace H5

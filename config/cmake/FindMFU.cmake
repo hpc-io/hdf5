@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -92,7 +92,7 @@ if (NOT MFU_FOUND)
     message (VERBOSE "${MFU_DIR_MESSAGE}")
   else ()
     if (MFU_FIND_REQUIRED)
-      message (FATAL_ERROR "Mfu was NOT found and is Required by this project")
+      message (FATAL_ERROR "MFU was NOT found and is required.")
     endif ()
   endif ()
 endif ()

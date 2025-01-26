@@ -92,7 +92,7 @@ Public header Files you will need to be familiar with include:
 </table>
 
 Many VOL connectors are listed on The HDF Group's VOL plugin registration page, located at:
-<a href="https://portal.hdfgroup.org/display/support/Registered+VOL+Connectors">Registered VOL Connectors</a>.
+<a href="https://\DOCURL/registered_vol_connectors.md">Registered VOL Connectors</a>.
 Not all of these VOL connectors are supported by The HDF Group and the level of completeness varies, but the
 connectors found there can serve as examples of working implementations
 
@@ -191,11 +191,12 @@ are for connector testing and should not be found in the wild. Values of 512 to 
 connectors.
 
 As is the case with HDF5 filters, The HDF Group can assign you an official VOL connector value. Please
-contact <a href="help@hdfgroup.org">help@hdfgroup.org</a> for help with this. We currently do not register connector names, though the
+contact <a href="mailto:help@hdfgroup.org">help@hdfgroup.org</a> for help with this. We currently do not 
+register connector names, though the
 name you've chosen will appear on the registered VOL connectors page.
 
 As noted above, registered VOL connectors will be listed at:
-<a href="https://portal.hdfgroup.org/display/support/Registered+VOL+Connectors">Registered VOL Connectors</a>
+<a href="https://\DOCURL/registered_vol_connectors.md">Registered VOL Connectors</a>
 
 A new \b conn_version field has been added to the class struct for 1.13. This field is currently not used by
 the library so its use is determined by the connector author. Best practices for this field will be determined
@@ -230,7 +231,7 @@ The initialization and terminate callbacks:
 \endcode
 
 \subsection subsecVOLMap Map Storage to HDF5 File Objects
-The most difficult part of designing a new VOL connector is going to determining how to support HDF5
+The most difficult part of designing a new VOL connector is determining how to support HDF5
 file objects and operations using your storage system. There isn't much specific advice to give here, as each
 connector will have unique needs, but a forthcoming "tutorial" connector will set up a simple connector and
 demonstrate this process.
@@ -305,6 +306,13 @@ it may be some time before that work is complete.
 
 \subsection subsecVOLPassthrough Passthrough Connectors
 Coming Soon
+
+Note: 
+Passthrough VOL connectors should avoid doing anything with the file in the open and create 
+callbacks except opening it. If connectors need to do anything else they should use the post 
+open callback (H5VL_NATIVE_FILE_POST_OPEN op_type for the file "optional" callback), 
+making sure to perform operations on the file only after passing the post open call down to 
+the terminal connector.  The post open callback is made for both file open and file create calls.
 
 \subsection subsecVOLAsync Asynchronous Operations
 Coming Soon
@@ -657,7 +665,11 @@ structure. It is the opposite of the <em>to_str</em> callback.
 
 \subsection subsecVOLRefWrap Object Wrap Callbacks
 The object wrap callbacks are used by passthrough connectors to wrap/unwrap objects and contexts when
-passing them up and down the VOL chain.
+passing them up and down the VOL chain. Each passthrough VOL must define an object wrapping structure and a wrap context.
+The object wrapping structure should contain the information necessary to recursively unwrap the object - at a minimum, this is the object provided from and the ID of the next connector in the stack.
+The wrap context should contain the information necessary to recursively wrap the object - at a minimum, this is the ID and the wrap context of the next VOL connector in the stack.
+
+Each callback should use <em>H5VL&lt;callback&gt;</em> to recursively invoke the same callback in all lower passthrough VOl connectors.
 
 <em>Wrap class for object wrapping routines, H5VLconnector.h</em>
 \code
@@ -671,7 +683,13 @@ typedef struct H5VL_wrap_class_t {
 \endcode
 
 \subsubsection subsubsecVOLRefWrapobj wrap: get_object
-Retrieves an underlying object.
+Retrieves the underlying object from a wrapped object. Should return a pointer to the underlying object belonging to the terminal VOL connector.
+
+This will generally be done by unwrapping this VOL's object wrapping structure, before recursively calling <em>H5VLget_object</em> to invoke the <em>get_object</em>
+callback for all lower VOL connectors which define it. <em>H5VLget_object</em> requires the object returned by the next VOL and the next VOL's ID. Both of 
+these fields should be stored by the VOL somehow, generally on the wrapped object structure.
+
+This callback should not cleanup or modify the provided object wrapping structure.
 <table>
 <tr>
 <th>Signature:</th>
@@ -689,7 +707,7 @@ Retrieves an underlying object.
 <tr>
 <td>
 \code
-  obj  (IN): Object being unwrapped.
+  obj  (IN): The object to be unwrapped.
 \endcode
 </td>
 </tr>
@@ -697,6 +715,9 @@ Retrieves an underlying object.
 
 \subsubsection subsubsecVOLRefWrapctx wrap: get_wrap_ctx
 Get a VOL connector's object wrapping context.
+
+The context should be returned in dynamically allocated memory under <em>*wrap_ctx</em>.
+Any resources this callback allocates should be freed within <em>free_wrap_ctx</em>.
 <table>
 <tr>
 <th>Signature:</th>
@@ -714,7 +735,7 @@ Get a VOL connector's object wrapping context.
 <tr>
 <td>
 \code
-  obj      (IN):  Object for which we need a context.
+  obj      (IN):  Object wrapped by this VOL connector, for which we need a context.
   wrap_ctx (OUT): Context.
 \endcode
 </td>
@@ -722,7 +743,11 @@ Get a VOL connector's object wrapping context.
 </table>
 
 \subsubsection subsubsecVOLRefWrapwrap wrap: wrap_object
-Asks a connector to wrap an underlying object.
+Asks a connector to wrap an underlying object. This callback should use <em>H5VLwrap_object</em> 
+to recursively have the object wrapped by all lower VOL connectors before performing its own wrapping.
+
+The wrapped object should provide the information necessary for <em>unwrap_object</em> to recursively 
+unwrap it - at a minimum, the object provided from and the ID of the next VOL connector.
 <table>
 <tr>
 <th>Signature:</th>
@@ -740,7 +765,7 @@ Asks a connector to wrap an underlying object.
 <tr>
 <td>
 \code
-  obj       (IN): Object being wrapped.
+  obj       (IN): The object to be wrapped.
   obj_type  (IN): Object type (see H5Ipublic.h).
   wrap_ctx  (IN): Context.
 \endcode
@@ -749,7 +774,10 @@ Asks a connector to wrap an underlying object.
 </table>
 
 \subsubsection subsubsecVOLRefWrapunwrap wrap: unwrap_object
-Unwrap an object from connector.
+Unwrap an object from connector. Any resources allocated during <em>wrap_object</em> should be released and cleaned up here.
+
+This callback should clean up this VOL's object wrapping structure before recursively invoking <em>H5VLunwrap_object</em>.
+
 <table>
 <tr>
 <th>Signature:</th>
@@ -767,14 +795,15 @@ Unwrap an object from connector.
 <tr>
 <td>
 \code
-  obj  (IN): Object being unwrapped.
+  obj  (IN): Object to be unwrapped.
 \endcode
 </td>
 </tr>
 </table>
 
 \subsubsection subsubsecVOLRefWrapfree wrap: free_wrap_ctx
-Release a VOL connector's object wrapping context.
+Release a VOL connector's object wrapping context. This should free any resources allocated during <em>get_wrap_ctx</em>, and recursively invoke <em>H5VLfree_wrap_ctx</em>
+to execute the free callback for the lower VOL connectors in the stack.
 <table>
 <tr>
 <th>Signature:</th>
@@ -4082,62 +4111,6 @@ Retrieves a pointer to the VOL object from an HDF5 file or object identifier.
 Returns a copy of the <em>dtype_id</em> parameter but with the location set to be in the file. Returns a negative
 value (#H5I_INVALID_HID) on errors.
 
-\subsubsection subsubsecVOLNewConnpeek_name H5VLpeek_connector_id_by_name
-<table>
-<tr>
-<th>Signature:</th>
-</tr>
-<tr>
-<td>
-\code
-  hid_t H5VLpeek_connector_id_by_name(const char *name);
-\endcode
-</td>
-</tr>
-<tr>
-<th>Arguments:</th>
-</tr>
-<tr>
-<td>
-\code
-  name (IN): name of the connector to query.
-\endcode
-</td>
-</tr>
-</table>
-Retrieves the ID for a registered VOL connector based on a connector name. This is done without duplicating
-the ID and transferring ownership to the caller (as it normally the case in the HDF5 library). The ID returned
-from this operation should not be closed. This is intended for use by VOL connectors to find their own ID.
-Returns a negative value (#H5I_INVALID_HID) on errors.
-
-\subsubsection subsubsecVOLNewConnpeek_value H5VLpeek_connector_id_by_value
-<table>
-<tr>
-<th>Signature:</th>
-</tr>
-<tr>
-<td>
-\code
-  hid_t H5VLpeek_connector_id_by_value(H5VL_class_value_t value);
-\endcode
-</td>
-</tr>
-<tr>
-<th>Arguments:</th>
-</tr>
-<tr>
-<td>
-\code
-  value (IN): value of the connector to query.
-\endcode
-</td>
-</tr>
-</table>
-Retrieves the ID for a registered VOL connector based on a connector value. This is done without duplicating
-the ID and transferring ownership to the caller (as it normally the case in the HDF5 library). The ID returned
-from this operation should not be closed. This is intended for use by VOL connectors to find their own ID.
-Returns a negative value (#H5I_INVALID_HID) on errors.
-
 \subsection subsecVOLNewPass H5VLconnector_passthru.h
 This functionality is intended for VOL connector authors who are writing pass-through connectors and
 includes helper functions that are useful for writing such connectors. Callback equivalent functions can be
@@ -4233,7 +4206,7 @@ he type must be a VOL-managed object class:
 Retrieves a copy of the internal state of the HDF5 library, so that it can be restored later. Returns a positive
 value on success and a negative value on errors.
 
-\subsubsection subsubsecVOLNewPassstar H5VLstart_lib_state
+\subsubsection subsubsecVOLNewPassstar H5VLopen_lib_context
 <table>
 <tr>
 <th>Signature:</th>
@@ -4241,13 +4214,12 @@ value on success and a negative value on errors.
 <tr>
 <td>
 \code
-  herr_t H5VLstart_lib_state(void);
+  herr_t H5VLopen_lib_context(void **context);
 \endcode
 </td>
 </tr>
 </table>
-Opens a new internal state for the HDF5 library. Returns a positive value on success and a negative value
-on errors.
+Opens a new internal context for the HDF5 library. Returns a non-negative value if \p *context is set; otherwise returns negative value if \p *context is unset.
 
 \subsubsection subsubsecVOLNewPassrestore H5VLrestore_lib_state
 <table>
@@ -4274,7 +4246,7 @@ on errors.
 </table>
 Restores the internal state of the HDF5 library. Returns a positive value on success and a negative value on errors.
 
-\subsubsection subsubsecVOLNewPassfinish H5VLfinish_lib_state
+\subsubsection subsubsecVOLNewPassfinish H5VLclose_lib_context
 <table>
 <tr>
 <th>Signature:</th>
@@ -4282,12 +4254,12 @@ Restores the internal state of the HDF5 library. Returns a positive value on suc
 <tr>
 <td>
 \code
-  herr_t H5VLfinish_lib_state(void);
+ herr_t H5VLclose_lib_context(void *context);
 \endcode
 </td>
 </tr>
 </table>
-Closes the state of the library, undoing the effects of #H5VLstart_lib_state. Returns a positive value on
+Closes the state of the library, undoing the effects of #H5VLopen_lib_context. Returns a positive value on
 success and a negative value on errors.
 
 \subsubsection subsubsecVOLNewPassfree H5VLfree_lib_state

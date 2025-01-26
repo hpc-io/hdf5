@@ -4,17 +4,11 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*
- *  For details of the HDF libraries, see the HDF Documentation at:
- *    http://hdfgroup.org/HDF5/doc/
- *
- */
 
 #include <jni.h>
 #include "H5version.h"
@@ -82,7 +76,7 @@
             H5_JNI_FATAL_ERROR(envptr, "JNI error: GetMethodID failed");                                     \
         }                                                                                                    \
         if (NULL == (ret_obj = (*envptr)->NewObjectA(envptr, cls, constructor, (args)))) {                   \
-            HDprintf("FATAL ERROR: %s: Creation failed\n", classname);                                       \
+            printf("FATAL ERROR: %s: Creation failed\n", classname);                                         \
             CHECK_JNI_EXCEPTION(envptr, JNI_FALSE);                                                          \
         }                                                                                                    \
     } while (0)
@@ -355,7 +349,7 @@ extern jobject get_enum_object(JNIEnv *env, const char *enum_class_name, jint en
 extern jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info);
 
 /* implemented at h5oimp.c */
-extern jobject create_H5O_token_t(JNIEnv *env, const H5O_token_t *token, hbool_t is_critical_pinning);
+extern jobject create_H5O_token_t(JNIEnv *env, const H5O_token_t *token, bool is_critical_pinning);
 
 #ifdef __cplusplus
 } /* end extern "C" */

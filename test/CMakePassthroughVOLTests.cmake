@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -37,26 +37,26 @@ endforeach ()
 
 foreach (voltest ${VOL_LIST})
   foreach (h5_tfile ${HDF5_TEST_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TOOLS_DIR}/testfiles/${h5_tfile}" "${PROJECT_BINARY_DIR}/${voltest}/${h5_tfile}" "HDF5_VOLTEST_LIB_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/${h5_tfile}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/${h5_tfile}" "HDF5_VOLTEST_LIB_files")
   endforeach ()
 endforeach ()
 
 foreach (voltest ${VOL_LIST})
   foreach (ref_file ${HDF5_REFERENCE_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TEST_SOURCE_DIR}/testfiles/${ref_file}" "${PROJECT_BINARY_DIR}/${voltest}/${ref_file}" "HDF5_VOLTEST_LIB_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/${ref_file}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/${ref_file}" "HDF5_VOLTEST_LIB_files")
   endforeach ()
 endforeach ()
 
 foreach (voltest ${VOL_LIST})
   foreach (h5_file ${HDF5_REFERENCE_TEST_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TEST_SOURCE_DIR}/${h5_file}" "${HDF5_TEST_BINARY_DIR}/${voltest}/${h5_file}" "HDF5_VOLTEST_LIB_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/${h5_file}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/${h5_file}" "HDF5_VOLTEST_LIB_files")
   endforeach ()
 endforeach ()
 
 foreach (voltest ${VOL_LIST})
   foreach (plistfile ${HDF5_REFERENCE_PLIST_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TEST_SOURCE_DIR}/testfiles/plist_files/${plistfile}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/plist_files/${plistfile}" "HDF5_VOLTEST_LIB_files")
-    HDFTEST_COPY_FILE("${HDF5_TEST_SOURCE_DIR}/testfiles/plist_files/def_${plistfile}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/plist_files/def_${plistfile}" "HDF5_VOLTEST_LIB_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/plist_files/${plistfile}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/plist_files/${plistfile}" "HDF5_VOLTEST_LIB_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/plist_files/def_${plistfile}" "${PROJECT_BINARY_DIR}/${voltest}/testfiles/plist_files/def_${plistfile}" "HDF5_VOLTEST_LIB_files")
   endforeach ()
 endforeach ()
 
@@ -107,10 +107,14 @@ add_custom_target(HDF5_VOLTEST_LIB_files ALL COMMENT "Copying files needed by HD
               ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/${volname}"
               WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/${volname}
           )
+          if ("VOL-${volname}-${voltest}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+            set_tests_properties (VOL-${volname}-${voltest} PROPERTIES DISABLED true)
+          endif ()
         else ()
           add_test (NAME VOL-${volname}-${voltest}
               COMMAND ${CMAKE_COMMAND} -E echo "SKIP VOL-${volname}-${voltest}"
           )
+          set_tests_properties (VOL-${volname}-${voltest} PROPERTIES DISABLED true)
         endif ()
       else ()
         add_test (NAME VOL-${volname}-${voltest}
@@ -128,6 +132,9 @@ add_custom_target(HDF5_VOLTEST_LIB_files ALL COMMENT "Copying files needed by HD
             ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/${volname}"
             WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/${volname}
         )
+        if ("VOL-${volname}-${voltest}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+          set_tests_properties (VOL-${volname}-${voltest} PROPERTIES DISABLED true)
+        endif ()
       endif ()
     else ()
       add_test (NAME VOL-${volname}-${voltest}
@@ -145,6 +152,9 @@ add_custom_target(HDF5_VOLTEST_LIB_files ALL COMMENT "Copying files needed by HD
           ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/${volname}"
           WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/${volname}
       )
+      if ("VOL-${volname}-${voltest}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (VOL-${volname}-${voltest} PROPERTIES DISABLED true)
+      endif ()
     endif ()
   endmacro ()
 
@@ -165,10 +175,22 @@ add_custom_target(HDF5_VOLTEST_LIB_files ALL COMMENT "Copying files needed by HD
           ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/${volname}"
           WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/${volname}
       )
+      if ("VOL-${volname}-${voltest}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (VOL-${volname}-${voltest} PROPERTIES DISABLED true)
+      endif ()
   endmacro ()
 
   macro (ADD_VOL_TEST volname volinfo resultcode)
     #message(STATUS "volname=${volname} volinfo=${volinfo}")
+    foreach (h5_test ${H5_EXPRESS_TESTS})
+      if (NOT h5_test IN_LIST H5_VOL_SKIP_TESTS)
+        if (WIN32)
+          CHECK_VOL_TEST (${h5_test} ${volname} "${volinfo}" ${resultcode})
+        else ()
+          DO_VOL_TEST (${h5_test} ${volname} "${volinfo}" ${resultcode})
+        endif ()
+      endif ()
+    endforeach ()
     foreach (h5_test ${H5_TESTS})
       if (NOT h5_test IN_LIST H5_VOL_SKIP_TESTS)
         if (WIN32)
@@ -202,6 +224,9 @@ add_custom_target(HDF5_VOLTEST_LIB_files ALL COMMENT "Copying files needed by HD
           ENVIRONMENT "srcdir=${HDF5_TEST_BINARY_DIR}/${volname}"
           WORKING_DIRECTORY ${HDF5_TEST_BINARY_DIR}/${volname}
       )
+      if ("VOL-${volname}-fheap" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (VOL-${volname}-fheap PROPERTIES DISABLED true)
+      endif ()
     endif ()
   endmacro ()
 

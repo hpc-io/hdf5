@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -37,6 +37,9 @@ macro (ADD_VFD_TEST vfdname resultcode)
             -P "${HDF_RESOURCES_DIR}/vfdTest.cmake"
     )
     set_tests_properties (CPP_VFD-${vfdname}-cpp_testhdf5 PROPERTIES TIMEOUT ${CTEST_SHORT_TIMEOUT})
+    if ("CPP_VFD-${vfdname}-cpp_testhdf5" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+      set_tests_properties (CPP_VFD-${vfdname}-cpp_testhdf5 PROPERTIES DISABLED true)
+    endif ()
   endif ()
 endmacro ()
 

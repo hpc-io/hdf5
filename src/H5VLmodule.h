@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -23,10 +23,11 @@
  *      reporting macros.
  */
 #define H5VL_MODULE
-#define H5_MY_PKG     H5VL
-#define H5_MY_PKG_ERR H5E_VOL
+#define H5_MY_PKG      H5VL
+#define H5_MY_PKG_ERR  H5E_VOL
+#define H5_MY_PKG_INIT YES
 
-/** \page H5VL_UG The HDF5 Virtual Object Layer (VOL)
+/** \page H5VL_UG HDF5 Virtual Object Layer (VOL)
  *
  * \section sec_vol The HDF5 Virtual Object Layer (VOL)
  *
@@ -35,7 +36,7 @@
  * that could potentially access objects in an HDF5 container and forwards those calls to a VOL
  * connector, which implements the storage. The user or application gets the benefit of using the
  * familiar and widely-used HDF5 data model and API, but can map the physical storage of the HDF5 file
- * and objects to storage that better meets the application’s data needs.
+ * and objects to storage that better meets the application's data needs.
  *
  * \subsection subsec_vol_abstract_layer The VOL Abstraction Layer
  * The VOL lies just under the public API. When a storage-oriented public APIcall is made, the library
@@ -83,7 +84,7 @@
  * to be much more common than internal implementations.
  *
  * A list of VOL connectors can be found here:
- * <a href="https://portal.hdfgroup.org/display/support/Registered+VOL+Connectors">
+ * <a href="https://\DOCURL/registered_vol_connectors.md">
  * Registered VOL Connectors</a>
  *
  * This list is incomplete and only includes the VOL connectors that have been registered with
@@ -126,7 +127,7 @@
  * due to inadequate support for pass-through connectors. These deficiencies have been addressed
  * in HDF5 1.14.0, so VOL users and connector authors should target the 1.14.0 VOL API.
  *
- * On Windows, it’s probably best to use the same debug vs release configuration for the application and
+ * On Windows, it's probably best to use the same debug vs release configuration for the application and
  * all libraries in order to avoid C runtime (CRT) issues. Pre-2015 versions of Visual Studio are not
  * supported.
  *
@@ -141,7 +142,7 @@
  *
  * Exactly how you go about setting a VOL connector in a fapl, will depend on
  * the complexity of the VOL connector and how much control you have over the
- * application’s source code. Note that the environment variable method, though
+ * application's source code. Note that the environment variable method, though
  * convenient, has some limitations in its implementation, which are discussed
  * below.
  *
@@ -170,7 +171,7 @@
  *
  * \subsection subsec_vol_use Connector Use
  * Before a VOL connector can be set in a fapl, it must be registered with the
- * library (\ref H5Pset_vol requires the connector’s #hid_t ID) and, if a plugin, it
+ * library (\ref H5Pset_vol requires the connector's #hid_t ID) and, if a plugin, it
  * must be discoverable by the library at run time.
  *
  * \subsubsection subsubsec_vol_connect_register Registration
@@ -190,7 +191,7 @@
  *
  * Note the two ways that a VOL connector can be identified: by a name or by
  * a connector-specific numerical value (#H5VL_class_value_t is typedef’d to an
- * integer). The name and value for a connector can be found in the connector’s
+ * integer). The name and value for a connector can be found in the connector's
  * documentation or public header file.
  *
  * Each call also takes a VOL initialization property list (vipl). The library adds
@@ -203,11 +204,11 @@
  * closed. If you want to close a VOL connector ID, either \ref H5VLunregister_connector()
  * or \ref H5VLclose() can be used (they have the same internal code path). The library maintains a
  * reference count on all open IDs and will not do the actual
- * work of closing an ID until its reference count drops to zero, so it’s safe to close
+ * work of closing an ID until its reference count drops to zero, so it's safe to close
  * IDs anytime after they are used, even while an HDF5 file that was opened with
  * that connector is still open.
  *
- * Note that it’s considered an error to unload the native VOL connector. The
+ * Note that it's considered an error to unload the native VOL connector. The
  * library will prevent this. This means that, for the time being, the native VOL
  * connector will always be available. This may change in the future so that
  * the memory footprint of the native VOL connector goes away when not in
@@ -222,7 +223,7 @@
  * in the fapl. These will often be in the form of \b H5Pset_fapl_<name>(). For
  * example, the <a href="https://github.com/HDFGroup/vol-daos">DAOS VOL</a> connector
  * provides a \b H5Pset_fapl_daos() API call which will take MPI parameters and
- * make this call. See the connector’s documentation or public header file(s) for
+ * make this call. See the connector's documentation or public header file(s) for
  * more information.
  *
  * \subsubsection subsubsec_vol_connect_set_vol H5Pset_vol()
@@ -234,12 +235,12 @@
  *
  * It takes the ID of the file access property list, the ID of the registered VOL
  * connector, and a pointer to whatever connector-specific data the connector is
- * expecting. This will usually be a data struct specified in the connector’s header
+ * expecting. This will usually be a data struct specified in the connector's header
  * or a NULL pointer if the connecter requires no special information (as in the
  * native VOL connector).
  *
  * As mentioned above, many connectors will provide their own replacement for
- * this call. See the connector’s documentation for more information.
+ * this call. See the connector's documentation for more information.
  *
  * \subsubsection subsubsec_vol_connect_search VOL Connector Search Path
  * Dynamically loaded VOL connector plugins are discovered and loaded by the
@@ -297,7 +298,7 @@
  *
  * NOTE: Implementing the environment variable in this way means that setting
  * the native VOL connector becomes somewhat awkward as there is no explicit
- * HDF5 API call to do this. Instead you will need to get the native VOL connector’s ID via
+ * HDF5 API call to do this. Instead you will need to get the native VOL connector's ID via
  * \ref H5VLget_connector_id_by_value(#H5_VOL_NATIVE) and set it manually in the fapl
  * using \ref H5Pset_vol().
  *
@@ -361,6 +362,10 @@
  * \code
  *     htri_t H5Fis_accessible(const char *container_name, hid_t fapl_id)
  * \endcode
+ *
+ * Note also that an error is only returned if it is not possible to determine
+ * if a file (or container) is accessible.  It is not an error to return 'false'
+ * for whether the file is accessible.
  *
  * <h4> H5Oget_info[1|2]() → H5Oget_info3() and H5Oget_native_info()</h4>
  * The \ref H5Oget_info1() and \ref H5Oget_info2() family of HDF5 API calls are often
@@ -454,7 +459,7 @@
  * \code
  *     typedef struct {
  *         H5L_type_t type;      // Type of link
- *         hbool_t corder_valid; // Indicate if creation order is valid
+ *         bool corder_valid; // Indicate if creation order is valid
  *         int64_t corder;       // Creation order
  *         H5T_cset_t cset;      // Character set of link name
  *         union {
@@ -464,7 +469,7 @@
  *     } H5L_info2_t;
  * \endcode
  *
- * <h4>H5Literate() and H5Lvisit() → H5Literte2() and H5Lvisit2()</h4>
+ * <h4>H5Literate() and H5Lvisit() → H5Literate2() and H5Lvisit2()</h4>
  * The callback used in these API calls used the old #H5L_info_t struct, which used
  * addresses instead of tokens. These callbacks were versioned in the C library and
  * now take modified #H5L_iterate2_t callbacks which use the new token-based info
@@ -595,7 +600,7 @@
  * \code
  *  --vol-(name|value|info)
  * \endcode
- * See the individual tool’s help for the options specific to that tool.
+ * See the individual tool's help for the options specific to that tool.
  *
  * \subsection subsec_vol_compat Compatibility
  *
@@ -606,15 +611,21 @@
  * fact, implement some of this functionality as it is possible to mimic the native
  * HDF5 connector, however this will probably not be true for most non-native
  * VOL connectors.
+ * <div>
  * \snippet{doc} tables/volAPIs.dox vol_native_table
+ * </div>
  *
  * \subsubsection subsubsec_vol_compat_indep  List of HDF5 VOL-Independent API Calls
  * These HDF5 API calls do not depend on a particular VOL connector being loaded.
+ * <div>
  * \snippet{doc} tables/volAPIs.dox vol_independent_table
+ * </div>
  *
  * \subsubsection subsubsec_vol_compat_opt List of Native VOL Optional Operation Values By Subclass
  * These values can be passed to the opt type parameter of H5VLquery optional().
+ * <div>
  * \snippet{doc} tables/volAPIs.dox vol_optional_table
+ * </div>
  *
  *
  *

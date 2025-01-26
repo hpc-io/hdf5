@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -45,13 +45,10 @@
       old_h5fc_ext2_sf.ddl
       old_h5fc_ext3_isf.ddl
       h5fc_v_err.ddl
-      h5fc_v_err.ddl.err
   )
   set (HDF5_REFERENCE_ERR_FILES
-      h5fc_d_file.ddl.err
       h5fc_dname.err
       h5fc_nonexistfile.ddl.err
-      h5fc_nonexistdset_file.ddl.err
   )
   set (HDF5_REFERENCE_TEST_FILES
       h5fc_non_v3.h5
@@ -79,15 +76,15 @@
   add_custom_target(h5fc-files ALL COMMENT "Copying files needed by h5fc tests")
 
   foreach (ddl_file ${HDF5_REFERENCE_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${ddl_file}" "${PROJECT_BINARY_DIR}/testfiles/${ddl_file}" "h5fc_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/expected/${ddl_file}" "${PROJECT_BINARY_DIR}/testfiles/${ddl_file}" "h5fc_files")
   endforeach ()
 
   foreach (h5_file ${HDF5_REFERENCE_ERR_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${h5_file}" "${PROJECT_BINARY_DIR}/testfiles/${h5_file}" "h5fc_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/expected/${h5_file}" "${PROJECT_BINARY_DIR}/testfiles/${h5_file}" "h5fc_files")
   endforeach ()
 
   foreach (h5_file ${HDF5_REFERENCE_TEST_FILES})
-    HDFTEST_COPY_FILE("${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${h5_file}" "${PROJECT_BINARY_DIR}/testfiles/${h5_file}" "h5fc_files")
+    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/${h5_file}" "${PROJECT_BINARY_DIR}/testfiles/${h5_file}" "h5fc_files")
   endforeach ()
   add_custom_target(h5fc_files ALL COMMENT "Copying files needed by h5fc tests" DEPENDS ${h5fc_files_list})
 
@@ -105,46 +102,52 @@
           COMMAND ${CMAKE_COMMAND} -E remove ./testfiles/${testname}-tmp.h5
       )
       if (${testfile})
-          add_test (
-              NAME H5FC-${testname}-${testfile}-tmpfile
-              COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${testfile} ./testfiles/${testname}-tmp.h5
-          )
-          set_tests_properties (H5FC-${testname}-${testfile}-tmpfile PROPERTIES
-              DEPENDS H5FC-${testname}-${testfile}-clear-objects
-          )
-          add_test (
-              NAME H5FC-${testname}-${testfile}
-              COMMAND "${CMAKE_COMMAND}"
-                  -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-                  -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
-                  -D "TEST_ARGS=${ARGN};${testname}-tmp.h5"
-                  -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
-                  -D "TEST_OUTPUT=${testname}-${testfile}.out"
-                  -D "TEST_EXPECT=${resultcode}"
-                  -D "TEST_REFERENCE=${resultfile}"
-                  -D "TEST_ERRREF=${resultfile}.err"
-                  -P "${HDF_RESOURCES_DIR}/runTest.cmake"
-          )
-          set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES
-              DEPENDS H5FC-${testname}-${testfile}-tmpfile
-          )
-          set (last_test "H5FC-${testname}-${testfile}")
+        add_test (
+            NAME H5FC-${testname}-${testfile}-tmpfile
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${testfile} ./testfiles/${testname}-tmp.h5
+        )
+        set_tests_properties (H5FC-${testname}-${testfile}-tmpfile PROPERTIES
+            DEPENDS H5FC-${testname}-${testfile}-clear-objects
+        )
+        add_test (
+            NAME H5FC-${testname}-${testfile}
+            COMMAND "${CMAKE_COMMAND}"
+                -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
+                -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
+                -D "TEST_ARGS=${ARGN};${testname}-tmp.h5"
+                -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
+                -D "TEST_OUTPUT=${testname}-${testfile}.out"
+                -D "TEST_EXPECT=${resultcode}"
+                -D "TEST_REFERENCE=${resultfile}"
+                -D "TEST_ERRREF=${resultfile}.err"
+                -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+        )
+        set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES
+            DEPENDS H5FC-${testname}-${testfile}-tmpfile
+        )
+        if ("H5FC-${testname}-${testfile}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+          set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES DISABLED true)
+        endif ()
+        set (last_test "H5FC-${testname}-${testfile}")
       else ()
-          add_test (
-              NAME H5FC-${testname}-${testfile}-NA
-              COMMAND "${CMAKE_COMMAND}"
-                  -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-                  -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
-                  -D "TEST_ARGS=${ARGN}"
-                  -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
-                  -D "TEST_OUTPUT=${testname}-${testfile}.out"
-                  -D "TEST_EXPECT=${resultcode}"
-                  -D "TEST_REFERENCE=${resultfile}"
-                  -P "${HDF_RESOURCES_DIR}/runTest.cmake"
-          )
-          set_tests_properties (H5FC-${testname}-${testfile}-NA PROPERTIES
-              DEPENDS H5FC-${testname}-${testfile}-tmpfile
-          )
+        add_test (
+            NAME H5FC-${testname}-${testfile}-NA
+            COMMAND "${CMAKE_COMMAND}"
+                -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
+                -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
+                -D "TEST_ARGS=${ARGN}"
+                -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
+                -D "TEST_OUTPUT=${testname}-${testfile}.out"
+                -D "TEST_EXPECT=${resultcode}"
+                -D "TEST_REFERENCE=${resultfile}"
+                -P "${HDF_RESOURCES_DIR}/runTest.cmake"
+        )
+        set_tests_properties (H5FC-${testname}-${testfile}-NA PROPERTIES
+            DEPENDS H5FC-${testname}-${testfile}-tmpfile
+        )
+        if ("H5FC-${testname}-${testfile}-NA" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+          set_tests_properties (H5FC-${testname}-${testfile}-NA PROPERTIES DISABLED true)
+        endif ()
       endif ()
       add_test (
           NAME H5FC-${testname}-${testfile}-clean-objects
@@ -174,7 +177,7 @@
           NAME H5FC-${testname}-${testfile}
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
               -D "TEST_ARGS=${ARGN};${testname}-tmp.h5"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
               -D "TEST_OUTPUT=${testname}-${testfile}.out"
@@ -185,6 +188,9 @@
       set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES
           DEPENDS H5FC-${testname}-${testfile}-tmpfile
       )
+      if ("H5FC-${testname}-${testfile}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC-${testname}-${testfile}-clean-objects
           COMMAND ${CMAKE_COMMAND} -E remove ./testfiles/${testname}-tmp.h5
@@ -213,7 +219,7 @@
           NAME H5FC-${testname}-${testfile}
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
               -D "TEST_ARGS=${ARGN};${testname}-tmp.h5"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
               -D "TEST_OUTPUT=${testname}-${testfile}.out"
@@ -225,6 +231,9 @@
       set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES
           DEPENDS H5FC-${testname}-${testfile}-tmpfile
       )
+      if ("H5FC-${testname}-${testfile}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC-${testname}-${testfile} PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC-${testname}-${testfile}-clean-objects
           COMMAND ${CMAKE_COMMAND} -E remove ./testfiles/${testname}-tmp.h5
@@ -254,7 +263,6 @@
       set_tests_properties (H5FC_CHECK_IDX-${testname}-clean-objects PROPERTIES
           FIXTURES_CLEANUP clear_H5FC-${testname}
       )
-      
       add_test (
           NAME H5FC-${testname}-tmpfile
           COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDF5_TOOLS_TEST_H5FC_SOURCE_DIR}/testfiles/${testfile} ./testfiles/${testname}-tmp.h5
@@ -266,7 +274,7 @@
           NAME H5FC-${testname}
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
               -D "TEST_ARGS=${ARGN};./testfiles/${testname}-tmp.h5"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
               -D "TEST_OUTPUT=testfiles/${testname}.out"
@@ -278,6 +286,9 @@
           DEPENDS "H5FC-${testname}-tmpfile"
           FIXTURES_REQUIRED clear_H5FC-${testname}
       )
+      if ("H5FC-${testname}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC-${testname} PROPERTIES DISABLED true)
+      endif ()
      endif ()
   endmacro ()
 
@@ -292,6 +303,9 @@
           DEPENDS "H5FC-${dependtest}"
           FIXTURES_REQUIRED clear_H5FC-${dependtest}
       )
+      if ("H5FC_CHECK_IDX-${dependtest}-${testname}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC_CHECK_IDX-${dependtest}-${testname} PROPERTIES DISABLED true)
+      endif ()
      endif ()
   endmacro ()
 
@@ -314,7 +328,7 @@
           NAME H5FC_TEST_CHECK_IDX-${testname}
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
               -D "TEST_ARGS=-d;${ARGN};./testfiles/${testname}-tmp.h5"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
               -D "TEST_OUTPUT=testfiles/${testname}.out"
@@ -325,6 +339,9 @@
       set_tests_properties (H5FC_TEST_CHECK_IDX-${testname} PROPERTIES
           DEPENDS "H5FC_TEST_CHECK_IDX-${testname}-tmpfile"
       )
+      if ("H5FC_TEST_CHECK_IDX-${testname}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC_TEST_CHECK_IDX-${testname} PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC_TEST_CHECK_IDX-${testname}-check
           COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:h5fc_chk_idx> ./testfiles/${testname}-tmp.h5 ${ARGN}
@@ -332,6 +349,9 @@
       set_tests_properties (H5FC_TEST_CHECK_IDX-${testname}-check PROPERTIES
           DEPENDS "H5FC_TEST_CHECK_IDX-${testname}"
       )
+      if ("H5FC_TEST_CHECK_IDX-${testname}-check" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC_TEST_CHECK_IDX-${testname}-check PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC_TEST_CHECK_IDX-${testname}-clean-objects
           COMMAND ${CMAKE_COMMAND} -E remove
@@ -362,7 +382,7 @@
           NAME H5FC_H5DUMP_CHECK-${testname}
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert${tgt_file_ext}>"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5format_convert>"
               -D "TEST_ARGS=${ARGN};./testfiles/${testname}-tmp.h5"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
               -D "TEST_OUTPUT=testfiles/${testname}.out"
@@ -373,21 +393,27 @@
       set_tests_properties (H5FC_H5DUMP_CHECK-${testname} PROPERTIES
           DEPENDS "H5FC_H5DUMP_CHECK-${testname}-tmpfile"
       )
+      if ("H5FC_H5DUMP_CHECK-${testname}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC_H5DUMP_CHECK-${testname} PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC_H5DUMP_CHECK-${testname}-dump
           COMMAND "${CMAKE_COMMAND}"
               -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
-              -D "TEST_PROGRAM=$<TARGET_FILE:h5dump${tgt_file_ext}>"
-              -D "TEST_ARGS:STRING=-BH;./testfiles/${testname}-tmp.h5"
-              -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
-              -D "TEST_OUTPUT=testfiles/${testname}_chk.out"
+              -D "TEST_PROGRAM=$<TARGET_FILE:h5dump>"
+              -D "TEST_ARGS:STRING=-BH;${testname}-tmp.h5"
+              -D "TEST_FOLDER=${PROJECT_BINARY_DIR}/testfiles"
+              -D "TEST_OUTPUT=${testname}_chk.out"
               -D "TEST_EXPECT=0"
-              -D "TEST_REFERENCE=testfiles/${testname}.ddl"
+              -D "TEST_REFERENCE=${testname}.ddl"
               -P "${HDF_RESOURCES_DIR}/runTest.cmake"
       )
       set_tests_properties (H5FC_H5DUMP_CHECK-${testname}-dump PROPERTIES
           DEPENDS "H5FC_H5DUMP_CHECK-${testname}"
       )
+      if ("H5FC_H5DUMP_CHECK-${testname}-dump" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+        set_tests_properties (H5FC_H5DUMP_CHECK-${testname}-dump PROPERTIES DISABLED true)
+      endif ()
       add_test (
           NAME H5FC_H5DUMP_CHECK-${testname}-clean-objects
           COMMAND ${CMAKE_COMMAND} -E remove
@@ -410,17 +436,20 @@
 # h5format_convert nonexist.h5  (no options, file does not exist)
   ADD_H5_OUTPUT (h5fc_help h5fc_help.ddl 0 "" --help)
   ADD_H5_OUTPUT (h5fc_nooption h5fc_nooption.ddl 1 "")
+#  ADD_H5_MASK_OUTPUT (h5fc_nooption h5fc_nooption.ddl 1 "" "")
   ADD_H5_OUTPUT (h5fc_nonexistfile h5fc_nonexistfile.ddl 1 "" nonexist.h5)
+#  ADD_H5_MASK_OUTPUT (h5fc_nonexistfile h5fc_nonexistfile.ddl 1 "unable to open file" "" nonexist.h5)
 #
 #
 # h5format_convert -d old_h5fc_ext_none.h5 (just -d option, file exists)
 # h5format_convert --dname old_h5fc_ext_none.h5 (just --dname option, file exists)
 # h5format_convert --dname (just --dname option)
 # h5format_convert --dname=nonexist old_h5fc_ext_none.h5 (dataset does not exist, file exists)
-  ADD_H5_OUTPUT (h5fc_d_file-d h5fc_d_file.ddl 1 old_h5fc_ext_none.h5 -d)
-  ADD_H5_OUTPUT (h5fc_d_file h5fc_d_file.ddl 1 old_h5fc_ext_none.h5 --dname)
+  ADD_H5_MASK_OUTPUT (h5fc_d_file-d h5fc_d_file.ddl 1 "missing file name" old_h5fc_ext_none.h5 -d)
+  ADD_H5_MASK_OUTPUT (h5fc_d_file h5fc_d_file.ddl 1 "missing file name" old_h5fc_ext_none.h5 --dname)
   ADD_H5_OUTPUT (h5fc_dname h5fc_dname.ddl 1 "" --dname)
-  ADD_H5_OUTPUT (h5fc_nonexistdset_file h5fc_nonexistdset_file.ddl 1 old_h5fc_ext_none.h5 --dname=nonexist)
+#  ADD_H5_MASK_OUTPUT (h5fc_dname h5fc_dname.ddl 1 "missing file name" "" --dname)
+  ADD_H5_MASK_OUTPUT (h5fc_nonexistdset_file h5fc_nonexistdset_file.ddl 1 "unable to open dataset" old_h5fc_ext_none.h5 --dname=nonexist)
 #
 #
 #

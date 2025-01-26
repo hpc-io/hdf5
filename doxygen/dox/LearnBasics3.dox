@@ -39,6 +39,8 @@ list of the property types.
 \li Close the property list when done, using #H5Pclose.
 
 <hr>
+Previous Chapter \ref LBDatatypes - Next Chapter \ref LBDsetLayout
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBDsetLayout Dataset Storage Layout
@@ -46,6 +48,19 @@ Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 <hr>
 
 \section secLBDsetLayoutDesc Description of a Dataset
+The Creating a Dataset tutorial topic defines a dataset as a multidimensional array of data elements together with supporting metadata, where:
+
+\li The array of elements consists of the raw data values that a user wishes to store in HDF5.
+\li The supporting metadata describes that data. The metadata is stored in the dataset (object) header of a dataset.
+
+Datatype, dataspace, attribute, and storage layout information were introduced as part of the metadata associated with a dataset:
+<table>
+<tr>
+<td>
+\image html tutr-lodset.png
+</td>
+</tr>
+</table>
 
 \section secLBDsetLayout Dataset Storage Layout
 The storage information, or storage layout, defines how the raw data values in the dataset are
@@ -92,7 +107,7 @@ which keeps track of the chunks associated with a dataset:
 
 
 \subsubsection susubsecLBDsetLayoutChunkWhy Why Chunking ?
-Chunking is required for enabling compression and other filters, as well as for creating extendible
+\ref hdf5_chunking is required for enabling compression and other filters, as well as for creating extendible
 or unlimited dimension datasets.
 
 It is also commonly used when subsetting very large datasets. Using the chunking layout can
@@ -134,6 +149,8 @@ It is a good idea to:
 \li Test the data with different chunk sizes to determine the optimal chunk size to use.
 \li Consider the chunk size in terms of the most common access patterns that will be used once the dataset has been created.
 
+@see hdf5_chunk_issues
+
 \subsection subsecLBDsetLayoutCom Compact
 A compact dataset is one in which the raw data is stored in the object header of the dataset.
 This layout is for very small datasets that can easily fit in the object header.
@@ -152,13 +169,13 @@ To use the compact storage layout, call: #H5Pset_layout
 \li Create a dataset with the modified property list. (See #H5Dcreate)
 \li Close the property list. (See #H5Pclose)
 For example code, see the \ref HDF5Examples page.
-Specifically look at the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a>.
+Specifically look at the \ref ExAPI.
 There are examples for different languages.
 
 The C example to create a chunked dataset is:
-<a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5D/h5ex_d_chunk.c">h5ex_d_chunk.c</a>
+<a href="https://\SRCURL/HDF5Examples/C/H5D/h5ex_d_chunk.c">h5ex_d_chunk.c</a>
 The C example to create a compact dataset is:
-<a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5D/h5ex_d_compact.c">h5ex_d_compact.c</a>
+<a href="https://\SRCURL/HDF5Examples/C/H5D/h5ex_d_compact.c">h5ex_d_compact.c</a>
 
 \section secLBDsetLayoutChange Changing the Layout after Dataset Creation
 The dataset layout is a Dataset Creation Property List. This means that once the dataset has been
@@ -166,11 +183,12 @@ created the dataset layout cannot be changed. The h5repack utility can be used t
 to a new with a new layout.
 
 \section secLBDsetLayoutSource Sources of Information
-<a href="https://confluence.hdfgroup.org/display/HDF5/Chunking+in+HDF5">Chunking in HDF5</a>
-(See the documentation on <a href="https://confluence.hdfgroup.org/display/HDF5/Advanced+Topics+in+HDF5">Advanced Topics in HDF5</a>)
+\ref hdf5_chunking
 \see \ref sec_plist in the HDF5 \ref UG.
 
 <hr>
+Previous Chapter \ref LBPropsList - Next Chapter \ref LBExtDset
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 
@@ -184,7 +202,7 @@ certain initial dimensions, then to later increase the size of any of the initia
 
 HDF5 requires you to use chunking to define extendible datasets. This makes it possible to extend
 datasets efficiently without having to excessively reorganize storage. (To use chunking efficiently,
-be sure to see the advanced topic, <a href="https://confluence.hdfgroup.org/display/HDF5/Chunking+in+HDF5">Chunking in HDF5</a>.)
+be sure to see the advanced topic, \ref hdf5_chunking.)
 
 The following operations are required in order to extend a dataset:
 \li Declare the dataspace of the dataset to have unlimited dimensions for all dimensions that might eventually be extended.
@@ -210,12 +228,14 @@ For details on compiling an HDF5 application:
 an extendible array dataset, pass in #H5P_DATASET_CREATE for the property list class.
 \li The #H5Pset_chunk call modifies a Dataset Creation Property List instance to store a chunked
 layout dataset and sets the size of the chunks used.
-\li To extend an unlimited dimension dataset use the the #H5Dset_extent call. Please be aware that
+\li To extend an unlimited dimension dataset use the #H5Dset_extent call. Please be aware that
 after this call, the dataset's dataspace must be refreshed with #H5Dget_space before more data can be accessed.
 \li The #H5Pget_chunk call retrieves the size of chunks for the raw data of a chunked layout dataset.
 \li Once there is no longer a need for a Property List instance, it should be closed with the #H5Pclose call.
 
 <hr>
+Previous Chapter \ref LBDsetLayout - Next Chapter \ref LBComDset
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBComDset Compressed Datasets
@@ -224,7 +244,7 @@ Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 \section secLBComDsetCreate Creating a Compressed Dataset
 HDF5 requires you to use chunking to create a compressed dataset. (To use chunking efficiently,
-be sure to see the advanced topic, <a href="https://confluence.hdfgroup.org/display/HDF5/Chunking+in+HDF5">Chunking in HDF5</a>.)
+be sure to see the advanced topic, \ref hdf5_chunking.)
 
 The following operations are required in order to create a compressed dataset:
 \li Create a dataset creation property list.
@@ -232,7 +252,7 @@ The following operations are required in order to create a compressed dataset:
 \li Create the dataset.
 \li Close the dataset creation property list and dataset.
 
-For more information on compression, see the FAQ question on <a href="https://confluence.hdfgroup.org/display/HDF5/Using+Compression+in+HDF5">Using Compression in HDF5</a>.
+For more information on troubleshooting compression issues, see \ref CompTS.
 
 \section secLBComDsetProg Programming Example
 
@@ -258,6 +278,8 @@ to #H5Dcreate will fail if attempting to create an SZIP compressed dataset with 
 The conflict can only be detected when the property list is used.
 
 <hr>
+Previous Chapter \ref LBExtDset - Next Chapter \ref LBContents
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBContents Discovering the Contents of an HDF5 File
@@ -288,20 +310,22 @@ is met, at a certain point in the future.)
 
 \section secLBContentsProg Programming Example
 
-\subsection subsecLBContentsProgUsing Using #H5Literate, #H5Lvisit and #H5Ovisit
+\subsection subsecLBContentsProgUsing Using H5Literate, H5Lvisit and H5Ovisit
 For example code, see the \ref HDF5Examples page.
-Specifically look at the <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a>.
+Specifically look at the \ref ExAPI.
 There are examples for different languages, where examples of using #H5Literate and #H5Ovisit/#H5Lvisit are included.
 
 The h5ex_g_traverse example traverses a file using H5Literate:
-\li C: <a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5G/h5ex_g_traverse.c">h5ex_g_traverse.c</a>
-\li F90: <a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/FORTRAN/H5G/h5ex_g_traverse_F03.f90">h5ex_g_traverse_F03.f90</a>
+\li C: <a href="https://\SRCURL/HDF5Examples/C/H5G/h5ex_g_traverse.c">h5ex_g_traverse.c</a>
+\li F90: <a href="https://\SRCURL/HDF5Examples/FORTRAN/H5G/h5ex_g_traverse.F90">h5ex_g_traverse_F03.f90</a>
 
 The h5ex_g_visit example traverses a file using H5Ovisit and H5Lvisit:
-\li C: <a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5G/h5ex_g_visit.c">h5ex_g_visit.c</a>
-\li F90:  <a href="https://support.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/FORTRAN/H5G/h5ex_g_visit_F03.f90">h5ex_g_visit_F03.f90</a>
+\li C: <a href="https://\SRCURL/HDF5Examples/C/H5G/h5ex_g_visit.c">h5ex_g_visit.c</a>
+\li F90:  <a href="https://\SRCURL/HDF5Examples/FORTRAN/H5G/h5ex_g_visit.F90">h5ex_g_visit_F03.f90</a>
 
 <hr>
+Previous Chapter \ref LBComDset - Next Chapter \ref LBQuiz
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBQuiz Learning the basics QUIZ
@@ -398,6 +422,8 @@ is in the <code style="background-color:whitesmoke;">root</code> group. How woul
 </ol>
 
 <hr>
+Previous Chapter \ref LBContents - Next Chapter \ref LBQuizAnswers
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBQuizAnswers Learning the basics QUIZ with Answers
@@ -691,6 +717,8 @@ did = H5Dopen (file_id, "/foo/boo/moo"); /* absolute path */
 </ol>
 
 <hr>
+Previous Chapter \ref LBQuiz - Next Chapter \ref LBCompiling
+
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 @page LBCompiling Compiling HDF5 Applications
@@ -715,7 +743,7 @@ When the library is built, the following compile scripts are included:
 \li h5fc:  compile script for HDF5 F90 programs
 \li h5c++: compile script for HDF5 C++ programs
 
-These scripts are easilye used to compile single file applications, such as those included in the tutorial.
+These scripts are easily used to compile single file applications, such as those included in the tutorial.
 <table>
 <tr>
 <th><strong>Warning</strong>
@@ -746,6 +774,9 @@ To see how the libraries linked in with a compile script were configured and bui
 The h5cc, h5c++, and h5fc compile scripts come with the HDF5 binary distributions (include files,
 libraries, and utilities) for the platforms we support. The h5c++ and h5fc utilities are ONLY present
 if the library was built with C++ and Fortran.
+
+<h4>USING_HDF5_CMake.txt:</h4>
+\verbinclude USING_HDF5_CMake.txt
 
 \section secLBCompilingVS Using Visual Studio
 
@@ -811,7 +842,7 @@ HDF5 C Library
 \code
 libhdf5_hl_cpp.a
 libhdf5_cpp.a
-libhdf5hl_fortran.a
+libhdf5_hl_fortran.a
 libhdf5_fortran.a
 libhdf5_hl.a
 libhdf5.a
@@ -821,7 +852,7 @@ libhdf5.a
 \code
 libhdf5_hl_cpp.a
 libhdf5_cpp.a
-libhdf5hl_fortran.a
+libhdf5_hl_fortran.a
 libhdf5_fortran.a
 libhdf5_hl.a
 libhdf5.a
@@ -832,7 +863,7 @@ libhdf5.a
 \code
 libhdf5_hl_cpp.lib
 libhdf5_cpp.lib
-libhdf5hl_fortran.lib
+libhdf5_hl_fortran.lib
 libhdf5_fortran.lib
 libhdf5_hl.lib
 libhdf5.lib
@@ -863,7 +894,7 @@ HDF5 C Library
 \code
 libhdf5_hl_cpp.so
 libhdf5_cpp.so
-libhdf5hl_fortran.so
+libhdf5_hl_fortran.so
 libhdf5_fortran.so
 libhdf5_hl.so
 libhdf5.so
@@ -873,7 +904,7 @@ libhdf5.so
 \code
 libhdf5_hl_cpp.dylib
 libhdf5_cpp.dylib
-libhdf5hl_fortran.dylib
+libhdf5_hl_fortran.dylib
 libhdf5_fortran.dylib
 libhdf5_hl.dylib
 libhdf5.dylib
@@ -883,7 +914,7 @@ libhdf5.dylib
 \code
 hdf5_hl_cpp.lib
 hdf5_cpp.lib
-hdf5hl_fortran.lib
+hdf5_hl_fortran.lib
 hdf5_fortran.lib
 hdf5_hl.lib
 hdf5.lib
@@ -938,16 +969,15 @@ or on WINDOWS you may need to add the path to the bin folder to PATH.
 \section secLBCompilingCMake Compiling an Application with CMake
 
 \subsection subsecLBCompilingCMakeScripts CMake Scripts for Building Applications
-Simple scripts are provided for building applications with different languages and options.
-See <a href="https://confluence.hdfgroup.org/display/support/CMake+Scripts+for+Building+Applications">CMake Scripts for Building Applications</a>.
+See <a href="https://\SRCURL/release_docs/USING_CMake_Examples.txt">Using CMake to Build Applications</a> to build applications with different languages and options.
 
 For a more complete script (and to help resolve issues) see the script provided with the HDF5 Examples project.
 
 \subsection subsecLBCompilingCMakeExamples HDF5 Examples
 The installed HDF5 can be verified by compiling the HDF5 Examples project, included with the CMake built HDF5 binaries
-in the share folder or you can go to the <a href="https://github.com/HDFGroup/hdf5_examples">HDF5 Examples</a> github repository.
+in the share folder or you can go to the <a href="https://\SRCURL/HDF5Examples">HDF5 Examples</a> in the HDF5 github repository.
 
-Go into the share directory and follow the instructions in USING_CMake_examples.txt to build the examples.
+Go into the share directory and follow the instructions in <a href="https://\SRCURL/release_docs/USING_CMake_Examples.txt">Using CMake to Build Examples</a> to build the examples.
 
 In general, users must first set the HDF5_ROOT environment variable to the installed location of the CMake
 configuration files for HDF5. For example, on Windows the following path might be set:
@@ -1001,15 +1031,8 @@ For example, on Unix the log files will be in:
 There are log files for the configure, test, and build. 
 
 <hr>
-Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
+Previous Chapter \ref LBQuizAnswers
 
-@page LBTraining Training Videos
-Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
-<hr>
-
-<a href="https://confluence.hdfgroup.org/display/HDF5/Training+Videos">Training Videos</a>
-
-<hr>
 Navigate back: \ref index "Main" / \ref GettingStarted / \ref LearnBasics
 
 */

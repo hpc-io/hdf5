@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -68,6 +68,9 @@ macro (ADD_H5_FORTRAN_TEST file)
       FIXTURES_REQUIRED clear_HL_FORTRAN_test
       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
   )
+  if ("HL_FORTRAN_f90_${file}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+    set_tests_properties (HL_FORTRAN_f90_${file} PROPERTIES DISABLED true)
+  endif ()
 endmacro ()
 
 foreach (h5_test ${H5_TESTS})

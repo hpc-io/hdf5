@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -23,6 +23,7 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
     "stamp.verify"
     "CMake Warning*stamp"
     "src.ZLIB.*:[ \t]*warning"
+    "src.HDF5_ZLIB.*:[ \t]*warning"
     "warning LNK4197:.*ZLIB-prefix"
     "src.SZIP.*:[ \t]*warning"
 #    "POSIX name for this item is deprecated"
@@ -36,6 +37,7 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
     ".*note.*expected.*void.*but argument is of type.*volatile.*"
     ".*src.SZIP.*:[ \t]*warning.*"
     ".*src.ZLIB.*:[ \t]*warning.*"
+    ".*src.HDF5_ZLIB.*:[ \t]*warning.*"
     ".*src.JPEG.*:[ \t]*warning.*"
     ".*POSIX name for this item is deprecated.*"
     ".*disabling jobserver mode.*"
@@ -50,6 +52,9 @@ set (CTEST_CUSTOM_MEMCHECK_IGNORE
     H5TEST-error_test       #uses runTest.cmake
     H5TEST-err_compat       #uses runTest.cmake
     H5TEST-testlibinfo      #uses grepTest.cmake
+    H5SHELL-test_flush_refresh #uses shell script
+    H5SHELL-test_flush_refresh #uses shell script
+    H5SHELL-test_vds_swmr      #uses shell script
     #########
     H5TEST-clear-objects
     H5TEST-cache-clear-objects
@@ -170,32 +175,6 @@ set (CTEST_CUSTOM_MEMCHECK_IGNORE
     H5REPACK_STAT-SPT_FSM_AGGR-clear-objects
     H5REPACK_STAT-STG_PAGE-clear-objects
     #########
-    H5REPACK_META-meta_long
-    H5REPACK_META-meta_short
-    #########
-    H5REPACK-gzip_verbose_filters                       #uses runTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset2_chunk_20x10            #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT_ALL-chunk_20x10              #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset2_conti                  #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT_ALL-conti                    #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset2_compa                  #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT_ALL-compa                    #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_compa_conti             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_compa_chunk             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_compa_compa             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_conti_compa             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_conti_chunk             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-dset_conti_conti             #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-chunk_compa                  #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-chunk_conti                  #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-chunk_18x13                  #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-contig_small_compa           #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT-contig_small_fixed_compa     #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT_ALL-layout_long_switches     #uses grepTest.cmake
-    H5REPACK_VERIFY_LAYOUT_ALL-layout_short_switches    #uses grepTest.cmake
-    H5REPACK-plugin
-    H5REPACK_CMP-plugin_zero
-    #########
     ADD_H5_VERIFY_INVALIDBOUNDS-h5repack-latest_latest_invalid-clear-objects
     H5REPACK_VERIFY_SUPERBLOCK-SB_IS_0-clear-objects
     H5REPACK_VERIFY_SUPERBLOCK-SB_IS_2-clear-objects
@@ -213,3 +192,9 @@ set (CTEST_CUSTOM_MEMCHECK_IGNORE
     H5WATCH-clearall-objects
     H5WATCH-cleanall-objects
 )
+
+list (APPEND CTEST_CUSTOM_COVERAGE_EXCLUDE
+    "/test/"
+    "/_deps/"
+)
+

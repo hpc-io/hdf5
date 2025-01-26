@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -36,12 +36,12 @@ jarfile = jar$(PACKAGE_TARNAME)-$(PACKAGE_VERSION).jar
 hdf5_javadir = $(libdir)
 
 pkgpath = hdf/hdf5lib
-CLASSPATH_ENV=CLASSPATH=.:$(top_srcdir)/java/lib/slf4j-api-1.7.33.jar:$$CLASSPATH
+CLASSPATH_ENV=CLASSPATH=.:$(top_srcdir)/java/lib/slf4j-api-2.0.6.jar:$$CLASSPATH
 
 AM_JAVACFLAGS = $(H5_JAVACFLAGS) -deprecation
 
 hdf5_java_JAVA =  \
-	${pkgpath}/callbacks/Callbacks.java \
+	${pkgpath}/callbacks/H5Callbacks.java \
 	${pkgpath}/callbacks/H5A_iterate_cb.java \
 	${pkgpath}/callbacks/H5A_iterate_t.java \
 	${pkgpath}/callbacks/H5D_append_cb.java \
@@ -129,8 +129,5 @@ clean:
 	rm -f $(jarfile)
 	rm -f classhdf5_java.stamp
 
-
-# Clean examples when check-clean is invoked
-check-clean :: ;
 
 #include $(top_srcdir)/config/conclude.am

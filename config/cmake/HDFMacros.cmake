@@ -4,35 +4,84 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
 #
 
 #-------------------------------------------------------------------------------
+# Setup output Directories
+#-----------------------------------------------------------------------------
+macro (SET_HDF_OUTPUT_DIRS package_prefix)
+  if (NOT ${package_prefix}_EXTERNALLY_CONFIGURED)
+    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Executables."
+    )
+    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries"
+    )
+    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
+    )
+    set (CMAKE_Fortran_MODULE_DIRECTORY
+        ${PROJECT_BINARY_DIR}/mod CACHE PATH "Single Directory for all fortran modules."
+    )
+    get_property(_isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if(_isMultiConfig)
+      set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${HDF_CFG_NAME})
+      set (CMAKE_PDB_OUTPUT_DIRECTORY
+          ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all pdb files."
+      )
+    else ()
+      set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    endif ()
+  else ()
+    # if we are externally configured, but the project uses old cmake scripts
+    # this may not be set and utilities like H5detect will fail
+    if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+      set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+    endif ()
+  endif ()
+
+  if (NOT ${package_prefix}_EXTERNALLY_CONFIGURED AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if (CMAKE_HOST_UNIX)
+      set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/HDF_Group/${HDF5_PACKAGE_NAME}/${HDF5_PACKAGE_VERSION}"
+        CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
+    else ()
+      GetDefaultWindowsPrefixBase(CMAKE_GENERIC_PROGRAM_FILES)
+      set (CMAKE_INSTALL_PREFIX
+        "${CMAKE_GENERIC_PROGRAM_FILES}/HDF_Group/${HDF5_PACKAGE_NAME}/${HDF5_PACKAGE_VERSION}"
+        CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
+      set (CMAKE_GENERIC_PROGRAM_FILES)
+    endif ()
+    set (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT 0 CACHE PATH "" FORCE)
+  endif ()
+endmacro ()
+
+#-------------------------------------------------------------------------------
 macro (SET_HDF_BUILD_TYPE)
   get_property (_isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
   if (_isMultiConfig)
-    set (HDF_CFG_NAME ${CMAKE_BUILD_TYPE})
-    set (HDF_BUILD_TYPE ${CMAKE_CFG_INTDIR})
+    # HDF_CFG_BUILD_TYPE is used in the Fortran install commands for the build location of the .mod files
     set (HDF_CFG_BUILD_TYPE \${CMAKE_INSTALL_CONFIG_NAME})
+    if (CMAKE_BUILD_TYPE)
+      # set the default to the specified command line define
+      set (HDF_CFG_NAME ${CMAKE_BUILD_TYPE})
+    else ()
+      # set the default to the MultiConfig variable
+      set (HDF_CFG_NAME "$<CONFIG>")
+    endif ()
   else ()
     set (HDF_CFG_BUILD_TYPE ".")
     if (CMAKE_BUILD_TYPE)
       set (HDF_CFG_NAME ${CMAKE_BUILD_TYPE})
-      set (HDF_BUILD_TYPE ${CMAKE_BUILD_TYPE})
     else ()
       set (HDF_CFG_NAME "Release")
-      set (HDF_BUILD_TYPE "Release")
     endif ()
-  endif ()
-  if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message (VERBOSE "Setting build type to 'RelWithDebInfo' as none was specified.")
-    set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
-    # Set the possible values of build type for cmake-gui
-    set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-      "MinSizeRel" "RelWithDebInfo" "Developer")
+    # Set available build types for cmake-gui/ccmake convenience
+    set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+      "Debug" "Release" "RelWithDebInfo" "MinSizeRel" "Developer")
   endif ()
 endmacro ()
 
@@ -73,12 +122,14 @@ endmacro ()
 
 #-------------------------------------------------------------------------------
 macro (INSTALL_TARGET_PDB libtarget targetdestination targetcomponent)
-  if (WIN32 AND MSVC AND NOT DISABLE_PDB_FILES)
+  option (HDF5_DISABLE_PDB_FILES "Do not install PDB files" OFF)
+  mark_as_advanced (HDF5_DISABLE_PDB_FILES)
+  if (WIN32 AND MSVC AND NOT HDF5_DISABLE_PDB_FILES)
     get_target_property (target_type ${libtarget} TYPE)
-    if (${libtype} MATCHES "SHARED")
+    if (${target_type} MATCHES "SHARED")
       set (targetfilename $<TARGET_PDB_FILE:${libtarget}>)
     else ()
-      get_property (target_name TARGET ${libtarget} PROPERTY $<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:Developer>>,OUTPUT_NAME_DEBUG,OUTPUT_NAME_RELWITHDEBINFO>)
+      get_property (target_name TARGET ${libtarget} PROPERTY "$<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:Developer>>,OUTPUT_NAME_DEBUG,OUTPUT_NAME_RELWITHDEBINFO>")
       set (targetfilename $<TARGET_FILE_DIR:${libtarget}>/${target_name}.pdb)
     endif ()
     install (
@@ -173,8 +224,8 @@ macro (HDF_IMPORT_SET_LIB_OPTIONS libtarget libname libtype libversion)
         )
       else ()
         set_target_properties (${libtarget} PROPERTIES
-            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${IMPORT_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
-            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_BUILD_TYPE}/${CMAKE_IMPORT_LIBRARY_PREFIX}${IMPORT_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            IMPORTED_IMPLIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_CFG_NAME}/${CMAKE_IMPORT_LIBRARY_PREFIX}${IMPORT_LIB_NAME}${CMAKE_IMPORT_LIBRARY_SUFFIX}"
+            IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_CFG_NAME}/${CMAKE_IMPORT_LIBRARY_PREFIX}${IMPORT_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
         )
       endif ()
     else ()
@@ -199,7 +250,7 @@ macro (HDF_IMPORT_SET_LIB_OPTIONS libtarget libname libtype libversion)
   else ()
     if (WIN32 AND NOT MINGW)
       set_target_properties (${libtarget} PROPERTIES
-          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_BUILD_TYPE}/${IMPORT_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
+          IMPORTED_LOCATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${HDF_CFG_NAME}/${IMPORT_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       )
     else ()
@@ -214,12 +265,14 @@ endmacro ()
 #-------------------------------------------------------------------------------
 macro (TARGET_C_PROPERTIES wintarget libtype)
   target_compile_options(${wintarget} PRIVATE
-      $<$<C_COMPILER_ID:MSVC>:${WIN_COMPILE_FLAGS}>
-      $<$<CXX_COMPILER_ID:MSVC>:${WIN_COMPILE_FLAGS}>
+      "$<$<C_COMPILER_ID:MSVC>:${WIN_COMPILE_FLAGS}>"
+      "$<$<CXX_COMPILER_ID:MSVC>:${WIN_COMPILE_FLAGS}>"
   )
   if(MSVC)
     set_property(TARGET ${wintarget} APPEND PROPERTY LINK_FLAGS "${WIN_LINK_FLAGS}")
   endif()
+  #Disable UNITY_BUILD for now
+  set_property(TARGET ${wintarget} APPEND PROPERTY UNITY_BUILD OFF)
 endmacro ()
 
 #-----------------------------------------------------------------------------
@@ -231,6 +284,7 @@ macro (HDF_README_PROPERTIES target_fortran)
   if (WIN32)
     set (BINARY_EXAMPLE_ENDING "zip")
     set (BINARY_INSTALL_ENDING "msi")
+    set (BINARY_COMPRESS_ENDING "zip")
     if (CMAKE_CL_64)
       set (BINARY_SYSTEM_NAME "win64")
     else ()
@@ -273,8 +327,10 @@ macro (HDF_README_PROPERTIES target_fortran)
           set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2019")
         elseif (${CMAKE_C_COMPILER_VERSION} MATCHES "^19.3.*")
           set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2022")
+        elseif (${CMAKE_C_COMPILER_VERSION} MATCHES "^19.4.*")
+          set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO 2022")
         else ()
-          set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO ???")
+          set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO ????")
         endif ()
       else ()
         set (BINARY_PLATFORM "${BINARY_PLATFORM}, using VISUAL STUDIO ${CMAKE_C_COMPILER_VERSION}")
@@ -282,12 +338,14 @@ macro (HDF_README_PROPERTIES target_fortran)
     endif ()
   elseif (APPLE)
     set (BINARY_EXAMPLE_ENDING "tar.gz")
+    set (BINARY_COMPRESS_ENDING "tar.gz")
     set (BINARY_INSTALL_ENDING "sh") # if packaging changes - use dmg
     set (BINARY_PLATFORM "${BINARY_PLATFORM} ${CMAKE_SYSTEM_VERSION} ${CMAKE_SYSTEM_PROCESSOR}")
     set (BINARY_PLATFORM "${BINARY_PLATFORM}, using ${CMAKE_C_COMPILER_ID} C ${CMAKE_C_COMPILER_VERSION}")
   else ()
     set (BINARY_EXAMPLE_ENDING "tar.gz")
-    set (BINARY_INSTALL_ENDING "sh")
+    set (BINARY_COMPRESS_ENDING "tar.gz")
+    set (BINARY_INSTALL_ENDING "sh/deb/rpm")
     set (BINARY_PLATFORM "${BINARY_PLATFORM} ${CMAKE_SYSTEM_VERSION} ${CMAKE_SYSTEM_PROCESSOR}")
     set (BINARY_PLATFORM "${BINARY_PLATFORM}, using ${CMAKE_C_COMPILER_ID} C ${CMAKE_C_COMPILER_VERSION}")
   endif ()
@@ -296,7 +354,7 @@ macro (HDF_README_PROPERTIES target_fortran)
     set (BINARY_PLATFORM "${BINARY_PLATFORM} / ${CMAKE_Fortran_COMPILER_ID} Fortran")
   endif ()
 
-  if (ONLY_SHARED_LIBS)
+  if (HDF5_ONLY_SHARED_LIBS)
     set (LIB_TYPE "Shared")
   elseif (BUILD_SHARED_LIBS)
     set (LIB_TYPE "Static and Shared")
@@ -321,7 +379,7 @@ macro (HDFTEST_COPY_FILE src dest target)
 endmacro ()
 
 macro (HDF_DIR_PATHS package_prefix)
-  option (HDF5_USE_GNU_DIRS "TRUE to use GNU Coding Standard install directory variables, FALSE to use historical settings" FALSE)
+  option (HDF5_USE_GNU_DIRS "ON to use GNU Coding Standard install directory variables, OFF to use historical settings" OFF)
   if (HDF5_USE_GNU_DIRS)
     include(GNUInstallDirs)
     if (NOT ${package_prefix}_INSTALL_BIN_DIR)
@@ -352,7 +410,7 @@ macro (HDF_DIR_PATHS package_prefix)
   endif ()
 
   if (APPLE)
-    option (${package_prefix}_BUILD_FRAMEWORKS "TRUE to build as frameworks libraries, FALSE to build according to BUILD_SHARED_LIBS" FALSE)
+    option (${package_prefix}_BUILD_FRAMEWORKS "ON to build as frameworks libraries, OFF to build according to BUILD_SHARED_LIBS" OFF)
   endif ()
 
   if (NOT ${package_prefix}_INSTALL_BIN_DIR)
@@ -401,10 +459,10 @@ macro (HDF_DIR_PATHS package_prefix)
   message(STATUS "Final: ${${package_prefix}_INSTALL_DOC_DIR}")
 
   # Always use full RPATH, i.e. don't skip the full RPATH for the build tree
-  set (CMAKE_SKIP_BUILD_RPATH  FALSE)
+  set (CMAKE_SKIP_BUILD_RPATH  OFF)
   # when building, don't use the install RPATH already
   # (but later on when installing)
-  set (CMAKE_INSTALL_RPATH_USE_LINK_PATH  FALSE)
+  set (CMAKE_INSTALL_RPATH_USE_LINK_PATH  OFF)
   # add the automatically determined parts of the RPATH
   # which point to directories outside the build tree to the install RPATH
   set (CMAKE_BUILD_WITH_INSTALL_RPATH ON)
@@ -435,52 +493,7 @@ macro (HDF_DIR_PATHS package_prefix)
 
   SET_HDF_BUILD_TYPE()
 
-#-----------------------------------------------------------------------------
-# Setup output Directories
-#-----------------------------------------------------------------------------
-  if (NOT ${package_prefix}_EXTERNALLY_CONFIGURED)
-    set (CMAKE_RUNTIME_OUTPUT_DIRECTORY
-        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Executables."
-    )
-    set (CMAKE_LIBRARY_OUTPUT_DIRECTORY
-        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries"
-    )
-    set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
-        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
-    )
-    set (CMAKE_Fortran_MODULE_DIRECTORY
-        ${PROJECT_BINARY_DIR}/mod CACHE PATH "Single Directory for all fortran modules."
-    )
-    get_property(_isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-    if(_isMultiConfig)
-      set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE})
-      set (CMAKE_PDB_OUTPUT_DIRECTORY
-          ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all pdb files."
-      )
-    else ()
-      set (CMAKE_TEST_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-    endif ()
-  else ()
-    # if we are externally configured, but the project uses old cmake scripts
-    # this may not be set and utilities like H5detect will fail
-    if (NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-      set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
-    endif ()
-  endif ()
-
-  if (NOT ${package_prefix}_EXTERNALLY_CONFIGURED AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    if (CMAKE_HOST_UNIX)
-      set (CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/HDF_Group/${HDF5_PACKAGE_NAME}/${HDF5_PACKAGE_VERSION}"
-        CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
-    else ()
-      GetDefaultWindowsPrefixBase(CMAKE_GENERIC_PROGRAM_FILES)
-      set (CMAKE_INSTALL_PREFIX
-        "${CMAKE_GENERIC_PROGRAM_FILES}/HDF_Group/${HDF5_PACKAGE_NAME}/${HDF5_PACKAGE_VERSION}"
-        CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
-      set (CMAKE_GENERIC_PROGRAM_FILES)
-    endif ()
-    set (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT 0 CACHE PATH "" FORCE)
-  endif ()
+  SET_HDF_OUTPUT_DIRS(${package_prefix})
 
   include (FetchContent)
 endmacro ()
@@ -505,4 +518,3 @@ macro (ADD_H5_FLAGS h5_flag_var infile)
   endif ()
   #message (TRACE "h5_flag_var=${${h5_flag_var}}")
 endmacro ()
-

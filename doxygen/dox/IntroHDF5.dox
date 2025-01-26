@@ -124,7 +124,7 @@ It is a 2-dimensional 5 x 3 array (the dataspace). The datatype should not be co
 </ul>
 
 \subsubsection subsec_intro_desc_prop_dspace Dataspaces
-A dataspace describes the layout of a dataset’s data elements. It can consist of no elements (NULL),
+A dataspace describes the layout of a dataset's data elements. It can consist of no elements (NULL),
 a single element (scalar), or a simple array.
 
 <table>
@@ -141,7 +141,7 @@ in size (i.e. they are extendible).
 
 There are two roles of a dataspace:
 \li It contains the spatial information (logical layout) of a dataset stored in a file. This includes the rank and dimensions of a dataset, which are a permanent part of the dataset definition.
-\li It describes an application’s data buffers and data elements participating in I/O. In other words, it can be used to select a portion or subset of a dataset.
+\li It describes an application's data buffers and data elements participating in I/O. In other words, it can be used to select a portion or subset of a dataset.
 
 <table>
 <caption>The dataspace is used to describe both the logical layout of a dataset and a subset of a dataset.</caption>
@@ -204,7 +204,7 @@ Useful tools for working with HDF5 files include:
 \li HDFView:            A java browser to view HDF (HDF4 and HDF5) files
 
 <h4>h5dump</h4>
-The h5dump utility displays the contents of an HDF5 file in Data Description Language (\ref DDLBNF110).
+The h5dump utility displays the contents of an HDF5 file in Data Description Language (\ref DDLBNF200).
 Below is an example of h5dump output for an HDF5 file that contains no objects:
 \code
 $ h5dump file.h5
@@ -262,7 +262,7 @@ FORTRAN routines are similar; they begin with “h5*” and end with “_f”.
 <li>
 Java routines are similar; the routine names begin with “H5*” and are prefixed with “H5.” as the class. Constants are
 in the HDF5Constants class and are prefixed with "HDF5Constants.". The function arguments
-are usually similar, @see @ref HDF5LIB
+are usually similar, see @ref HDF5LIB
 </li>
 </ul>
 For example:
@@ -298,19 +298,27 @@ hsize_t is used for dimensions
 Language specific files must be included in applications:
 <ul>
 <li>
-Python:   Add <code>"import h5py / import numpy"</code>
+<strong>Python</strong>:<br />
+<code>
+import h5py<br />
+import numpy
+</code>
 </li>
 <li>
-C:        Add <code>"#include hdf5.h"</code>
+<strong>C</strong>:<br />
+<code>"#include hdf5.h"</code>
 </li>
 <li>
-FORTRAN:  Add <code>"USE HDF5"</code> and call h5open_f and h5close_f to initialize and close the HDF5 FORTRAN interface
+<strong>FORTRAN</strong>:<br />
+<code>USE HDF5</code><br />
+and call h5open_f and h5close_f to initialize and close the HDF5 FORTRAN interface
 </li>
 <li>
-Java:     Add <code>"import hdf.hdf5lib.H5;
-                     import hdf.hdf5lib.HDF5Constants;"</code>
-</li>
-</ul>
+<strong>Java</strong>:<br />
+<code>
+import hdf.hdf5lib.H5;<br />
+import hdf.hdf5lib.HDF5Constants;
+</code>
 </li>
 </ul>
 
@@ -602,14 +610,13 @@ Navigate back: \ref index "Main" / \ref GettingStarted
 @page HDF5Examples HDF5 Examples
 Example programs of how to use HDF5 are provided below.
 For HDF-EOS specific examples, see the <a href="http://hdfeos.org/zoo/index.php">examples</a>
-of how to access and visualize NASA HDF-EOS files using IDL, MATLAB, and NCL on the
-<a href="http://hdfeos.org/">HDF-EOS Tools and Information Center</a> page.
+of how to access and visualize NASA HDF-EOS files using Python, IDL, MATLAB, and NCL
+on the <a href="http://hdfeos.org/">HDF-EOS Tools and Information Center</a> page.
 
 \section secHDF5Examples Examples
 \li \ref LBExamples
-\li <a href="https://portal.hdfgroup.org/display/HDF5/Examples+by+API">Examples by API</a>
-\li <a href="https://portal.hdfgroup.org/display/HDF5/Examples+in+the+Source+Code">Examples in the Source Code</a>
-\li <a href="https://portal.hdfgroup.org/display/HDF5/Other+Examples">Other Examples</a>
+\li \ref ExAPI
+\li <a href="https://\SRCURL/HDF5Examples">Examples in the Source Code</a>
 
 \section secHDF5ExamplesCompile How To Compile
 For information on compiling in C, C++ and Fortran, see: \ref LBCompiling
@@ -618,10 +625,10 @@ For information on compiling in C, C++ and Fortran, see: \ref LBCompiling
 <a href="http://hdfeos.org/zoo/index.php">IDL, MATLAB, and NCL Examples for HDF-EOS</a>
 Examples of how to access and visualize NASA HDF-EOS files using IDL, MATLAB, and NCL.
 
-<a href="https://support.hdfgroup.org/ftp/HDF5/examples/misc-examples/">Miscellaneous Examples</a>
+<a href="https://\AEXURL/misc-examples/index.html">Miscellaneous Examples</a>
 These (very old) examples resulted from working with users, and are not fully tested. Most of them are in C, with a few in Fortran and Java.
 
-<a href="https://support.hdfgroup.org/ftp/HDF5/examples/special_values_HDF5_example.tar">Using Special Values</a>
+<a href="https://\AEXURL/special_values_HDF5_example.tar">Using Special Values</a>
 These examples show how to create special values in an HDF5 application.
 
 */

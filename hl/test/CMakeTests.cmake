@@ -4,7 +4,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -41,7 +41,7 @@ set (HL_REFERENCE_TEST_FILES
 #-- Copy the necessary files.
 # --------------------------------------------------------------------
 foreach (h5_file ${HL_REFERENCE_TEST_FILES})
-  HDFTEST_COPY_FILE("${HDF5_HL_TEST_SOURCE_DIR}/${h5_file}" "${HDF5_HL_TEST_BINARY_DIR}/${h5_file}" "hl_test_files")
+  HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/testfiles/${h5_file}" "${HDF5_HL_TEST_BINARY_DIR}/testfiles/${h5_file}" "hl_test_files")
 endforeach ()
 add_custom_target(hl_test_files ALL COMMENT "Copying files needed by hl_test tests" DEPENDS ${hl_test_files_list})
 
@@ -118,6 +118,9 @@ macro (HL_ADD_TEST hl_name)
       ENVIRONMENT "srcdir=${HDF5_HL_TEST_BINARY_DIR}"
       WORKING_DIRECTORY ${HDF5_HL_TEST_BINARY_DIR}
   )
+  if ("HL_${hl_name}" MATCHES "${HDF5_DISABLE_TESTS_REGEX}")
+    set_tests_properties (HL_${hl_name} PROPERTIES DISABLED true)
+  endif ()
 endmacro ()
 
 HL_add_test (test_lite )

@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -56,6 +56,9 @@ import hdf.hdf5lib.structs.H5L_info_t;
 import hdf.hdf5lib.structs.H5O_info_t;
 import hdf.hdf5lib.structs.H5O_native_info_t;
 import hdf.hdf5lib.structs.H5O_token_t;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @page HDF5LIB HDF5 Java API Package
@@ -228,7 +231,7 @@ import hdf.hdf5lib.structs.H5O_token_t;
  * which prints out the HDF5 error stack, as described in the HDF5 C API <i><b>@ref H5Eprint()</b>.</i> This
  * may be used by Java exception handlers to print out the HDF5 error stack. <hr>
  *
- * @version HDF5 1.15.0 <BR>
+ * @version HDF5 2.0.0 <BR>
  *          <b>See also: </b>
  *          @ref HDFARRAY hdf.hdf5lib.HDFArray<br />
  *          @ref HDF5CONST hdf.hdf5lib.HDF5Constants<br />
@@ -257,7 +260,7 @@ public class H5 implements java.io.Serializable {
      */
     private static final long serialVersionUID = 6129888282117053288L;
 
-    private final static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5.class);
+    private final static Logger log = LoggerFactory.getLogger(H5.class);
 
     /**
      * @ingroup JH5
@@ -270,7 +273,7 @@ public class H5 implements java.io.Serializable {
      * </ul>
      * Make sure to update the versions number when a different library is used.
      */
-    public final static int LIB_VERSION[] = {1, 15, 0};
+    public final static int LIB_VERSION[] = {2, 0, 0};
 
     /**
      * @ingroup JH5
@@ -5345,7 +5348,7 @@ public class H5 implements java.io.Serializable {
     //    herr_t H5Fget_mpi_atomicity(hid_t file_id, hbool_t *flag);
     // #endif /* H5_HAVE_PARALLEL */
 
-    // /**
+    // /*
     // * H5Fget_vfd_handle returns a pointer to the file handle from the
     // low-level file driver
     // * currently being used by the HDF5 library for file I/O.
@@ -5362,7 +5365,7 @@ public class H5 implements java.io.Serializable {
     // H5Fget_vfd_handle(int file_id, int fapl)
     //             throws HDF5LibraryException;
 
-    // /**
+    // /*
     // * H5Fget_mdc_config loads the current metadata cache configuration into
     // * the instance of H5AC_cache_config_t pointed to by the config_ptr
     // parameter.
@@ -5379,7 +5382,7 @@ public class H5 implements java.io.Serializable {
     // public synchronized static native void H5Fget_mdc_config(int file_id, H5AC_cache_config_t config_ptr)
     //             throws HDF5LibraryException, NullPointerException;
 
-    // /**
+    // /*
     // * H5Fset_mdc_config attempts to configure the file's metadata cache
     // according to the configuration supplied.
     // *
@@ -6303,7 +6306,7 @@ public class H5 implements java.io.Serializable {
     // hid_t H5Iregister(H5I_type_t type, const void *object);
 
     // typedef herr_t (*H5I_free_t)(void *);
-    // H5I_type_t H5Iregister_type(size_t hash_size, unsigned reserved, H5I_free_t free_func);
+    // H5I_type_t H5Iregister_type2(unsigned reserved, H5I_free_t free_func);
 
     // void *H5Iremove_verify(hid_t id, H5I_type_t id_type);
 
@@ -8604,7 +8607,7 @@ public class H5 implements java.io.Serializable {
      * @ingroup JH5P
      *
      * H5Premove_filter deletes a filter from the dataset creation property list;
-     *                  deletes all filters if filter is H5Z_FILTER_NONE
+     *                  deletes all filters if filter is H5Z_FILTER_ALL
      *
      * @param obj_id
      *            IN: Property list identifier.
@@ -9431,10 +9434,10 @@ public class H5 implements java.io.Serializable {
     /**
      * @ingroup JH5P
      *
-     * H5Pset_sieve_buf_size Sets the maximum size of the data seive buffer used for file
+     * H5Pset_sieve_buf_size Sets the maximum size of the data sieve buffer used for file
      *      drivers which are capable of using data sieving.  The data sieve
      *      buffer is used when performing I/O on datasets in the file.  Using a
-     *      buffer which is large anough to hold several pieces of the dataset
+     *      buffer which is large enough to hold several pieces of the dataset
      *      being read in for hyperslab selections boosts performance by quite a
      *      bit.
      * <p>
@@ -9445,7 +9448,7 @@ public class H5 implements java.io.Serializable {
      * @param fapl_id
      *            IN: Identifier of property list to modify.
      * @param size
-     *            IN: maximum size of the data seive buffer.
+     *            IN: maximum size of the data sieve buffer.
      *
      * @exception HDF5LibraryException
      *            Error from the HDF5 Library.
@@ -10025,7 +10028,7 @@ public class H5 implements java.io.Serializable {
         throws HDF5LibraryException, IllegalArgumentException;
 
     //    /////  unimplemented /////
-    //    /**
+    //    /*
     //     * H5Pget_vds_file_cache_size retrieves the size of the vds link open file cache.
     //     *
     //     * @param fapl_id
@@ -10040,7 +10043,7 @@ public class H5 implements java.io.Serializable {
     //    public synchronized static native int H5Pget_vds_file_cache_size(long fapl_id) throws
     //    HDF5LibraryException;
     //
-    //    /**
+    //    /*
     //     * H5Pset_vds_file_cache_size sets the number of files that can be held open in an vds link open
     //     * file cache.
     //     *
@@ -10072,10 +10075,9 @@ public class H5 implements java.io.Serializable {
      * @param size
      *            OUT: the offset value and the size of the external file data.
      *
-     *            <pre>
-     *      size[0] = offset // a location to return an offset value
-     *      size[1] = size // a location to return the size of
-     *                // the external file data.
+     * <pre>
+     *    size[0] = offset // a location to return an offset value
+     *    size[1] = size // a location to return the size of the external file data.
      * </pre>
      *
      * @return a non-negative value if successful
@@ -13747,6 +13749,33 @@ public class H5 implements java.io.Serializable {
     /**
      * @ingroup JH5T
      *
+     * H5Tcomplex_create creates a new complex number datatype object.
+     *
+     * @param base_id
+     *            IN: Datatype identifier for the complex number base datatype.
+     *                Must be a floating-point datatype.
+     *
+     * @return a valid datatype identifier
+     *
+     * @exception HDF5LibraryException
+     *            Error from the HDF5 Library.
+     **/
+    public static long H5Tcomplex_create(long base_id) throws HDF5LibraryException
+    {
+        long id = _H5Tcomplex_create(base_id);
+        if (id > 0) {
+            log.trace("OPEN_IDS: H5Tcomplex_create add {}", id);
+            OPEN_IDS.add(id);
+            log.trace("OPEN_IDS: {}", OPEN_IDS.size());
+        }
+        return id;
+    }
+
+    private synchronized static native long _H5Tcomplex_create(long base_id) throws HDF5LibraryException;
+
+    /**
+     * @ingroup JH5T
+     *
      * H5Tconvert converts nelmts elements from the type specified by the src_id identifier to type dst_id.
      *
      * @param src_id
@@ -13803,7 +13832,7 @@ public class H5 implements java.io.Serializable {
     /**
      * @ingroup JH5T
      *
-     * H5Tcreate creates a new dataype of the specified class with the specified number of bytes.
+     * H5Tcreate creates a new datatype of the specified class with the specified number of bytes.
      *
      * @param tclass
      *            IN: Class of datatype to create.
@@ -13836,6 +13865,9 @@ public class H5 implements java.io.Serializable {
      * @param buf
      *            IN: Buffer for the data type object to be decoded.
      *
+     * @param buf_size
+     *           IN: Size of the buffer.
+     *
      * @return a new object handle
      *
      * @exception HDF5LibraryException
@@ -13843,9 +13875,9 @@ public class H5 implements java.io.Serializable {
      * @exception NullPointerException
      *            buf is null.
      **/
-    public static long H5Tdecode(byte[] buf) throws HDF5LibraryException, NullPointerException
+    public static long H5Tdecode(byte[] buf, long buf_size) throws HDF5LibraryException, NullPointerException
     {
-        long id = _H5Tdecode(buf);
+        long id = _H5Tdecode(buf, buf_size);
         if (id > 0) {
             log.trace("OPEN_IDS: H5Tdecode add {}", id);
             OPEN_IDS.add(id);
@@ -13854,7 +13886,7 @@ public class H5 implements java.io.Serializable {
         return id;
     }
 
-    private synchronized static native long _H5Tdecode(byte[] buf)
+    private synchronized static native long _H5Tdecode(byte[] buf, long buf_size)
         throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -13899,7 +13931,7 @@ public class H5 implements java.io.Serializable {
     public synchronized static native int H5Tencode(long obj_id, byte[] buf, long nalloc)
         throws HDF5LibraryException, NullPointerException;
 
-    // /**
+    // /*
     //  * @ingroup JH5T
     //  *
     //  * H5Tencode converts a data type description into binary form in a buffer.
@@ -14247,6 +14279,8 @@ public class H5 implements java.io.Serializable {
             retValue = "H5T_VLEN";
         else if (HDF5Constants.H5T_ARRAY == class_id) /* Array types */
             retValue = "H5T_ARRAY";
+        else if (HDF5Constants.H5T_COMPLEX == class_id) /* Complex number types */
+            retValue = "H5T_COMPLEX";
         else
             retValue = "H5T_NO_CLASS";
 
@@ -15258,7 +15292,7 @@ public class H5 implements java.io.Serializable {
     /**
      * @ingroup JH5T
      *
-     * H5Tvlen_create creates a new variable-length (VL) dataype.
+     * H5Tvlen_create creates a new variable-length (VL) datatype.
      *
      * @param base_id
      *            IN: Identifier of parent datatype.
@@ -15492,6 +15526,24 @@ public class H5 implements java.io.Serializable {
      *            Error from the HDF5 Library.
      **/
     public synchronized static native void H5VLunregister_connector(long connector_id)
+        throws HDF5LibraryException;
+
+    /**
+     * @ingroup JH5VL
+     *
+     * H5VLcmp_connector_cls Determines whether two connector identifiers refer to the same connector.
+     *
+     * @param conn_id1
+     *            IN: Identifier of connector to compare.
+     * @param conn_id2
+     *            IN: Identifier of connector to compare.
+     *
+     * @return true if the connector identifiers refer to the same connector, else false.
+     *
+     * @exception HDF5LibraryException
+     *            Error from the HDF5 Library.
+     **/
+    public synchronized static native boolean H5VLcmp_connector_cls(long conn_id1, long conn_id2)
         throws HDF5LibraryException;
 
     // /////// unimplemented ////////

@@ -4,7 +4,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -19,7 +19,7 @@
  * HDF5 entry point, generally with the arguments and return codes analogous to the C interface.
  * <p>
  * For details of the HDF5 library, see the HDF5 Documentation at:
- *     <a href="http://hdfgroup.org/HDF5/">http://hdfgroup.org/HDF5/</a>
+ *     <a href="https://support.hdfgroup.org/documentation/">https://support.hdfgroup.org/documentation/</a>
  * <hr>
  * <p>
  * <b>Mapping of arguments for Java</b>
@@ -196,7 +196,7 @@
  *
  * @ref HDF5LIB
  *
- * <b>@see: <a href="http://hdfgroup.org/HDF5/"> HDF5"</a></b>
+ * <b>@see: <a href="https://www.hdfgroup.org/solutions/hdf5/">HDF5"</a></b>
  *
  */
 package hdf.hdf5lib;

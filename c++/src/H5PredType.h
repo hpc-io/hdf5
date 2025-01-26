@@ -5,7 +5,7 @@
  *                                                                           *
  * This file is part of HDF5.  The full HDF5 copyright notice, including     *
  * terms governing use, modification, and redistribution, is contained in    *
- * the COPYING file, which can be found at the root of the source code       *
+ * the LICENSE file, which can be found at the root of the source code       *
  * distribution tree, or in https://www.hdfgroup.org/licenses.               *
  * If you do not have access to either file, you may request a copy from     *
  * help@hdfgroup.org.                                                        *
@@ -41,7 +41,7 @@ class H5_DLLCPP PredType : public AtomType {
     PredType(const PredType &original);
 
     // Noop destructor
-    virtual ~PredType() override;
+    virtual ~PredType() override = default;
 
     /*! \brief This dummy function do not inherit from DataType - it will
         throw a DataTypeIException if invoked.

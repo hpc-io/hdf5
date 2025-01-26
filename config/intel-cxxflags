@@ -5,7 +5,7 @@
 #
 # This file is part of HDF5.  The full HDF5 copyright notice, including
 # terms governing use, modification, and redistribution, is contained in
-# the COPYING file, which can be found at the root of the source code
+# the LICENSE file, which can be found at the root of the source code
 # distribution tree, or in https://www.hdfgroup.org/licenses.
 # If you do not have access to either file, you may request a copy from
 # help@hdfgroup.org.
@@ -129,15 +129,15 @@ if test "X-icpc" = "X-$cxx_vendor"; then
 
     # Add various general warning flags in intel-warnings.
     # Use the C warnings as CXX warnings are the same
-    H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments general)"
+    H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments classic/general)"
 
     ######################
     # Developer warnings #
     ######################
 
     # Use the C warnings as CXX warnings are the same
-    #NO_DEVELOPER_WARNING_CXXFLAGS=$(load_intel_arguments no-developer-general)
-    #DEVELOPER_WARNING_CXXFLAGS=$(load_intel_arguments developer-general)
+    #NO_DEVELOPER_WARNING_CXXFLAGS=$(load_intel_arguments classic/no-developer-general)
+    #DEVELOPER_WARNING_CXXFLAGS=$(load_intel_arguments classic/developer-general)
 
     #############################
     # Version-specific warnings #
@@ -157,19 +157,13 @@ if test "X-icpc" = "X-$cxx_vendor"; then
     # intel >= 15
     if test $cxx_vers_major -ge 15; then
         # Use the C warnings as CXX warnings are the same
-        H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments 15)"
+        H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments classic/15)"
     fi
 
     # intel >= 18
     if test $cxx_vers_major -ge 18; then
         # Use the C warnings as CXX warnings are the same
-        H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments 18)"
-    fi
-
-    # intel <= 19
-    if test $cxx_vers_major -le 19; then
-        # Use the C warnings as CXX warnings are the same
-        H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments general-19)"
+        H5_CXXFLAGS="$H5_CXXFLAGS $(load_intel_arguments classic/18)"
     fi
 
     #################
